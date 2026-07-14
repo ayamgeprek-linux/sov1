@@ -1,0 +1,15 @@
+{
+  "name": "stock-opname-enterprise",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:api": "cd apps/api && npm run dev",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "turbo": "^1.12.0"
+  }
+}

@@ -1,0 +1,658 @@
+/* ============================================================
+   IMPORT PAGE - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.importPage {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.importHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.importHeaderIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(115, 92, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.importHeaderIcon span {
+  font-size: 28px;
+  color: #735c00;
+}
+
+.importTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.01em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.importSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 400;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ============================================================
+   BENTO GRID
+   ============================================================ */
+.importGrid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ============================================================
+   UPLOAD PANEL
+   ============================================================ */
+.importUpload {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 24px;
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.02);
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.importUploadBg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: radial-gradient(#735c00 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.dropzone {
+  border: 2px dashed rgba(115, 92, 0, 0.4);
+  border-radius: 16px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  padding: 32px;
+}
+
+.dropzone:hover {
+  background: rgba(115, 92, 0, 0.03);
+  transform: scale(1.01);
+}
+
+.dropzone.dragover {
+  background: rgba(115, 92, 0, 0.05);
+  transform: scale(1.01);
+}
+
+.dropzoneIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #edeeef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: transform 0.3s ease;
+}
+
+.dropzone:hover .dropzoneIcon {
+  transform: scale(1.1);
+}
+
+.dropzoneIcon span {
+  font-size: 40px;
+  color: #735c00;
+}
+
+.dropzoneText {
+  font-size: 24px;
+  font-weight: 600;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 4px;
+}
+
+.dropzoneSub {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+.dropzoneBtn {
+  padding: 12px 24px;
+  background: #e1e3e4;
+  color: #191c1d;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dropzoneBtn:hover {
+  background: #d0c5af;
+}
+
+.dropzoneBtn span {
+  font-size: 20px;
+}
+
+.filename {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #edeeef;
+  border-radius: 9999px;
+  color: #4d4635;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ============================================================
+   IMPORT BUTTON
+   ============================================================ */
+.importBtnWrap {
+  margin-top: 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.importBtn {
+  width: 100%;
+  padding: 16px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 10px 30px -5px rgba(115, 92, 0, 0.2);
+}
+
+.importBtn:hover:not(:disabled) {
+  transform: scale(1.02);
+  background: #5c4a00;
+}
+
+.importBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.importBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.importBtn span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progressBarWrapper {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #edeeef;
+  border-radius: 12px;
+}
+
+.progressBarTrack {
+  width: 100%;
+  height: 4px;
+  background: rgba(208, 197, 175, 0.3);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(to right, #735c00, #d4af37);
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.progressBarText {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.6);
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   STATUS ITEMS
+   ============================================================ */
+.importStatus {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #edeeef;
+  border-radius: 12px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusDot.valid {
+  background: #34d399;
+}
+
+.statusDot.warning {
+  background: #735c00;
+}
+
+.statusItem span {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.8);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statusItem small {
+  font-size: 10px;
+  color: rgba(77, 70, 53, 0.4);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ============================================================
+   PREVIEW PANEL
+   ============================================================ */
+.importPreview {
+  background: #ffffff;
+  border-radius: 32px;
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.02);
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+}
+
+/* ============================================================
+   PREVIEW HEADER
+   ============================================================ */
+.previewHeader {
+  padding: 16px 24px;
+  background: rgba(237, 238, 239, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.1);
+}
+
+.previewLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #735c00;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.previewLabel span {
+  font-size: 20px;
+}
+
+.previewClear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ba1a1a;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.previewClear:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   PREVIEW TABLE
+   ============================================================ */
+.previewTableWrap {
+  flex: 1;
+  overflow: auto;
+  max-height: 400px;
+}
+
+.previewTableWrap::-webkit-scrollbar {
+  width: 6px;
+}
+
+.previewTableWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.previewTableWrap::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 10px;
+}
+
+.previewTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.previewTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #ffffff;
+}
+
+.previewTable th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.2);
+  background: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.previewTable td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #191c1d;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.05);
+  font-weight: 400;
+}
+
+.previewTable tbody tr:hover {
+  background: rgba(237, 238, 239, 0.3);
+}
+
+.fontMono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #4d4635;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.sizeBadge {
+  display: inline-block;
+  padding: 2px 12px;
+  background: #edeeef;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4d4635;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.emptyState {
+  padding: 64px 20px;
+  text-align: center;
+  color: rgba(77, 70, 53, 0.3);
+}
+
+.emptyState span {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.emptyState p {
+  font-size: 16px;
+  font-weight: 400;
+  font-style: italic;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ============================================================
+   PREVIEW FOOTER
+   ============================================================ */
+.previewFooter {
+  padding: 16px 24px;
+  background: rgba(237, 238, 239, 0.2);
+  border-top: 1px solid rgba(208, 197, 175, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.previewValid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.previewDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ba1a1a;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.previewDot.valid {
+  background: #34d399;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.previewImport {
+  padding: 12px 40px;
+  background: rgba(208, 197, 175, 0.3);
+  color: rgba(77, 70, 53, 0.5);
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewImport.active {
+  background: #735c00;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.previewImport.active:hover {
+  background: #5c4a00;
+  transform: scale(1.02);
+}
+
+.previewImport.active:active {
+  transform: scale(0.95);
+}
+
+.previewImport span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .importGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .importHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .importTitle {
+    font-size: 24px;
+  }
+
+  .dropzone {
+    min-height: 300px;
+    padding: 20px;
+  }
+
+  .dropzoneText {
+    font-size: 20px;
+  }
+
+  .dropzoneIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .dropzoneIcon span {
+    font-size: 28px;
+  }
+
+  .importStatus {
+    grid-template-columns: 1fr;
+  }
+
+  .previewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .previewFooter {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .previewImport {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .previewTableWrap {
+    max-height: 300px;
+  }
+
+  .previewTable th,
+  .previewTable td {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .importUpload {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .importPreview {
+    border-radius: 24px;
+    min-height: 400px;
+  }
+
+  .dropzone {
+    min-height: 240px;
+  }
+
+  .dropzoneText {
+    font-size: 16px;
+  }
+
+  .previewTable th,
+  .previewTable td {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .previewImport {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+}

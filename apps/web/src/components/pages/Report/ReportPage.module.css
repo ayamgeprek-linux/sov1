@@ -1,0 +1,656 @@
+/* ============================================================
+   REPORT PAGE - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.reportPage {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.reportHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.reportTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.01em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.reportSubtitle {
+  font-size: 16px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 400;
+}
+
+.reportActions {
+  display: flex;
+  gap: 12px;
+}
+
+.reportBackBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.3);
+  border-radius: 12px;
+  color: #191c1d;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.reportBackBtn:hover {
+  background: #edeeef;
+}
+
+.reportBackBtn span {
+  font-size: 20px;
+}
+
+.reportExportBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #735c00;
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 20px rgba(115, 92, 0, 0.2);
+}
+
+.reportExportBtn:hover:not(:disabled) {
+  background: #5c4a00;
+  transform: scale(0.98);
+}
+
+.reportExportBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reportExportBtn span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+.reportContent {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  padding: 24px;
+  color: #191c1d;
+}
+
+/* ============================================================
+   SUMMARY GRID
+   ============================================================ */
+.reportSummary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.reportSummaryItem {
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.reportSummaryLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.reportSummaryValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reportSummaryNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.reportSummaryTrend {
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.textPrimary {
+  color: #735c00;
+}
+
+.textMuted {
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.textError {
+  color: #ba1a1a;
+}
+
+.textTertiary {
+  color: #415ba4;
+}
+
+.reportSummaryBar {
+  width: 100%;
+  height: 4px;
+  background: #edeeef;
+  border-radius: 9999px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.reportSummaryBarFill {
+  height: 100%;
+  background: #735c00;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+/* ============================================================
+   METRICS STRIP
+   ============================================================ */
+.reportMetricsStrip {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 20px;
+  background: rgba(237, 238, 239, 0.3);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.reportMetricsItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.reportMetricsLabel {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.reportMetricsValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.reportMetricsDivider {
+  width: 1px;
+  height: 32px;
+  background: rgba(208, 197, 175, 0.2);
+}
+
+.reportMetricsDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.4);
+  margin-left: auto;
+}
+
+.reportMetricsDate span {
+  font-size: 16px;
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.reportTabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.1);
+  padding-bottom: 0;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.reportTab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(77, 70, 53, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+}
+
+.reportTab:hover {
+  color: #191c1d;
+}
+
+.reportTab.active {
+  color: #735c00;
+  border-bottom-color: #735c00;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.reportTableWrapper {
+  overflow-x: auto;
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.reportTable thead {
+  background: rgba(237, 238, 239, 0.2);
+}
+
+.reportTable th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.reportTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.05);
+  color: #191c1d;
+}
+
+.reportTable tbody tr:hover {
+  background: rgba(237, 238, 239, 0.2);
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.sku {
+  font-weight: 600;
+  color: #735c00;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+/* ============================================================
+   ROW COLORS
+   ============================================================ */
+.rowMinus {
+  background: rgba(186, 26, 26, 0.03);
+}
+
+.rowMinus:hover {
+  background: rgba(186, 26, 26, 0.06) !important;
+}
+
+.rowPlus {
+  background: rgba(65, 91, 164, 0.03);
+}
+
+.rowPlus:hover {
+  background: rgba(65, 91, 164, 0.06) !important;
+}
+
+.rowZero {
+  background: rgba(52, 211, 153, 0.02);
+}
+
+.rowZero:hover {
+  background: rgba(52, 211, 153, 0.05) !important;
+}
+
+/* ============================================================
+   SIZE DETAILS
+   ============================================================ */
+.sizeDetails {
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(77, 70, 53, 0.6);
+  max-width: 300px;
+  word-wrap: break-word;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   SELISIH
+   ============================================================ */
+.selisihMinus {
+  color: #ba1a1a;
+  font-weight: 700;
+}
+
+.selisihPlus {
+  color: #415ba4;
+  font-weight: 700;
+}
+
+.selisihZero {
+  color: rgba(77, 70, 53, 0.3);
+}
+
+/* ============================================================
+   STATUS BADGE
+   ============================================================ */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.statusMinus {
+  background: rgba(186, 26, 26, 0.08);
+  color: #ba1a1a;
+}
+
+.statusPlus {
+  background: rgba(65, 91, 164, 0.08);
+  color: #415ba4;
+}
+
+.statusOk {
+  background: rgba(52, 211, 153, 0.08);
+  color: #34d399;
+}
+
+.statusBelum {
+  background: rgba(77, 70, 53, 0.05);
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(77, 70, 53, 0.3);
+}
+
+/* ============================================================
+   EMPTY
+   ============================================================ */
+.reportEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: rgba(77, 70, 53, 0.2);
+}
+
+.reportEmpty span {
+  font-size: 48px;
+}
+
+.reportEmpty p {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.3);
+  margin-top: 8px;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.reportPagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 0;
+  margin-top: 16px;
+  border-top: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.reportPaginationInfo {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.reportPaginationControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reportPaginationBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.reportPaginationBtn:hover:not(:disabled) {
+  background: #edeeef;
+}
+
+.reportPaginationBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.reportPaginationBtn span {
+  font-size: 20px;
+}
+
+.reportPaginationPage {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.reportPaginationPage:hover {
+  background: #edeeef;
+}
+
+.reportPaginationPage.active {
+  background: #735c00;
+  color: #ffffff;
+}
+
+.reportPaginationDots {
+  color: rgba(77, 70, 53, 0.3);
+  padding: 0 4px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .reportSummary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .reportMetricsStrip {
+    gap: 16px;
+  }
+  
+  .reportMetricsDivider {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .reportPage {
+    padding: 16px 16px 60px;
+  }
+  
+  .reportHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .reportActions {
+    width: 100%;
+  }
+  
+  .reportBackBtn,
+  .reportExportBtn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .reportSummary {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .reportSummaryItem {
+    padding: 12px 16px;
+  }
+  
+  .reportSummaryNumber {
+    font-size: 22px;
+  }
+  
+  .reportMetricsStrip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .reportMetricsDate {
+    margin-left: 0;
+  }
+  
+  .reportContent {
+    padding: 16px;
+  }
+  
+  .reportTabs {
+    gap: 2px;
+  }
+  
+  .reportTab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .reportTable {
+    font-size: 12px;
+    min-width: 650px;
+  }
+  
+  .reportTable th,
+  .reportTable td {
+    padding: 8px 12px;
+  }
+  
+  .reportPagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .sizeDetails {
+    font-size: 11px;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reportSummary {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .reportTitle {
+    font-size: 22px;
+  }
+  
+  .reportSummaryNumber {
+    font-size: 18px;
+  }
+  
+  .reportActions {
+    flex-direction: column;
+  }
+  
+  .reportBackBtn,
+  .reportExportBtn {
+    width: 100%;
+  }
+  
+  .reportTable {
+    font-size: 11px;
+    min-width: 500px;
+  }
+  
+  .reportTable th,
+  .reportTable td {
+    padding: 6px 8px;
+  }
+  
+  .sizeDetails {
+    font-size: 10px;
+    max-width: 150px;
+  }
+}

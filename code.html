@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OPNAME • Distro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: 245 158 11;
+        }
+        
+        .tail-container {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link:hover {
+            transform: translateX(8px);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+        }
+
+        .industrial-bg {
+            background: linear-gradient(180deg, #18181b 0%, #111113 100%);
+        }
+
+        .scan-line {
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(400%); }
+        }
+
+        .data-row {
+            transition: all 0.2s ease;
+        }
+        
+        .data-row:hover {
+            background-color: #27272a;
+        }
+
+        .modal {
+            animation: modalPop 0.3s ease forwards;
+        }
+        
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .barcode {
+            font-family: monospace;
+            letter-spacing: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #111113,
+                #111113 10px,
+                #eab308 12px,
+                #eab308 20px
+            );
+        }
+
+        .status-dot {
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+    </style>
+</head>
+<body class="tail-container bg-zinc-950 text-zinc-200">
+<div class="flex h-screen overflow-hidden">
+<!-- SIDEBAR -->
+<div class="w-64 bg-black border-r border-zinc-800 flex flex-col" id="sidebar">
+<!-- logo header -->
+<div class="px-6 py-8 border-b border-zinc-800 flex items-center gap-x-3">
+<div class="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center shadow-inner">
+<i class="fa-solid fa-boxes-stacked text-black text-2xl"></i>
+</div>
+<div>
+<span class="logo-font text-3xl font-semibold tracking-tighter text-white">OPNAME</span>
+</div>
+<div class="ml-auto px-3 py-1 text-[10px] font-mono bg-zinc-900 text-amber-400 border border-amber-400/30 rounded-full">v24.3</div>
+</div>
+<!-- role indicator -->
+<div class="px-6 py-4 bg-zinc-900 border-b border-zinc-800 flex items-center gap-x-3">
+<div class="flex-1 flex items-center gap-x-2 bg-zinc-800 hover:bg-zinc-700 transition-colors px-4 py-2 rounded-full cursor-pointer" id="role-badge" onclick="switchRole()">
+<div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+<span class="text-sm font-semibold text-white" id="current-role">ADMIN</span>
+</div>
+<button class="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i>
+</button>
+</div>
+<!-- menu -->
+<div class="flex-1 overflow-y-auto py-6 px-3" id="admin-menu">
+<a class="nav-link active flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-amber-300 bg-zinc-900 mx-2 rounded-full mb-1" onclick="navigateTo('dashboard')">
+<i class="fa-solid fa-gauge-high w-4"></i>
+<span>Dashboard</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('import')">
+<i class="fa-solid fa-file-import w-4"></i>
+<span>Import Master</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('master')">
+<i class="fa-solid fa-list-ul w-4"></i>
+<span>Data Master</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('mapping')">
+<i class="fa-solid fa-barcode w-4"></i>
+<span>Mapping Barcode</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('sop')">
+<i class="fa-solid fa-clipboard-check w-4"></i>
+<span>Stock Opname</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('progress')">
+<i class="fa-solid fa-chart-line w-4"></i>
+<span>Monitor Progress</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full" onclick="navigateTo('history')">
+<i class="fa-solid fa-clock-rotate-left w-4"></i>
+<span>Riwayat SO</span>
+</a>
+</div>
+<!-- petugas menu (hidden by default) -->
+<div class="flex-1 overflow-y-auto py-6 px-3 hidden" id="petugas-menu">
+<a class="nav-link active flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-amber-300 bg-zinc-900 mx-2 rounded-full mb-1" onclick="navigateTo('petugas-dashboard')">
+<i class="fa-solid fa-house w-4"></i>
+<span>Beranda</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-1" onclick="navigateTo('petugas-so')">
+<i class="fa-solid fa-magnifying-glass w-4"></i>
+<span>Mulai Opname</span>
+</a>
+<a class="nav-link flex items-center gap-x-3 px-5 py-3.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 mx-2 rounded-full mb-6" onclick="navigateTo('petugas-progress')">
+<i class="fa-solid fa-list-check w-4"></i>
+<span>Progress Saya</span>
+</a>
+<div class="mx-6 mt-auto mb-6 bg-zinc-900 rounded-[2rem] p-5 text-xs">
+<div class="flex justify-between items-center text-zinc-400 mb-3">
+<div>Barang di-scan hari ini</div>
+<div class="font-mono text-3xl font-semibold text-white" id="today-scan-count">27</div>
+</div>
+<div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
+<div class="h-2 w-[68%] bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"></div>
+</div>
+<div class="text-[10px] text-zinc-500 mt-4 flex justify-between">
+<div>68% dari target</div>
+<div class="font-medium text-emerald-400">40 target</div>
+</div>
+</div>
+</div>
+<!-- footer -->
+<div class="p-4 border-t border-zinc-800 text-[10px] flex items-center justify-between text-zinc-500">
+<div class="flex items-center gap-x-1">
+<i class="fa-solid fa-wifi"></i>
+<span class="font-mono">PWA</span>
+</div>
+<div class="cursor-pointer hover:text-amber-400 transition-colors" onclick="showAbout()">
+<i class="fa-solid fa-circle-info"></i>
+</div>
+</div>
+</div>
+<!-- MAIN CONTENT -->
+<div class="flex-1 flex flex-col">
+<!-- topbar -->
+<div class="h-14 bg-zinc-900 border-b border-zinc-800 px-6 flex items-center justify-between">
+<div class="flex items-center">
+<button class="lg:hidden mr-4 text-zinc-400 hover:text-white" onclick="toggleSidebar()">
+<i class="fa-solid fa-bars text-xl"></i>
+</button>
+<div class="flex items-center gap-x-2 text-sm">
+<span class="px-4 py-1.5 bg-zinc-800 text-white rounded-full font-medium flex items-center gap-x-2">
+<span class="text-emerald-400">
+<i class="fa-solid fa-store"></i>
+</span>
+<span id="store-name">Distro Avalon • Bandung</span>
+</span>
+</div>
+</div>
+<div class="flex items-center gap-x-6">
+<!-- search -->
+<div class="flex items-center bg-zinc-800 text-zinc-400 hover:text-white px-5 h-9 rounded-full text-sm cursor-pointer transition-all active:scale-95" onclick="quickSearch()">
+<i class="fa-solid fa-magnifying-glass mr-2"></i>
+<span class="hidden md:inline">Cari barang atau barcode...</span>
+</div>
+<div class="flex items-center gap-x-5">
+<!-- notification -->
+<button class="relative text-zinc-400 hover:text-amber-300 transition-colors" onclick="fakeNotification()">
+<i class="fa-solid fa-bell text-xl"></i>
+<span class="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center">3</span>
+</button>
+<!-- user -->
+<div class="flex items-center gap-x-3">
+<div class="text-right">
+<div class="text-sm font-semibold text-white" id="user-name">Budi Santoso</div>
+<div class="text-[10px] text-zinc-500 -mt-0.5" id="user-role">Administrator</div>
+</div>
+<div class="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center text-amber-300 border border-amber-300/30">
+<i class="fa-solid fa-user"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- content area -->
+<div class="flex-1 overflow-auto industrial-bg p-6" id="main-content">
+<!-- DASHBOARD ADMIN -->
+<div id="screen-dashboard">
+<div class="max-w-screen-2xl mx-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<span class="px-4 py-2 bg-white/10 text-amber-400 text-xs tracking-[1px] font-mono rounded-full">SENIN, 17 FEB 2025</span>
+<h1 class="text-5xl font-semibold text-white mt-2 tracking-tighter">Selamat pagi, Budi.</h1>
+<p class="text-zinc-400">Mari kita cek stok hari ini</p>
+</div>
+<div class="flex items-center gap-x-2 bg-zinc-900 rounded-full p-1 text-sm">
+<div class="active-period px-6 py-2 rounded-full cursor-pointer" onclick="switchPeriod(this)">Minggu ini</div>
+<div class="px-6 py-2 rounded-full cursor-pointer text-zinc-400" onclick="switchPeriod(this)">Bulan ini</div>
+</div>
+</div>
+<!-- NEW: PETUGAS AKTIF SECTION -->
+<div class="mb-8">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="text-sm font-bold tracking-widest text-zinc-500 flex items-center gap-2 uppercase">
+<span class="w-2 h-2 bg-emerald-400 rounded-full status-dot"></span>
+                                    Petugas Aktif
+                                </h3>
+<button class="text-xs text-amber-400 hover:underline" onclick="navigateTo('progress')">Lihat Semua</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-zinc-900/50 border border-zinc-800 p-4 rounded-[1.5rem] flex items-center gap-4 hover:border-zinc-700 transition-all cursor-pointer group">
+<div class="relative">
+<div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center font-bold">RP</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-900 rounded-full"></div>
+</div>
+<div>
+<div class="font-semibold text-white text-sm">Rina Pratiwi</div>
+<div class="text-[11px] text-zinc-400">Scan 18 items</div>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+<i class="fa-solid fa-chevron-right text-zinc-600 text-xs"></i>
+</div>
+</div>
+<div class="bg-zinc-900/50 border border-zinc-800 p-4 rounded-[1.5rem] flex items-center gap-4 hover:border-zinc-700 transition-all cursor-pointer group">
+<div class="relative">
+<div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center font-bold">AS</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-900 rounded-full"></div>
+</div>
+<div>
+<div class="font-semibold text-white text-sm">Andi Saputra</div>
+<div class="text-[11px] text-emerald-400 font-medium italic">Completed</div>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+<i class="fa-solid fa-chevron-right text-zinc-600 text-xs"></i>
+</div>
+</div>
+<div class="bg-zinc-900/50 border border-zinc-800 p-4 rounded-[1.5rem] flex items-center gap-4 hover:border-zinc-700 transition-all cursor-pointer group">
+<div class="relative">
+<div class="w-12 h-12 bg-sky-500/20 text-sky-400 rounded-full flex items-center justify-center font-bold">BK</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-zinc-900 rounded-full"></div>
+</div>
+<div>
+<div class="font-semibold text-white text-sm">Bambang K.</div>
+<div class="text-[11px] text-zinc-400">Scan 42 items</div>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+<i class="fa-solid fa-chevron-right text-zinc-600 text-xs"></i>
+</div>
+</div>
+<div class="bg-zinc-900/50 border border-zinc-800 p-4 rounded-[1.5rem] flex items-center gap-4 hover:border-zinc-700 transition-all cursor-pointer group">
+<div class="relative">
+<div class="w-12 h-12 bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center font-bold">
+<i class="fa-solid fa-user-plus text-sm"></i>
+</div>
+</div>
+<div>
+<div class="font-medium text-zinc-500 text-sm">Undang Petugas</div>
+<div class="text-[11px] text-zinc-600">Assign shift baru</div>
+</div>
+</div>
+</div>
+</div>
+<!-- stats -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<!-- stat 1 -->
+<div class="bg-zinc-900 border border-zinc-700 rounded-[2rem] p-6 card-hover">
+<div class="flex justify-between">
+<div>
+<div class="text-xs font-medium tracking-widest text-zinc-400">TOTAL BARANG</div>
+<div class="text-6xl font-semibold text-white mt-1 font-mono" id="total-barang">248</div>
+<div class="text-emerald-400 text-sm flex items-center gap-x-1 mt-6">
+<i class="fa-solid fa-arrow-trend-up"></i>
+<span class="font-medium">+12</span>
+</div>
+</div>
+<div class="w-14 h-14 bg-zinc-800 rounded-full flex items-center justify-center text-4xl text-amber-400">
+                                        📦
+                                    </div>
+</div>
+<div class="h-1.5 bg-zinc-800 rounded-full mt-8 overflow-hidden">
+<div class="h-1.5 w-4/5 bg-white rounded-full"></div>
+</div>
+</div>
+<!-- stat 2 -->
+<div class="bg-zinc-900 border border-zinc-700 rounded-[2rem] p-6 card-hover">
+<div class="flex justify-between">
+<div>
+<div class="text-xs font-medium tracking-widest text-zinc-400">SUDAH MAPPING</div>
+<div class="text-6xl font-semibold text-white mt-1 font-mono" id="mapped-count">187</div>
+<div class="text-emerald-400 text-sm flex items-center gap-x-1 mt-6">
+<i class="fa-solid fa-check"></i>
+<span class="font-medium">75%</span>
+</div>
+</div>
+<div class="w-14 h-14 bg-emerald-900/40 rounded-full flex items-center justify-center text-4xl text-emerald-400">
+<i class="fa-solid fa-barcode"></i>
+</div>
+</div>
+<div class="text-xs mt-8 flex items-center justify-center gap-x-2 border border-dashed border-emerald-400 text-emerald-400 hover:bg-emerald-900/30 transition-colors h-9 rounded-full cursor-pointer" onclick="navigateTo('mapping')">
+<i class="fa-solid fa-plus text-xs"></i>
+<span>TAMBAH MAPPING</span>
+</div>
+</div>
+<!-- stat 3 -->
+<div class="bg-zinc-900 border border-zinc-700 rounded-[2rem] p-6 card-hover">
+<div class="flex justify-between">
+<div>
+<div class="text-xs font-medium tracking-widest text-zinc-400">BELUM MAPPING</div>
+<div class="text-6xl font-semibold text-white mt-1 font-mono" id="unmapped-count">61</div>
+<div class="text-orange-400 text-sm flex items-center gap-x-1 mt-6">
+<i class="fa-solid fa-triangle-exclamation"></i>
+<span class="font-medium">25%</span>
+</div>
+</div>
+<div class="w-14 h-14 bg-orange-900/30 rounded-full flex items-center justify-center text-4xl text-orange-400">
+                                        ⚠️
+                                    </div>
+</div>
+<div class="mt-8 text-[10px] text-zinc-400 font-medium">Perlu diprioritaskan</div>
+</div>
+<!-- stat 4 -->
+<div class="bg-zinc-900 border border-amber-400/30 rounded-[2rem] p-6 card-hover relative overflow-hidden">
+<div class="flex justify-between">
+<div>
+<div class="text-xs font-medium tracking-widest text-amber-400">PROGRESS SO</div>
+<div class="text-6xl font-semibold text-white mt-1 font-mono">64%</div>
+<div class="mt-8 flex items-center gap-x-4">
+<div class="flex-1">
+<div class="flex justify-between text-[10px]">
+<span class="text-zinc-400">HARI KE-3</span>
+<span class="font-medium text-amber-400">11 hari lagi</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div class="relative w-20 h-20">
+<svg class="w-20 h-20 -rotate-12" viewbox="0 0 42 42">
+<circle cx="21" cy="21" fill="none" r="15" stroke="#27272a" stroke-width="6"></circle>
+<circle cx="21" cy="21" fill="none" r="15" stroke="#f59e0b" stroke-dasharray="94.2" stroke-dashoffset="33" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center text-xs font-mono font-bold text-amber-400">64</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-6 right-6 text-[22px] leading-none font-black text-amber-400/10">SO</div>
+</div>
+</div>
+<!-- recent activity & quick actions -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+<!-- recent items -->
+<div class="lg:col-span-7 bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-700">
+<div class="px-8 pt-6 pb-4 border-b border-zinc-700 flex items-center justify-between">
+<div class="font-semibold">Barang Terakhir Di-scan</div>
+<button class="text-xs flex items-center gap-x-2 text-amber-400" onclick="navigateTo('petugas-so')">
+<span>Lihat semua scan</span>
+<i class="fa-solid fa-arrow-right text-xs"></i>
+</button>
+</div>
+<div class="divide-y divide-zinc-800 max-h-[340px] overflow-auto" id="recent-scans">
+<!-- populated by JS -->
+</div>
+</div>
+<!-- quick start -->
+<div class="lg:col-span-5 bg-gradient-to-br from-zinc-900 to-zinc-950 border border-amber-400/20 rounded-[2.5rem] p-8 flex flex-col">
+<div class="text-xs uppercase tracking-widest font-medium text-amber-400 mb-2">Mulai sekarang</div>
+<div class="text-3xl font-semibold leading-none text-white">Stock Opname<br/>Putaran 02</div>
+<div class="mt-auto">
+<button class="w-full h-14 bg-white text-black rounded-full font-semibold flex items-center justify-center gap-x-3 active:scale-[0.97] transition-transform" onclick="startSO()">
+<i class="fa-solid fa-play"></i>
+<span>MULAI SCAN BARCODE</span>
+</button>
+</div>
+<div class="text-[10px] text-center text-zinc-500 mt-8">Atau</div>
+<div class="cursor-pointer mt-3 flex items-center justify-center gap-x-2 text-xs border border-zinc-700 hover:border-zinc-400 transition-colors rounded-full py-6" onclick="navigateTo('mapping')">
+<i class="fa-solid fa-link"></i>
+<span class="font-medium">Mapping Barcode Baru</span>
+</div>
+</div>
+<!-- low stock alert -->
+<div class="lg:col-span-12 mt-2 bg-zinc-900/70 border border-red-400/30 rounded-full px-7 py-5 flex items-center gap-x-6">
+<div class="px-5 py-2 bg-red-400/10 text-red-400 rounded-full text-xs font-medium flex items-center gap-x-2">
+<div class="w-2 h-2 bg-red-400 rounded-full status-dot"></div>
+                                    ALERT
+                                </div>
+<div class="flex-1 text-sm">
+<span class="font-medium text-red-300">3 barang memiliki selisih lebih dari 30%:</span>
+<span class="ml-8 text-zinc-400 text-xs">JACKET DENIM • HOODIE BASIC • CAPS CLASSIC</span>
+</div>
+<button class="px-8 py-3 text-xs border border-red-400 text-red-400 rounded-full hover:bg-red-400 hover:text-black transition-all" onclick="viewLowStock()">
+                                    TINJAU
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- IMPORT SCREEN -->
+<div class="hidden max-w-screen-2xl mx-auto" id="screen-import">
+<h2 class="text-3xl font-semibold mb-8">Import Data Master</h2>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+<!-- upload panel -->
+<div class="lg:col-span-2 bg-zinc-900 rounded-[2rem] p-8">
+<div class="border border-dashed border-zinc-400 h-72 rounded-[2rem] flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-300 transition-colors" id="drop-zone" onclick="triggerFileUpload()">
+<i class="fa-solid fa-cloud-arrow-up text-5xl text-zinc-400 mb-6"></i>
+<div class="font-medium">Drop Excel Inventory Balancing</div>
+<div class="text-xs text-zinc-500 mt-1">.xlsx or .csv supported</div>
+<div class="mt-10 text-[10px] px-5 py-3 border border-zinc-600 rounded-full flex items-center gap-x-2 text-zinc-400">
+<i class="fa-solid fa-file-excel"></i>
+<span id="filename">inventory-balancing-feb.xlsx</span>
+</div>
+</div>
+<input accept=".xlsx,.csv" class="hidden" id="excel-upload" onchange="handleFileSelect(event)" type="file"/>
+<button class="mt-8 w-full bg-amber-400 hover:bg-amber-300 transition-colors text-zinc-950 h-12 rounded-full text-sm font-semibold" onclick="simulateImport()">
+                                PROSES &amp; VALIDASI
+                            </button>
+<div class="flex gap-x-4 text-xs mt-8">
+<div class="flex-1 bg-zinc-950 rounded-[1.5rem] p-4">
+<div class="text-emerald-400 text-center">
+<i class="fa-solid fa-check-circle"></i>
+</div>
+<div class="text-center text-[10px] mt-3 leading-tight">Format<br/>benar</div>
+</div>
+<div class="flex-1 bg-zinc-950 rounded-[1.5rem] p-4">
+<div class="text-amber-400 text-center">
+<i class="fa-solid fa-exclamation-triangle"></i>
+</div>
+<div class="text-center text-[10px] mt-3 leading-tight">3 baris<br/>duplikat</div>
+</div>
+</div>
+</div>
+<!-- preview -->
+<div class="lg:col-span-3 bg-zinc-900 rounded-[2rem] overflow-hidden">
+<div class="px-6 py-5 border-b flex items-center justify-between text-xs font-medium">
+<div class="flex items-center gap-x-8">
+<div class="text-amber-400">PREVIEW (8 dari 248)</div>
+</div>
+<div class="flex items-center gap-x-2 text-zinc-400 cursor-pointer" onclick="clearImportData()">
+<i class="fa-solid fa-trash"></i>
+<span class="text-xs">BATAL</span>
+</div>
+</div>
+<div class="overflow-auto max-h-[400px]">
+<table class="w-full text-xs" id="preview-table">
+<thead class="sticky top-0 bg-zinc-900">
+<tr class="border-b border-zinc-700 text-zinc-400">
+<th class="py-4 px-6 text-left">Article</th>
+<th class="py-4 px-6 text-left">Nama Barang</th>
+<th class="py-4 px-6 text-left">Brand</th>
+<th class="py-4 px-6 text-right">Qty</th>
+</tr>
+</thead>
+<tbody class="text-zinc-300 font-light" id="preview-tbody">
+<!-- JS populated -->
+</tbody>
+</table>
+</div>
+<div class="px-6 py-5 bg-black flex items-center justify-between text-xs">
+<div class="flex items-center gap-x-2">
+<div class="rounded-full bg-emerald-400 w-3 h-3"></div>
+<span class="text-emerald-400 font-medium">248 baris valid</span>
+</div>
+<button class="px-10 py-3 bg-white text-black rounded-full text-xs font-semibold" onclick="importToDatabase()">
+                                    IMPORT KE DATABASE
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- MASTER DATA -->
+<div class="hidden" id="screen-master">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-semibold text-3xl">Data Master Barang</h2>
+<div class="flex items-center gap-x-2">
+<div class="relative">
+<input class="bg-zinc-900 border border-zinc-700 focus:border-amber-400 w-72 h-10 rounded-full pl-10 outline-none text-sm" id="master-search" onkeyup="filterMaster()" placeholder="Cari nama / article..." type="text"/>
+<i class="fa-solid fa-magnifying-glass absolute left-4 top-3 text-xs text-zinc-400"></i>
+</div>
+<select class="bg-zinc-900 border border-zinc-700 h-10 rounded-full px-5 text-sm outline-none" id="brand-filter" onchange="filterMaster()">
+<option value="">Semua Brand</option>
+<option value="AVALON">AVALON</option>
+<option value="NIKE">NIKE</option>
+<option value="ADIDAS">ADIDAS</option>
+</select>
+</div>
+</div>
+<div class="bg-zinc-900 rounded-[2rem] overflow-hidden">
+<table class="w-full">
+<thead>
+<tr class="bg-black text-xs text-zinc-400">
+<th class="px-8 py-6 text-left">ARTICLE CODE</th>
+<th class="px-8 py-6 text-left">NAMA BARANG</th>
+<th class="px-8 py-6 text-left">BRAND</th>
+<th class="px-8 py-6 text-left">WARNA</th>
+<th class="px-8 py-6 text-center">SIZE</th>
+<th class="px-8 py-6 text-right">QTY SISTEM</th>
+<th class="px-8 py-6 text-center">MAPPING</th>
+<th class="w-10"></th>
+</tr>
+</thead>
+<tbody class="text-sm divide-y divide-zinc-800" id="master-tbody">
+<!-- populated with JS -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- MAPPING BARCODE -->
+<div class="hidden max-w-2xl mx-auto" id="screen-mapping">
+<div class="bg-zinc-900 rounded-[2rem] p-8">
+<h2 class="text-3xl font-medium mb-2">Mapping Barcode</h2>
+<p class="text-zinc-400 text-sm">Cari barang lalu scan barcode fisiknya</p>
+<div class="mt-8">
+<input class="w-full h-14 bg-black border border-zinc-700 focus:border-amber-400 rounded-full px-6 outline-none text-lg" id="mapping-search-input" onkeyup="if(event.key === 'Enter') searchForMapping()" placeholder="Ketik nama atau article code..." type="text"/>
+</div>
+<div class="mt-3 max-h-64 overflow-auto rounded-[1.5rem] bg-black hidden" id="mapping-search-results">
+<!-- populated by JS -->
+</div>
+<!-- selected item -->
+<div class="hidden mt-10 border border-amber-400 bg-zinc-950 rounded-[2rem] p-6" id="mapping-selected">
+<div class="flex gap-6">
+<div class="flex-1">
+<div class="text-xs text-zinc-400">ARTICLE CODE</div>
+<div class="font-mono text-3xl text-white" id="map-article">AVA-BLK-M</div>
+<div class="font-medium text-xl mt-1" id="map-name">Avalon Hoodie Basic Black M</div>
+<div class="flex gap-x-5 text-xs mt-8">
+<div>
+<div class="text-zinc-400">BRAND</div>
+<div class="font-semibold" id="map-brand">AVALON</div>
+</div>
+<div>
+<div class="text-zinc-400">WARNA</div>
+<div class="font-semibold" id="map-color">BLACK</div>
+</div>
+<div>
+<div class="text-zinc-400">SIZE</div>
+<div class="font-semibold" id="map-size">M</div>
+</div>
+</div>
+</div>
+<!-- scanner simulation -->
+<div class="w-60 bg-zinc-950 border border-zinc-700 rounded-[2rem] p-4 flex flex-col items-center">
+<div class="uppercase text-[10px] tracking-widest font-medium text-center text-amber-400">SCAN BARCODE</div>
+<div class="barcode mt-6 w-full h-12 rounded-full flex items-center justify-center text-white text-[13px] font-bold shadow-inner" id="barcode-visual">
+                                        8945678234512
+                                    </div>
+<div class="w-5 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent my-6"></div>
+<input class="text-center font-mono bg-transparent outline-none border border-zinc-600 focus:border-white text-white placeholder:text-zinc-600 w-full rounded-full py-3 text-sm" id="barcode-input" maxlength="13" placeholder="8881234567890" type="text"/>
+<button class="mt-auto w-full h-10 text-xs bg-emerald-400 text-black font-semibold rounded-full" onclick="saveBarcodeMapping()">SIMPAN MAPPING</button>
+<div class="text-zinc-400 text-xs mt-4 cursor-pointer hover:text-white" onclick="cancelMapping()">batal</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- STOCK OPNAME / PETUGAS VIEW -->
+<div class="hidden" id="screen-sop">
+<div class="max-w-md mx-auto bg-zinc-900 min-h-full rounded-[3rem] shadow-2xl shadow-black border border-zinc-700 overflow-hidden flex flex-col" style="height: 620px">
+<!-- petugas header -->
+<div class="bg-black px-5 py-6 flex items-center">
+<div class="cursor-pointer" onclick="navigateTo('dashboard')">
+<i class="fa-solid fa-arrow-left text-zinc-300"></i>
+</div>
+<div class="flex-1 text-center">
+<span class="px-5 py-1 bg-zinc-800 text-amber-400 text-xs rounded-full font-medium">OPNAME AKTIF</span>
+</div>
+<div class="font-mono text-xs text-right">
+<div class="text-white">03</div>
+<div class="text-[10px] text-zinc-500 -mt-1">PUTARAN</div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<!-- search bar -->
+<div class="relative">
+<input class="w-full bg-zinc-800 h-14 rounded-full px-6 outline-none border border-transparent focus:border-amber-400 placeholder:text-zinc-400" id="so-search-input" onkeyup="liveSearchSO(event)" placeholder="Cari barang... (contoh: ava)" type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 bg-zinc-700 hover:bg-emerald-400 hover:text-black transition-all text-white px-6 h-10 rounded-full text-xs flex items-center gap-x-2" onclick="simulateScan()">
+<i class="fa-solid fa-camera"></i>
+<span>SCAN</span>
+</button>
+</div>
+<!-- live suggestions -->
+<div class="hidden mt-3 bg-zinc-950 border border-zinc-700 rounded-[1.5rem] py-2 max-h-60 overflow-auto text-sm" id="so-suggestions">
+<!-- JS populated suggestions -->
+</div>
+<!-- detail view -->
+<div class="hidden flex-1 mt-6 bg-black rounded-[2rem] p-6 flex flex-col" id="so-detail-view">
+<div class="flex justify-between items-start">
+<div>
+<div class="font-mono text-xl text-amber-300" id="so-detail-article"></div>
+<div class="text-xl font-medium text-white" id="so-detail-name"></div>
+</div>
+<div class="w-8 h-8 bg-zinc-900 rounded-full flex items-center justify-center text-zinc-400 cursor-pointer" onclick="closeDetailView()">
+                                        ✕
+                                    </div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4 text-xs">
+<div class="bg-zinc-900 rounded-[1.5rem] p-4">
+<div class="text-zinc-400">Brand</div>
+<div class="font-semibold text-lg text-white" id="so-detail-brand"></div>
+</div>
+<div class="bg-zinc-900 rounded-[1.5rem] p-4">
+<div class="text-zinc-400">Size / Warna</div>
+<div class="font-semibold text-lg text-white" id="so-detail-size-color"></div>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between text-xs mb-4">
+<div class="text-zinc-400">Stok sistem</div>
+<div class="font-mono text-white" id="so-detail-qty-system"></div>
+</div>
+<div class="flex justify-between items-center border border-dashed border-zinc-600 rounded-[2rem] px-6 py-5">
+<div class="text-xs text-zinc-400">QTY FISIK</div>
+<input class="w-20 text-right bg-transparent outline-none text-4xl font-light font-mono text-white" id="qty-fisik-input" type="number" value="42"/>
+</div>
+</div>
+<div class="mt-8 text-xs flex items-center gap-x-2 text-zinc-400">
+<div class="flex-1 h-px bg-zinc-700"></div>
+<div>BARCODE</div>
+<div class="flex-1 h-px bg-zinc-700"></div>
+</div>
+<div class="cursor-pointer mt-3 border border-zinc-700 hover:border-emerald-400 transition-colors rounded-[2rem] py-6 flex flex-col items-center justify-center" id="so-barcode-area" onclick="simulateBarcodeScanInDetail()">
+<i class="fa-solid fa-barcode text-5xl text-zinc-500"></i>
+<div class="font-mono text-xs text-emerald-400 mt-4" id="so-current-barcode">8945678234512</div>
+</div>
+</div>
+<!-- default empty state -->
+<div class="flex-1 flex flex-col items-center justify-center text-center" id="so-empty-state">
+<div class="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-6">
+<i class="fa-solid fa-qrcode text-4xl text-zinc-600"></i>
+</div>
+<div class="text-zinc-400 max-w-[180px]">Scan barcode atau ketik nama barang untuk memulai opname</div>
+<div class="mt-12 text-[10px] flex flex-col items-center">
+<div class="bg-zinc-800 text-amber-300 rounded-full px-4 py-2 flex items-center gap-x-3">
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+<span class="font-medium">Tips: ketik “ava” </span>
+</div>
+</div>
+</div>
+</div>
+<!-- bottom bar -->
+<div class="h-16 bg-black border-t border-zinc-800 flex items-center px-6 text-xs font-medium">
+<button class="flex-1 h-10 bg-white text-zinc-900 rounded-full" onclick="saveCurrentSO()">SIMPAN HASIL</button>
+<button class="ml-3 text-zinc-400 border border-zinc-700 h-10 px-7 rounded-full" onclick="finishSO()">SELESAI</button>
+</div>
+</div>
+</div>
+<!-- PROGRESS SCREEN -->
+<div class="hidden max-w-screen-2xl mx-auto" id="screen-progress">
+<h1 class="text-3xl font-medium">Monitor Progress Stock Opname</h1>
+<div class="mt-6 bg-zinc-900 rounded-[2rem] p-8">
+<div class="flex justify-between items-center mb-8">
+<div class="flex items-center gap-x-6">
+<div class="text-sm font-medium">Total terinput: <span class="font-mono text-white" id="progress-total">124</span></div>
+<div class="h-5 w-px bg-zinc-700"></div>
+<div class="flex items-center text-xs gap-x-1 cursor-pointer" onclick="toggleProgressFilter()">
+<span class="text-emerald-400">•</span>
+<span id="progress-filter-label">Semua Petugas</span>
+</div>
+</div>
+<div class="flex items-center gap-x-8 text-xs font-medium">
+<div class="flex items-center gap-x-2">
+<div class="w-6 h-px bg-emerald-400"></div>
+<span class="text-emerald-400">SELESAI</span>
+</div>
+<div class="flex items-center gap-x-2">
+<div class="w-6 h-px bg-orange-400"></div>
+<span class="text-orange-400">PROSES</span>
+</div>
+</div>
+</div>
+<div class="space-y-4" id="progress-list">
+<!-- JS populated -->
+</div>
+</div>
+</div>
+<!-- HISTORY -->
+<div class="hidden" id="screen-history">
+<h2 class="text-3xl font-semibold mb-8">Riwayat Stock Opname</h2>
+<div class="bg-zinc-900 rounded-[2rem] overflow-hidden">
+<div class="p-8 border-b border-zinc-700 flex items-center text-xs text-zinc-400 font-medium">
+<div class="w-36">TANGGAL</div>
+<div class="flex-1">PERIODE</div>
+<div class="w-40">PETUGAS</div>
+<div class="w-28 text-right">ITEMS</div>
+<div class="w-28 text-center">STATUS</div>
+</div>
+<div class="divide-y divide-zinc-800 text-sm" id="history-list">
+<!-- JS populated -->
+</div>
+</div>
+</div>
+<!-- PETUGAS DASHBOARD -->
+<div class="hidden max-w-md mx-auto pt-8" id="screen-petugas-dashboard">
+<div class="text-center">
+<div class="inline-flex items-center gap-x-2 bg-emerald-900 text-emerald-400 text-xs px-5 h-6 rounded-full mb-3">
+<div class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
+                            ONLINE
+                        </div>
+<h2 class="text-4xl font-semibold">Halo, Rina</h2>
+<p class="text-zinc-400">Petugas Opname • Shift Pagi</p>
+</div>
+<div class="mt-16 grid grid-cols-2 gap-4">
+<div class="bg-zinc-900 hover:bg-zinc-800 transition-all rounded-[2.5rem] aspect-square flex flex-col items-center justify-center border border-transparent hover:border-amber-300" onclick="navigateTo('petugas-so')">
+<i class="fa-solid fa-qrcode text-6xl mb-6 text-amber-400"></i>
+<div class="font-semibold">Scan Barang</div>
+<div class="text-xs text-zinc-400">Mulai opname</div>
+</div>
+<div class="bg-zinc-900 hover:bg-zinc-800 transition-all rounded-[2.5rem] aspect-square flex flex-col items-center justify-center border border-transparent hover:border-sky-300" onclick="navigateTo('progress')">
+<i class="fa-solid fa-chart-pie text-6xl mb-6 text-sky-400"></i>
+<div class="font-semibold">Lihat Progress</div>
+<div class="text-xs text-zinc-400">Hari ini</div>
+</div>
+</div>
+<div class="mt-8 bg-zinc-900 rounded-[2rem] p-6">
+<div class="flex justify-between text-xs">
+<div class="font-medium">Barang sudah dihitung</div>
+<div class="font-mono text-amber-400">18 / 40</div>
+</div>
+<div class="mt-4 h-px bg-gradient-to-r from-transparent via-amber-400/30 to-transparent"></div>
+<div class="flex justify-between mt-8">
+<div class="text-center">
+<div class="text-4xl font-light text-white font-mono">18</div>
+<div class="text-xs text-zinc-400">Terinput</div>
+</div>
+<div class="text-center">
+<div class="text-4xl font-light text-white font-mono">4</div>
+<div class="text-xs text-orange-400">Selisih</div>
+</div>
+<div class="text-center">
+<div class="text-4xl font-light text-white font-mono">22</div>
+<div class="text-xs text-zinc-400">Total scan</div>
+</div>
+</div>
+</div>
+<div class="text-xs text-center text-zinc-500 mt-16">PWA ready • 87% battery</div>
+</div>
+</div>
+<!-- status bar -->
+<div class="h-9 bg-black text-[10px] text-zinc-400 font-mono flex items-center px-6 justify-between text-xs border-t border-zinc-800">
+<div>248 item • 3 selisih</div>
+<div class="flex items-center gap-x-5">
+<div class="flex items-center gap-x-1 cursor-pointer" onclick="showToast('Database tersinkronisasi')">
+<i class="fa-solid fa-database"></i>
+<span>SYNC</span>
+</div>
+<div class="w-px h-3 bg-zinc-700"></div>
+<div class="tabular-nums" id="clock"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- TOAST -->
+<div class="hidden fixed bottom-6 right-6 bg-zinc-800 border border-amber-400 text-amber-400 text-xs px-5 h-9 rounded-full flex items-center shadow-2xl" id="toast" onclick="this.classList.add('hidden')">
+<span id="toast-text"></span>
+</div>
+<!-- MODAL -->
+<div class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50" id="modal-backdrop" onclick="if(event.target.id === 'modal-backdrop') hideModal()">
+<div class="modal bg-zinc-900 w-full max-w-lg mx-4 rounded-[2rem] overflow-hidden" onclick="event.stopImmediatePropagation()">
+<!-- modal content injected by JS -->
+<div id="modal-content"></div>
+</div>
+</div>
+<!-- LOGIN OVERLAY (demo) -->
+<div class="fixed inset-0 bg-zinc-950/90 hidden flex items-center justify-center z-[999]" id="login-overlay" onclick="if(event.target.id==='login-overlay') hideLogin()">
+<div class="max-w-xs w-full bg-zinc-900 rounded-[2.5rem] p-8">
+<div class="logo-font text-center text-5xl text-white mb-8 tracking-tighter">OPNAME</div>
+<div class="space-y-6">
+<div class="h-14 border border-zinc-300 flex items-center justify-center rounded-full cursor-pointer hover:bg-white hover:text-zinc-900 transition-all text-sm font-semibold" onclick="loginAs('admin')">
+                    LOGIN SEBAGAI ADMIN
+                </div>
+<div class="h-14 border border-zinc-300 flex items-center justify-center rounded-full cursor-pointer hover:bg-white hover:text-zinc-900 transition-all text-sm font-semibold" onclick="loginAs('petugas')">
+                    LOGIN SEBAGAI PETUGAS
+                </div>
+</div>
+<div class="text-center text-zinc-500 text-xs mt-10">Demo PWA • Tidak perlu password</div>
+</div>
+</div>
+<script>
+        // Sample data
+        let products = [
+            {
+                id: 1,
+                article_code: "AVA-BLK-M",
+                barcode: "8945678234512",
+                nama_barang: "Avalon Hoodie Basic",
+                brand: "AVALON",
+                kategori: "Hoodie",
+                warna: "Black",
+                size: "M",
+                qty_sistem: 124,
+                qty_fisik: 118,
+                status_mapping: true,
+                created_at: "2025-02-10"
+            },
+            {
+                id: 2,
+                article_code: "AVA-BLK-L",
+                barcode: "8945678234513",
+                nama_barang: "Avalon Hoodie Basic",
+                brand: "AVALON",
+                kategori: "Hoodie",
+                warna: "Black",
+                size: "L",
+                qty_sistem: 98,
+                qty_fisik: 102,
+                status_mapping: true,
+                created_at: "2025-02-10"
+            },
+            {
+                id: 3,
+                article_code: "CAP-CLS-BL",
+                barcode: "",
+                nama_barang: "Classic Cap",
+                brand: "AVALON",
+                kategori: "Topi",
+                warna: "Blue",
+                size: "OS",
+                qty_sistem: 65,
+                qty_fisik: null,
+                status_mapping: false,
+                created_at: "2025-02-10"
+            },
+            {
+                id: 4,
+                article_code: "JKT-DNM-S",
+                barcode: "8945678234599",
+                nama_barang: "Denim Jacket",
+                brand: "NIKE",
+                kategori: "Jacket",
+                warna: "Indigo",
+                size: "S",
+                qty_sistem: 34,
+                qty_fisik: 29,
+                status_mapping: true,
+                created_at: "2025-02-11"
+            },
+            {
+                id: 5,
+                article_code: "TEE-WHT-M",
+                barcode: "8945678234601",
+                nama_barang: "Basic Tee",
+                brand: "ADIDAS",
+                kategori: "T-shirt",
+                warna: "White",
+                size: "M",
+                qty_sistem: 210,
+                qty_fisik: 210,
+                status_mapping: true,
+                created_at: "2025-02-12"
+            },
+            {
+                id: 6,
+                article_code: "PNT-CRG-BE",
+                barcode: "",
+                nama_barang: "Cargo Pants",
+                brand: "AVALON",
+                kategori: "Pants",
+                warna: "Beige",
+                size: "32",
+                qty_sistem: 52,
+                qty_fisik: null,
+                status_mapping: false,
+                created_at: "2025-02-12"
+            }
+        ]
+        
+        let historyData = [
+            {
+                date: "17 Feb 2025",
+                periode: "Putaran 02",
+                petugas: "Rina Pratiwi",
+                items: 42,
+                status: "Selesai"
+            },
+            {
+                date: "16 Feb 2025",
+                periode: "Putaran 01",
+                petugas: "Andi Saputra",
+                items: 38,
+                status: "Selesai"
+            },
+            {
+                date: "10 Feb 2025",
+                periode: "Putaran 03",
+                petugas: "Budi Santoso",
+                items: 61,
+                status: "Selesai"
+            }
+        ]
+        
+        let recentScans = [
+            {
+                article: "AVA-BLK-M",
+                name: "Avalon Hoodie Basic",
+                qty: 24,
+                time: "11:42"
+            },
+            {
+                article: "TEE-WHT-M",
+                name: "Basic Tee White",
+                qty: 15,
+                time: "11:38"
+            },
+            {
+                article: "JKT-DNM-S",
+                name: "Denim Jacket",
+                qty: 7,
+                time: "11:29"
+            }
+        ]
+        
+        let currentRole = "admin"
+        let currentProduct = null
+        let selectedMappingProduct = null
+        
+        function switchRole() {
+            if (currentRole === "admin") {
+                currentRole = "petugas"
+                document.getElementById("current-role").textContent = "PETUGAS"
+                document.getElementById("user-name").textContent = "Rina Pratiwi"
+                document.getElementById("user-role").innerHTML = `Petugas <span class="text-emerald-400">•</span>`
+                document.getElementById("admin-menu").classList.add("hidden")
+                document.getElementById("petugas-menu").classList.remove("hidden")
+                navigateTo("petugas-dashboard")
+            } else {
+                currentRole = "admin"
+                document.getElementById("current-role").textContent = "ADMIN"
+                document.getElementById("user-name").textContent = "Budi Santoso"
+                document.getElementById("user-role").textContent = "Administrator"
+                document.getElementById("admin-menu").classList.remove("hidden")
+                document.getElementById("petugas-menu").classList.add("hidden")
+                navigateTo("dashboard")
+            }
+            showToast("Role diubah ke " + currentRole.toUpperCase())
+        }
+        
+        function navigateTo(screen) {
+            const screens = document.querySelectorAll('#main-content > div')
+            screens.forEach(s => s.classList.add('hidden'))
+            const target = document.getElementById('screen-' + screen)
+            if (target) target.classList.remove('hidden')
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-amber-300', 'bg-zinc-900')
+                link.classList.add('text-zinc-400')
+            })
+            
+            if (screen === "dashboard" || screen === "import" || screen === "master" || screen === "mapping" || screen === "sop" || screen === "progress" || screen === "history") {
+                const navLinks = document.querySelectorAll('#admin-menu .nav-link')
+                navLinks.forEach(link => {
+                    if (link.getAttribute('onclick').includes(screen)) {
+                        link.classList.add('active', 'text-amber-300', 'bg-zinc-900')
+                    }
+                })
+            }
+            
+            if (screen === "petugas-dashboard" || screen === "petugas-so" || screen === "petugas-progress") {
+                const navLinks = document.querySelectorAll('#petugas-menu .nav-link')
+                navLinks.forEach(link => {
+                    if (link.getAttribute('onclick').includes(screen)) {
+                        link.classList.add('active', 'text-amber-300', 'bg-zinc-900')
+                    }
+                })
+            }
+            
+            if (screen === "master") renderMasterTable()
+            if (screen === "dashboard") renderRecentScans()
+            if (screen === "progress") renderProgress()
+            if (screen === "history") renderHistory()
+        }
+        
+        function renderMasterTable(filteredProducts = null) {
+            const tbody = document.getElementById("master-tbody")
+            tbody.innerHTML = ""
+            const toRender = filteredProducts || products
+            toRender.forEach(product => {
+                const row = document.createElement("tr")
+                row.className = "data-row border-b border-zinc-800 last:border-none"
+                row.innerHTML = `
+                    <td class="px-8 py-6 font-mono text-xs">${product.article_code}</td>
+                    <td class="px-8 py-6">${product.nama_barang}</td>
+                    <td class="px-8 py-6 text-xs uppercase">${product.brand}</td>
+                    <td class="px-8 py-6 text-xs">${product.warna}</td>
+                    <td class="px-8 py-6 text-center font-medium">${product.size}</td>
+                    <td class="px-8 py-6 text-right font-mono">${product.qty_sistem}</td>
+                    <td class="px-8 py-6 text-center">
+                        ${product.status_mapping ? 
+                            `<span class="inline-flex items-center px-3 py-1 text-[10px] font-medium bg-emerald-900 text-emerald-400 rounded-full"><i class="fa-solid fa-check mr-1"></i> MAPPED</span>` : 
+                            `<span onclick="mapThisProduct(${product.id}); event.stopImmediatePropagation()" class="inline-flex items-center px-3 py-1 text-[10px] font-medium bg-orange-900 text-orange-400 rounded-full cursor-pointer">MAP</span>`
+                        }
+                    </td>
+                    <td class="px-4">
+                        <button onclick="editProduct(${product.id}); event.stopImmediatePropagation()" class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-white">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                    </td>
+                `
+                tbody.append(row)
+            })
+        }
+        
+        function filterMaster() {
+            const searchTerm = document.getElementById("master-search").value.toLowerCase().trim()
+            const brandFilter = document.getElementById("brand-filter").value
+            let filtered = products
+            if (searchTerm !== "") {
+                filtered = filtered.filter(p => 
+                    p.nama_barang.toLowerCase().includes(searchTerm) ||
+                    p.article_code.toLowerCase().includes(searchTerm)
+                )
+            }
+            if (brandFilter !== "") filtered = filtered.filter(p => p.brand === brandFilter)
+            renderMasterTable(filtered)
+        }
+        
+        function editProduct(id) {
+            const product = products.find(p => p.id === id)
+            if (!product) return
+            const modalHTML = `
+                <div class="p-8">
+                    <div class="flex items-center justify-between">
+                        <div class="font-semibold text-xl">Edit Barang</div>
+                        <div onclick="hideModal()" class="cursor-pointer text-zinc-400 hover:text-white">✕</div>
+                    </div>
+                    <div class="mt-8 space-y-6">
+                        <div>
+                            <label class="text-xs text-zinc-400 block mb-2">Article Code</label>
+                            <input type="text" value="${product.article_code}" class="w-full h-12 bg-zinc-800 border border-zinc-700 rounded-full px-5 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-xs text-zinc-400 block mb-2">Nama Barang</label>
+                            <input type="text" value="${product.nama_barang}" class="w-full h-12 bg-zinc-800 border border-zinc-700 rounded-full px-5 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-xs text-zinc-400 block mb-2">Qty Sistem</label>
+                                <input type="text" value="${product.qty_sistem}" class="w-full h-12 bg-zinc-800 border border-zinc-700 rounded-full px-5 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs text-zinc-400 block mb-2">Barcode</label>
+                                <input type="text" value="${product.barcode}" class="w-full h-12 bg-zinc-800 border border-zinc-700 rounded-full px-5 outline-none font-mono">
+                            </div>
+                        </div>
+                        <div class="flex gap-x-3 pt-4">
+                            <button onclick="hideModal()" class="flex-1 py-4 text-xs border border-zinc-600 hover:bg-zinc-800 transition-colors rounded-full">BATAL</button>
+                            <button onclick="saveEditedProduct();hideModal()" class="flex-1 py-4 text-xs bg-white text-black font-semibold rounded-full">SIMPAN PERUBAHAN</button>
+                        </div>
+                    </div>
+                </div>
+            `
+            showModal(modalHTML)
+        }
+        
+        function saveEditedProduct() { showToast("Perubahan berhasil disimpan") }
+        
+        function mapThisProduct(id) {
+            selectedMappingProduct = products.find(p => p.id === id)
+            if (!selectedMappingProduct) return
+            navigateTo("mapping")
+            renderMappingSelected()
+        }
+        
+        function renderMappingSelected() {
+            document.getElementById("mapping-selected").classList.remove("hidden")
+            document.getElementById("mapping-search-results").classList.add("hidden")
+            document.getElementById("map-article").textContent = selectedMappingProduct.article_code
+            document.getElementById("map-name").textContent = selectedMappingProduct.nama_barang
+            document.getElementById("map-brand").textContent = selectedMappingProduct.brand
+            document.getElementById("map-color").textContent = selectedMappingProduct.warna
+            document.getElementById("map-size").textContent = selectedMappingProduct.size
+            const randomBarcode = "8945678234" + Math.floor(1000 + Math.random() * 900)
+            document.getElementById("barcode-visual").textContent = randomBarcode
+            document.getElementById("barcode-input").value = randomBarcode
+        }
+        
+        function searchForMapping() {
+            const query = document.getElementById("mapping-search-input").value.toLowerCase().trim()
+            if (!query) {
+                document.getElementById("mapping-search-results").classList.add("hidden")
+                return
+            }
+            const results = products.filter(p => p.nama_barang.toLowerCase().includes(query) || p.article_code.toLowerCase().includes(query))
+            const container = document.getElementById("mapping-search-results")
+            container.innerHTML = ""
+            container.classList.remove("hidden")
+            if (results.length === 0) {
+                container.innerHTML = `<div class="p-6 text-xs text-zinc-400 text-center">Tidak ditemukan</div>`
+                return
+            }
+            results.forEach(result => {
+                const div = document.createElement("div")
+                div.className = "px-6 py-4 hover:bg-zinc-900 flex justify-between items-center cursor-pointer border-b border-zinc-800 last:border-none"
+                div.innerHTML = `<div><div class="font-medium text-sm">${result.nama_barang}</div><div class="font-mono text-xs text-zinc-400">${result.article_code}</div></div><div class="text-xs ${result.status_mapping ? 'text-emerald-400' : 'text-orange-400'}">${result.status_mapping ? 'Sudah' : 'Belum'}</div>`
+                div.onclick = () => { selectedMappingProduct = result; renderMappingSelected() }
+                container.append(div)
+            })
+        }
+        
+        function saveBarcodeMapping() {
+            if (!selectedMappingProduct) return
+            selectedMappingProduct.barcode = document.getElementById("barcode-input").value || "8945678234512"
+            selectedMappingProduct.status_mapping = true
+            showToast("Barcode berhasil dimapping!")
+            setTimeout(() => navigateTo("master"), 800)
+        }
+        
+        function cancelMapping() {
+            selectedMappingProduct = null
+            document.getElementById("mapping-selected").classList.add("hidden")
+            document.getElementById("mapping-search-input").value = ""
+        }
+        
+        function renderRecentScans() {
+            const container = document.getElementById("recent-scans")
+            container.innerHTML = ""
+            recentScans.forEach(scan => {
+                const div = document.createElement("div")
+                div.className = "px-8 py-5 flex items-center data-row"
+                div.innerHTML = `<div class="flex-1"><div class="font-medium">${scan.name}</div><div class="text-xs font-mono text-zinc-400">${scan.article}</div></div><div class="text-right"><div class="text-emerald-400 font-medium">+${scan.qty}</div><div class="text-xs text-zinc-500">${scan.time}</div></div>`
+                container.append(div)
+            })
+        }
+        
+        function renderProgress() {
+            const container = document.getElementById("progress-list")
+            container.innerHTML = `
+                <div class="flex items-center justify-between bg-zinc-950 hover:bg-zinc-900 px-6 py-6 rounded-[2rem] cursor-pointer transition-colors">
+                    <div class="flex items-center gap-x-4">
+                        <div class="w-8 h-8 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center text-xs font-bold">RP</div>
+                        <div><div class="font-medium">Rina Pratiwi</div><div class="text-xs text-zinc-400">12 barang • 3 selisih</div></div>
+                    </div>
+                    <div class="text-right"><div class="text-xs bg-emerald-400 text-black px-5 py-2 rounded-full inline-block">82%</div></div>
+                </div>
+                <div class="flex items-center justify-between bg-zinc-950 hover:bg-zinc-900 px-6 py-6 rounded-[2rem] cursor-pointer transition-colors">
+                    <div class="flex items-center gap-x-4">
+                        <div class="w-8 h-8 bg-orange-200 text-orange-700 rounded-full flex items-center justify-center text-xs font-bold">AS</div>
+                        <div><div class="font-medium">Andi Saputra</div><div class="text-xs text-zinc-400">19 barang • 0 selisih</div></div>
+                    </div>
+                    <div class="text-right"><div class="text-xs bg-emerald-400 text-black px-5 py-2 rounded-full inline-block">100%</div></div>
+                </div>
+            `
+        }
+        
+        function renderHistory() {
+            const container = document.getElementById("history-list")
+            container.innerHTML = ""
+            historyData.forEach(item => {
+                const row = document.createElement("div")
+                row.className = "flex items-center px-8 py-6 text-xs hover:bg-zinc-800 transition-colors"
+                row.innerHTML = `<div class="w-36 font-medium">${item.date}</div><div class="flex-1">${item.periode}</div><div class="w-40">${item.petugas}</div><div class="w-28 text-right font-mono">${item.items}</div><div class="w-28 text-center"><span class="px-5 py-2 text-emerald-400 bg-emerald-900/60 text-[10px] font-medium rounded-full">${item.status}</span></div>`
+                container.append(row)
+            })
+        }
+        
+        function simulateImport() {
+            const tbody = document.getElementById("preview-tbody")
+            tbody.innerHTML = ""
+            const sampleData = [["AVA-BLK-M", "Avalon Hoodie Basic", "AVALON", "124"], ["CAP-CLS-BL", "Classic Cap Blue", "AVALON", "65"], ["JKT-DNM-S", "Denim Trucker Jacket", "NIKE", "34"]]
+            sampleData.forEach(rowData => {
+                const tr = document.createElement("tr")
+                tr.className = "border-b border-zinc-800 last:border-0"
+                tr.innerHTML = `<td class="px-6 py-5 font-mono">${rowData[0]}</td><td class="px-6 py-5">${rowData[1]}</td><td class="px-6 py-5">${rowData[2]}</td><td class="px-6 py-5 text-right font-medium">${rowData[3]}</td>`
+                tbody.append(tr)
+            })
+            showToast("Data berhasil divalidasi. 248 baris siap diimport.")
+        }
+        
+        function importToDatabase() { showToast("Data master berhasil diimport ke database lokal!"); setTimeout(() => navigateTo("master"), 1200) }
+        function clearImportData() { document.getElementById("preview-tbody").innerHTML = ""; showToast("Import data direset") }
+        function triggerFileUpload() { document.getElementById("excel-upload").click() }
+        function handleFileSelect(e) { document.getElementById("filename").textContent = e.target.files[0] ? e.target.files[0].name : "inventory-balancing-feb.xlsx"; simulateImport() }
+        
+        function liveSearchSO(e) {
+            const container = document.getElementById("so-suggestions")
+            const query = e.target.value.toLowerCase()
+            if (query.length < 2) { container.classList.add("hidden"); return }
+            const matches = products.filter(product => product.nama_barang.toLowerCase().includes(query) || product.article_code.toLowerCase().includes(query))
+            container.innerHTML = ""
+            matches.forEach(match => {
+                const item = document.createElement("div")
+                item.className = "px-6 py-4 hover:bg-zinc-800 flex items-center cursor-pointer"
+                item.innerHTML = `<div class="flex-1"><span class="font-medium">${match.nama_barang}</span><span class="ml-4 text-xs text-zinc-400">${match.article_code}</span></div><div class="text-xs px-4 py-1 rounded-full ${match.status_mapping ? 'bg-emerald-900 text-emerald-400' : 'bg-orange-900 text-orange-300'}">${match.status_mapping ? 'Mapped' : 'No barcode'}</div>`
+                item.onclick = () => selectSOItem(match)
+                container.append(item)
+            })
+            container.classList.remove("hidden")
+        }
+        
+        function selectSOItem(product) {
+            currentProduct = product
+            document.getElementById("so-suggestions").classList.add("hidden")
+            document.getElementById("so-search-input").value = ""
+            document.getElementById("so-empty-state").classList.add("hidden")
+            document.getElementById("so-detail-view").classList.remove("hidden")
+            document.getElementById("so-detail-article").innerHTML = product.article_code
+            document.getElementById("so-detail-name").innerHTML = product.nama_barang
+            document.getElementById("so-detail-brand").innerHTML = product.brand
+            document.getElementById("so-detail-size-color").innerHTML = `${product.size} • ${product.warna}`
+            document.getElementById("so-detail-qty-system").innerHTML = product.qty_sistem + " unit"
+            document.getElementById("so-current-barcode").innerHTML = product.barcode || "— BELUM DIMAPPING —"
+            setTimeout(() => { document.getElementById("qty-fisik-input").focus(); document.getElementById("qty-fisik-input").select() }, 300)
+        }
+        
+        function closeDetailView() { document.getElementById("so-detail-view").classList.add("hidden"); document.getElementById("so-empty-state").classList.remove("hidden"); currentProduct = null }
+        function simulateBarcodeScanInDetail() {
+            const barcodeEl = document.getElementById("so-current-barcode")
+            barcodeEl.style.opacity = 0
+            setTimeout(() => { barcodeEl.textContent = "8945678234512"; barcodeEl.style.transitionDuration = "400ms"; barcodeEl.style.opacity = 1; showToast("Barcode terdeteksi otomatis") }, 180)
+        }
+        function simulateScan() { selectSOItem(products[Math.floor(Math.random() * products.length)]); showToast("Barcode scanner aktif (demo)") }
+        function saveCurrentSO() { if (!currentProduct) return; currentProduct.qty_fisik = parseInt(document.getElementById("qty-fisik-input").value) || 0; showToast(`Data ${currentProduct.article_code} disimpan.`); setTimeout(closeDetailView, 600) }
+        function finishSO() { showToast("Stock opname sesi ini telah diselesaikan!"); setTimeout(() => navigateTo("petugas-dashboard"), 1200) }
+        function startSO() { navigateTo("sop") }
+        function showModal(html) { document.getElementById("modal-content").innerHTML = html; document.getElementById("modal-backdrop").classList.remove("hidden"); document.getElementById("modal-backdrop").classList.add("flex") }
+        function hideModal() { const backdrop = document.getElementById("modal-backdrop"); backdrop.classList.add("hidden"); backdrop.classList.remove("flex") }
+        function showAbout() { showModal(`<div class="p-8 max-w-xs mx-auto text-center"><span class="logo-font text-4xl">OPNAME</span><div class="text-xs text-zinc-400 mt-1">PWA STOCK OPNAME DISTRO</div><div class="my-10 text-left text-xs leading-relaxed text-zinc-300">Sistem sederhana untuk melakukan stock opname dengan cepat.<br><br>Demo UI industrial soft rounded theme.</div><button onclick="hideModal()" class="w-full py-4 text-xs border border-white/30 hover:bg-white/5 transition-colors rounded-full">TUTUP</button></div>`) }
+        function showToast(message) {
+            const toast = document.getElementById("toast")
+            document.getElementById("toast-text").textContent = message
+            toast.classList.remove("hidden")
+            toast.style.transform = 'translateY(30px)'; toast.style.opacity = 0
+            setTimeout(() => { toast.style.transitionDuration = "300ms"; toast.style.transform = 'translateY(0)'; toast.style.opacity = 1 }, 10)
+            setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.classList.add("hidden"), 300) }, 2800)
+        }
+        function quickSearch() { navigateTo("sop"); setTimeout(() => { const input = document.getElementById("so-search-input"); input.focus(); input.value = "ava"; liveSearchSO({target: input}) }, 500) }
+        function toggleSidebar() { const sidebar = document.getElementById("sidebar"); sidebar.style.display = sidebar.style.display === "none" ? "flex" : "none" }
+        function switchPeriod(el) { document.querySelectorAll('.active-period').forEach(item => item.classList.remove("active-period", "bg-zinc-800", "text-white")); el.classList.add("active-period", "bg-zinc-800", "text-white") }
+        function toggleProgressFilter() { const label = document.getElementById("progress-filter-label"); label.textContent = label.textContent === "Semua Petugas" ? "Hanya saya" : "Semua Petugas"; showToast("Filter progress diubah") }
+        function viewLowStock() { showToast("Menampilkan barang dengan selisih tinggi..."); navigateTo("master") }
+        function loginAs(role) { hideLogin(); if (role === "petugas") { currentRole = "petugas"; switchRole(); switchRole(); loginAsPetugasUI() } else { navigateTo("dashboard") } }
+        function loginAsPetugasUI() { currentRole = "petugas"; document.getElementById("current-role").textContent = "PETUGAS"; document.getElementById("user-name").textContent = "Rina Pratiwi"; document.getElementById("user-role").innerHTML = 'Petugas <span class="text-xs text-emerald-400">ON</span>'; document.getElementById("admin-menu").classList.add("hidden"); document.getElementById("petugas-menu").classList.remove("hidden"); navigateTo("petugas-dashboard") }
+        function hideLogin() { document.getElementById("login-overlay").classList.add("hidden") }
+        function logout() { document.getElementById("login-overlay").classList.remove("hidden") }
+        function updateClock() { const clockEl = document.getElementById("clock"); setInterval(() => { const date = new Date(); let h = date.getHours(); let m = date.getMinutes(); clockEl.textContent = `${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}` }, 10000) }
+        function initialize() {
+            renderMasterTable(); renderRecentScans(); renderProgress(); renderHistory(); updateClock()
+            setTimeout(() => document.getElementById("login-overlay").classList.remove("hidden"), 420)
+            document.addEventListener("keydown", (e) => { if (e.metaKey && e.key === "k") { e.preventDefault(); quickSearch() } })
+            products[2].status_mapping = false; products[5].status_mapping = false
+            setTimeout(() => { if (!document.getElementById("login-overlay").classList.contains("hidden")) return; showToast("Selamat datang kembali 👋") }, 2100)
+        }
+        window.onload = initialize
+    </script>
+</body></html>

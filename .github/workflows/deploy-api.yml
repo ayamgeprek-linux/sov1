@@ -1,0 +1,36 @@
+# .github/workflows/deploy-api.yml
+name: Deploy API to Railway
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: cd apps/api && npm install
+
+      - name: Build
+        run: cd apps/api && npm run build
+
+      - name: Deploy to Railway
+        uses: bervProject/railway-deploy@v1.2.2
+        with:
+          railway-token: ${{ secrets.RAILWAY_TOKEN }}
+          service: api
+          project: ${{ secrets.RAILWAY_PROJECT_ID }}
+          directory: ./apps/api

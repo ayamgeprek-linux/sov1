@@ -1,0 +1,1368 @@
+/* apps/web/src/components/pages/Progress/ProgressPage.module.css */
+
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+.progressPage {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 24px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ============================================================
+   BACKGROUND MESH
+   ============================================================ */
+.meshBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-color: #f8f9fa;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(115, 92, 0, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(115, 92, 0, 0.03) 0px, transparent 50%);
+  pointer-events: none;
+}
+
+/* ============================================================
+   GLASS CARD
+   ============================================================ */
+.glassCard {
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 200px;
+}
+
+.headerLocation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.headerLocation span {
+  font-size: clamp(16px, 1.5vw, 20px);
+  color: #735c00;
+}
+
+.headerLocation span:last-child {
+  font-size: clamp(11px, 0.9vw, 14px);
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.headerTitle {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.02em;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.headerSubtitle {
+  font-size: clamp(13px, 1vw, 16px);
+  color: rgba(77, 70, 53, 0.6);
+  max-width: 560px;
+  margin-top: 4px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.headerFilter {
+  display: flex;
+  background: rgba(237, 238, 239, 0.3);
+  padding: 4px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+}
+
+.filterBtn:hover {
+  color: #191c1d;
+}
+
+.filterBtn.active {
+  background: #735c00;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(115, 92, 0, 0.15);
+}
+
+/* ============================================================
+   STATS GRID
+   ============================================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.statCard {
+  padding: clamp(16px, 1.5vw, 24px);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+}
+
+.statCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.statCardIcon {
+  width: clamp(36px, 3.5vw, 48px);
+  height: clamp(36px, 3.5vw, 48px);
+  border-radius: 12px;
+  background: rgba(212, 175, 55, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #735c00;
+  transition: all 0.3s ease;
+}
+
+.statCard:hover .statCardIcon {
+  background: #735c00;
+  color: #ffffff;
+}
+
+.statCardIcon span {
+  font-size: clamp(18px, 1.8vw, 24px);
+}
+
+.iconSuccess {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+.iconWarning {
+  background: rgba(251, 146, 60, 0.1);
+  color: #fb923c;
+}
+
+.iconDanger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.statCardHeader .material-symbols-outlined:last-child {
+  color: rgba(77, 70, 53, 0.15);
+  font-size: 20px;
+}
+
+.statCardLabel {
+  font-size: clamp(11px, 0.8vw, 14px);
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  margin-bottom: 4px;
+}
+
+.statCardValue {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statCardValue h3 {
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.statCardValue span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #735c00;
+}
+
+.statCardBar {
+  flex: 1;
+  height: 6px;
+  background: rgba(208, 197, 175, 0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+  max-width: 80px;
+}
+
+.statCardBarFill {
+  height: 100%;
+  background: #735c00;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.textWarning {
+  color: #fb923c;
+}
+
+.textDanger {
+  color: #ef4444;
+}
+
+.cardSuccess {
+  border-left: 4px solid #735c00;
+}
+
+.statCardSub {
+  font-size: 12px;
+  color: rgba(239, 68, 68, 0.5);
+  font-weight: 500;
+}
+
+/* ============================================================
+   BENTO GRID
+   ============================================================ */
+.bentoGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   GAUGE CARD
+   ============================================================ */
+.gaugeCard {
+  padding: clamp(20px, 2.5vw, 32px);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.gaugeTitle {
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  align-self: flex-start;
+  margin-bottom: 24px;
+}
+
+.gaugeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.gauge {
+  position: relative;
+  width: clamp(140px, 14vw, 192px);
+  height: clamp(140px, 14vw, 192px);
+  margin-bottom: 24px;
+}
+
+.gaugeSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gaugeBg {
+  color: rgba(208, 197, 175, 0.15);
+}
+
+.gaugeProgress {
+  color: #735c00;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.gaugeCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.gaugePercent {
+  display: block;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.gaugeLabel {
+  display: block;
+  font-size: clamp(10px, 0.8vw, 12px);
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gaugeStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.gaugeStatItem {
+  background: rgba(248, 249, 250, 0.5);
+  padding: clamp(8px, 1vw, 12px) clamp(12px, 1.2vw, 16px);
+  border-radius: 8px;
+  text-align: left;
+  border: 1px solid rgba(208, 197, 175, 0.04);
+}
+
+.gaugeStatLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gaugeStatValue {
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 600;
+  color: #191c1d;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.textPrimary {
+  color: #735c00;
+}
+
+/* ============================================================
+   PERFORMERS CARD
+   ============================================================ */
+.performersCard {
+  padding: clamp(20px, 2.5vw, 32px);
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.performersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.performersTitle {
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.performersViewAll {
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 500;
+  color: #735c00;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.performersViewAll:hover {
+  text-decoration: underline;
+}
+
+.performersList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.performerItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.performerAvatar {
+  width: clamp(32px, 3vw, 40px);
+  height: clamp(32px, 3vw, 40px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: clamp(12px, 1vw, 14px);
+  flex-shrink: 0;
+}
+
+.avatarPrimary {
+  background: #ffe088;
+  color: #241a00;
+}
+
+.avatarSecondary {
+  background: #e5e2e1;
+  color: #1c1b1b;
+}
+
+.avatarTertiary {
+  background: #dbe1ff;
+  color: #00174b;
+}
+
+.performerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.performerRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.performerName {
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 600;
+  color: #191c1d;
+  word-break: break-word;
+}
+
+.performerItems {
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 600;
+  color: #191c1d;
+}
+
+.performerBar {
+  width: 100%;
+  height: 6px;
+  background: rgba(208, 197, 175, 0.15);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.performerBarFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.barPrimary {
+  background: #735c00;
+  box-shadow: 0 0 12px rgba(115, 92, 0, 0.2);
+}
+
+.barSecondary {
+  background: #5f5e5e;
+  opacity: 0.6;
+}
+
+.barTertiary {
+  background: #415ba4;
+  opacity: 0.6;
+}
+
+.performersFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(14px, 1.5vw, 20px) clamp(16px, 1.8vw, 24px);
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  border-radius: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.performersFooterLabel {
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 600;
+  color: #735c00;
+}
+
+.performersFooterSub {
+  font-size: clamp(12px, 0.9vw, 14px);
+  color: rgba(77, 70, 53, 0.6);
+  margin-top: 2px;
+}
+
+.performersFooterRight {
+  text-align: right;
+}
+
+.performersFooterPercent {
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 700;
+  color: #735c00;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.performersFooterVs {
+  font-size: 10px;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   GLOBAL PROGRESS
+   ============================================================ */
+.globalProgress {
+  padding: clamp(20px, 2.5vw, 40px);
+  border-radius: 16px;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.globalProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.globalProgressTitle {
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.globalProgressRight {
+  text-align: right;
+}
+
+.globalProgressPercent {
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 700;
+  color: #735c00;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.globalProgressVerified {
+  font-size: clamp(12px, 0.9vw, 14px);
+  color: rgba(77, 70, 53, 0.6);
+  margin-left: 8px;
+}
+
+.globalProgressBar {
+  position: relative;
+  width: 100%;
+  height: clamp(10px, 1vw, 16px);
+  background: rgba(208, 197, 175, 0.15);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.globalProgressFill {
+  position: absolute;
+  inset: 0;
+  left: 0;
+  height: 100%;
+  background: #735c00;
+  border-radius: 9999px;
+  transition: width 0.8s ease;
+}
+
+.globalProgressMarkers {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+  pointer-events: none;
+}
+
+.globalProgressMarker {
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.globalProgressFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.globalProgressLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(12px, 0.9vw, 14px);
+  color: rgba(77, 70, 53, 0.6);
+  flex-wrap: wrap;
+}
+
+.globalProgressDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #735c00;
+}
+
+.globalProgressError {
+  font-size: clamp(12px, 0.9vw, 14px);
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* ============================================================
+   TABLE CARD
+   ============================================================ */
+.tableCard {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(16px, 1.5vw, 24px) clamp(20px, 2vw, 32px);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.08);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tableTitle {
+  font-size: clamp(12px, 0.9vw, 14px);
+  font-weight: 600;
+  color: #191c1d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tableActions {
+  display: flex;
+  gap: 8px;
+}
+
+.tableActionBtn {
+  width: clamp(32px, 3vw, 36px);
+  height: clamp(32px, 3vw, 36px);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.tableActionBtn:hover {
+  background: rgba(212, 175, 55, 0.08);
+  color: #735c00;
+}
+
+.tableActionBtn:active {
+  transform: scale(0.95);
+}
+
+.tableActionBtn .material-symbols-outlined {
+  font-size: clamp(18px, 1.5vw, 20px);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  padding: 0 8px 8px 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(12px, 0.9vw, 14px);
+  min-width: 600px;
+}
+
+.table thead {
+  background: rgba(248, 249, 250, 0.5);
+}
+
+.table th {
+  padding: clamp(10px, 1vw, 16px) clamp(12px, 1.2vw, 20px);
+  text-align: left;
+  font-size: clamp(10px, 0.8vw, 11px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(77, 70, 53, 0.5);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.table th:first-child {
+  padding-left: clamp(16px, 1.5vw, 32px);
+}
+
+.table th:last-child {
+  padding-right: clamp(16px, 1.5vw, 32px);
+  text-align: right;
+}
+
+.table td {
+  padding: clamp(10px, 1vw, 16px) clamp(12px, 1.2vw, 20px);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.06);
+  color: #191c1d;
+  font-weight: 500;
+}
+
+.table td:first-child {
+  padding-left: clamp(16px, 1.5vw, 32px);
+}
+
+.table td:last-child {
+  padding-right: clamp(16px, 1.5vw, 32px);
+  text-align: right;
+}
+
+.table tbody tr {
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tableProduct {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tableProductAvatar {
+  width: clamp(28px, 2.5vw, 32px);
+  height: clamp(28px, 2.5vw, 32px);
+  border-radius: 8px;
+  background: rgba(212, 175, 55, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(12px, 1vw, 14px);
+  color: #735c00;
+  flex-shrink: 0;
+}
+
+.tableProductName {
+  font-weight: 600;
+  color: #191c1d;
+  font-size: clamp(13px, 0.9vw, 14px);
+}
+
+.tableProductSku {
+  font-size: clamp(10px, 0.7vw, 12px);
+  font-weight: 400;
+  color: rgba(77, 70, 53, 0.4);
+  display: block;
+  margin-top: 2px;
+}
+
+.tableStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(3px, 0.3vw, 4px) clamp(8px, 0.8vw, 12px);
+  border-radius: 9999px;
+  font-size: clamp(10px, 0.7vw, 12px);
+  font-weight: 600;
+}
+
+.statusComplete {
+  background: rgba(52, 211, 153, 0.1);
+  color: #059669;
+}
+
+.statusComplete .statusDot {
+  background: #059669;
+}
+
+.statusPending {
+  background: rgba(251, 146, 60, 0.1);
+  color: #d97706;
+}
+
+.statusPending .statusDot {
+  background: #d97706;
+}
+
+.statusError {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.statusError .statusDot {
+  background: #dc2626;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.tableSelisih {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.selisihMatch {
+  color: #059669;
+}
+
+.selisihLess {
+  color: #dc2626;
+}
+
+.selisihMore {
+  color: #d97706;
+}
+
+.tableDate {
+  font-size: clamp(11px, 0.8vw, 13px);
+  color: rgba(77, 70, 53, 0.5);
+  font-weight: 400;
+}
+
+.tableActionIcon {
+  color: rgba(77, 70, 53, 0.3);
+  transition: color 0.2s ease;
+  font-size: 18px;
+}
+
+.table tbody tr:hover .tableActionIcon {
+  color: #735c00;
+}
+
+.tableEmpty {
+  text-align: center;
+  padding: 64px 32px !important;
+}
+
+.tableEmptyIcon {
+  font-size: 48px;
+  color: rgba(208, 197, 175, 0.2);
+  margin-bottom: 16px;
+}
+
+.tableEmptyText {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.tableEmptySub {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(77, 70, 53, 0.25);
+  margin-top: 4px;
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Tablet - 1024px */
+@media (max-width: 1024px) {
+  .progressPage {
+    padding: 24px 20px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .gaugeCard {
+    padding: 24px;
+  }
+
+  .performersCard {
+    padding: 24px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .headerFilter {
+    width: 100%;
+    align-self: flex-start;
+  }
+
+  .globalProgress {
+    padding: 24px;
+  }
+}
+
+/* Tablet Kecil - 768px */
+@media (max-width: 768px) {
+  .progressPage {
+    padding: 16px 14px;
+  }
+
+  .headerTitle {
+    font-size: 26px;
+  }
+
+  .headerSubtitle {
+    font-size: 13px;
+  }
+
+  .headerFilter {
+    width: 100%;
+    overflow-x: auto;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filterBtn {
+    padding: 6px 14px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .statCard {
+    padding: 14px;
+  }
+
+  .statCardValue h3 {
+    font-size: 20px;
+  }
+
+  .statCardIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .statCardIcon span {
+    font-size: 16px;
+  }
+
+  .gauge {
+    width: 130px;
+    height: 130px;
+  }
+
+  .gaugePercent {
+    font-size: 28px;
+  }
+
+  .gaugeStats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .performersList {
+    gap: 12px;
+  }
+
+  .performerItem {
+    gap: 12px;
+  }
+
+  .globalProgressPercent {
+    font-size: 18px;
+  }
+
+  .globalProgressBar {
+    height: 10px;
+  }
+
+  .tableHeader {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 10px;
+  }
+
+  .table th:first-child,
+  .table td:first-child {
+    padding-left: 12px;
+  }
+
+  .table th:last-child,
+  .table td:last-child {
+    padding-right: 12px;
+  }
+
+  .tableProductName {
+    font-size: 12px;
+  }
+
+  .performersFooter {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .performersFooterRight {
+    text-align: center;
+  }
+
+  .globalProgressHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .globalProgressRight {
+    text-align: left;
+  }
+
+  .globalProgressFooter {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* Mobile - 480px */
+@media (max-width: 480px) {
+  .progressPage {
+    padding: 12px 8px;
+  }
+
+  .headerTitle {
+    font-size: 20px;
+  }
+
+  .headerSubtitle {
+    font-size: 12px;
+  }
+
+  .headerFilter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .filterBtn {
+    padding: 4px 12px;
+    font-size: 10px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .statCard {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .statCardValue h3 {
+    font-size: 18px;
+  }
+
+  .statCardLabel {
+    font-size: 10px;
+  }
+
+  .statCardBar {
+    display: none;
+  }
+
+  .statCardIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .statCardIcon span {
+    font-size: 14px;
+  }
+
+  .gauge {
+    width: 110px;
+    height: 110px;
+  }
+
+  .gaugePercent {
+    font-size: 24px;
+  }
+
+  .gaugeStatValue {
+    font-size: 12px;
+  }
+
+  .gaugeStatLabel {
+    font-size: 8px;
+  }
+
+  .gaugeStatItem {
+    padding: 8px 10px;
+  }
+
+  .table {
+    font-size: 11px;
+    min-width: 450px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 6px;
+  }
+
+  .table th:first-child,
+  .table td:first-child {
+    padding-left: 8px;
+  }
+
+  .table th:last-child,
+  .table td:last-child {
+    padding-right: 8px;
+  }
+
+  .tableProductAvatar {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .tableStatus {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .globalProgress {
+    padding: 16px;
+  }
+
+  .globalProgressPercent {
+    font-size: 16px;
+  }
+
+  .globalProgressTitle {
+    font-size: 11px;
+  }
+
+  .performersCard {
+    padding: 14px;
+  }
+
+  .performersFooterPercent {
+    font-size: 18px;
+  }
+
+  .performersFooterLabel {
+    font-size: 12px;
+  }
+
+  .performersFooterSub {
+    font-size: 11px;
+  }
+}
+
+/* Mobile Kecil - 375px */
+@media (max-width: 375px) {
+  .progressPage {
+    padding: 8px 4px;
+  }
+
+  .headerTitle {
+    font-size: 18px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .statCard {
+    padding: 8px;
+  }
+
+  .statCardValue h3 {
+    font-size: 16px;
+  }
+
+  .statCardLabel {
+    font-size: 9px;
+  }
+
+  .gauge {
+    width: 96px;
+    height: 96px;
+  }
+
+  .gaugePercent {
+    font-size: 20px;
+  }
+
+  .gaugeStats {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .gaugeStatItem {
+    padding: 6px 10px;
+  }
+
+  .table {
+    font-size: 10px;
+    min-width: 350px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px 4px;
+  }
+
+  .tableProductName {
+    font-size: 10px;
+  }
+
+  .tableStatus {
+    font-size: 8px;
+    padding: 2px 4px;
+  }
+
+  .globalProgress {
+    padding: 12px;
+  }
+
+  .globalProgressPercent {
+    font-size: 14px;
+  }
+
+  .performersCard {
+    padding: 10px;
+  }
+
+  .performerItem {
+    gap: 8px;
+  }
+
+  .performerAvatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .performerName {
+    font-size: 11px;
+  }
+
+  .performerItems {
+    font-size: 11px;
+  }
+
+  .performersFooter {
+    padding: 10px;
+  }
+
+  .performersFooterPercent {
+    font-size: 16px;
+  }
+}
+
+/* ============================================================
+   DARK MODE SUPPORT
+   ============================================================ */

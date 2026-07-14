@@ -1,0 +1,523 @@
+/* ============================================================
+   MASTER PAGE - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.masterPage {
+  max-width: 1280px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================================
+   HEADER & FILTERS
+   ============================================================ */
+.masterHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.masterHeaderTop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.masterTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.01em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 400;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+.masterSearch {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+}
+
+.masterSearch .searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: rgba(77, 70, 53, 0.4);
+  pointer-events: none;
+}
+
+.masterSearch input {
+  width: 100%;
+  padding: 10px 16px 10px 44px;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #191c1d;
+  outline: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterSearch input::placeholder {
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.masterSearch input:focus {
+  box-shadow: 0 4px 20px rgba(115, 92, 0, 0.08);
+}
+
+/* ============================================================
+   FILTER DROPDOWNS
+   ============================================================ */
+.masterFilterWrapper {
+  position: relative;
+  min-width: 140px;
+}
+
+.masterFilter {
+  width: 100%;
+  padding: 10px 40px 10px 16px;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterFilter:focus {
+  box-shadow: 0 4px 20px rgba(115, 92, 0, 0.08);
+}
+
+.masterFilter option {
+  color: #191c1d;
+  background: #ffffff;
+}
+
+.masterFilterArrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: rgba(77, 70, 53, 0.4);
+  pointer-events: none;
+}
+
+/* ============================================================
+   ACTION BUTTON
+   ============================================================ */
+.masterActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 20px rgba(115, 92, 0, 0.15);
+  white-space: nowrap;
+}
+
+.masterActionBtn:hover {
+  background: #5c4a00;
+  transform: scale(0.98);
+}
+
+.masterActionBtn:active {
+  transform: scale(0.95);
+}
+
+.masterActionBtn span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   TABLE CARD
+   ============================================================ */
+.masterTableWrap {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.masterTable {
+  width: 100%;
+  font-size: 14px;
+  border-collapse: collapse;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterTable thead {
+  background: #f8f9fa;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.2);
+}
+
+.masterTable th {
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterTable td {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.08);
+  color: #191c1d;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.masterRow {
+  transition: background 0.15s ease;
+}
+
+.masterRow:hover {
+  background: rgba(237, 238, 239, 0.3);
+}
+
+/* ============================================================
+   TABLE CELL STYLES
+   ============================================================ */
+.textXs {
+  font-size: 12px;
+}
+
+.fontMono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #735c00;
+  font-weight: 600;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+/* ============================================================
+   SIZE BADGE
+   ============================================================ */
+.sizeBadge {
+  padding: 4px 0;
+}
+
+.sizeLabel {
+  display: inline-block;
+  padding: 2px 12px;
+  background: rgba(229, 226, 225, 0.6);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.8);
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 32px;
+}
+
+/* ============================================================
+   CATEGORY BADGE
+   ============================================================ */
+.categoryBadge {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.categoryBadge.accessories {
+  background: #dbe1ff;
+  color: #00174b;
+}
+
+.categoryBadge.bag {
+  background: #254188;
+  color: #ffffff;
+}
+
+.categoryBadge.default {
+  background: #e2dfde;
+  color: #474746;
+}
+
+/* ============================================================
+   STATUS MAPPING
+   ============================================================ */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: none;
+  cursor: default;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.status.mapped {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+.status.unmapped {
+  background: rgba(115, 92, 0, 0.08);
+  color: #735c00;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(115, 92, 0, 0.1);
+}
+
+.status.unmapped:hover {
+  background: rgba(115, 92, 0, 0.15);
+  transform: scale(1.02);
+}
+
+.status.unmapped:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================
+   EDIT BUTTON
+   ============================================================ */
+.editBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(77, 70, 53, 0.4);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover {
+  color: #735c00;
+  background: rgba(115, 92, 0, 0.05);
+}
+
+.editBtn span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.emptyState {
+  text-align: center;
+  padding: 48px 20px;
+  color: rgba(77, 70, 53, 0.4);
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ============================================================
+   TABLE FOOTER
+   ============================================================ */
+.masterFooter {
+  padding: 12px 24px;
+  background: #ffffff;
+  border-top: 1px solid rgba(208, 197, 175, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterTotal {
+  font-weight: 500;
+}
+
+.masterTotal strong {
+  color: #191c1d;
+  font-weight: 700;
+}
+
+.masterStats {
+  display: flex;
+  gap: 16px;
+}
+
+.masterStats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+.masterTableWrap::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.masterTableWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.masterTableWrap::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 10px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .masterTable {
+    font-size: 13px;
+  }
+
+  .masterTable th,
+  .masterTable td {
+    padding: 12px 16px;
+  }
+
+  .masterControls {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .masterSearch {
+    min-width: 140px;
+  }
+
+  .masterFilterWrapper {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .masterHeader {
+    gap: 16px;
+  }
+
+  .masterTitle {
+    font-size: 24px;
+  }
+
+  .masterControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .masterSearch {
+    max-width: 100%;
+  }
+
+  .masterFilterWrapper {
+    min-width: 100%;
+  }
+
+  .masterActionBtn {
+    justify-content: center;
+  }
+
+  .masterTableWrap {
+    overflow-x: auto;
+  }
+
+  .masterTable {
+    min-width: 700px;
+  }
+
+  .masterFooter {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .masterStats {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .masterTable th,
+  .masterTable td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .masterTitle {
+    font-size: 20px;
+  }
+
+  .masterSubtitle {
+    font-size: 13px;
+  }
+
+  .status {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .sizeLabel {
+    font-size: 10px;
+    padding: 1px 8px;
+  }
+
+  .masterFooter {
+    font-size: 12px;
+  }
+}

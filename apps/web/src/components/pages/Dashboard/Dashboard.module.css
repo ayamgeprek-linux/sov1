@@ -1,0 +1,858 @@
+/* ============================================================
+   DASHBOARD - LAYOUT FIX
+   ============================================================ */
+
+.dashboard {
+  max-width: 100%;
+  margin: 0;
+  padding: 0 24px 24px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #191c1d;
+  background: #f8f9fa;
+  min-height: 100vh;
+  flex: 1;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  padding: 20px 0 8px;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.headerTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #191c1d;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  font-family: 'mater', 'Plus Jakarta Sans', sans-serif; 
+}
+
+.headerTitleAccent {
+  color: #735c00;
+  font-style: italic;
+  font-weight: 900;
+}
+
+.headerSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CONTENT CANVAS
+   ============================================================ */
+.contentCanvas {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   STATS SECTION (2 COLUMN LAYOUT)
+   ============================================================ */
+.statsSection {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 24px;
+}
+
+/* ============================================================
+   MAIN STATS (LEFT COLUMN)
+   ============================================================ */
+.mainStats {
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f5 100%);
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.02);
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mainStatsGlow {
+  display: none;
+}
+
+.mainStatsContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.mainStatsHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mainStatsIndicator {
+  width: 4px;
+  height: 20px;
+  background: #735c00;
+  border-radius: 9999px;
+}
+
+.mainStatsLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.mainStatsValue {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.mainStatsNumber {
+  font-size: 48px;
+  font-weight: 900;
+  color: #191c1d;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.mainStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(208, 197, 175, 0.1);
+  margin-bottom: 20px;
+}
+
+.mainStatsGridItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mainStatsGridLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mainStatsGridValue {
+  font-size: 22px;
+  font-weight: 900;
+  color: #191c1d;
+}
+
+.textError {
+  color: #ba1a1a;
+}
+
+.textPrimary {
+  color: #735c00;
+}
+
+.textGreen {
+  color: #059669;
+}
+
+.textOrange {
+  color: #d97706;
+}
+
+.mainStatsProgress {
+  background: #191c1d;
+  padding: 20px 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mainStatsProgressLeft {
+  flex: 1;
+  min-width: 140px;
+}
+
+.mainStatsProgressLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(233, 195, 73, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 2px;
+}
+
+.mainStatsProgressTitle {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.mainStatsProgressBar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.mainStatsProgressFill {
+  height: 100%;
+  background: #e9c349;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.mainStatsProgressDetail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mainStatsProgressRight {
+  text-align: right;
+  min-width: 60px;
+}
+
+.mainStatsProgressNumber {
+  font-size: 32px;
+  font-weight: 900;
+  color: #e9c349;
+}
+
+.mainStatsProgressRemaining {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* ============================================================
+   PETUGAS LIST (RIGHT COLUMN)
+   ============================================================ */
+.petugasList {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.petugasListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.petugasListTitle {
+  font-weight: 700;
+  font-size: 16px;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.petugasListSubtitle {
+  font-size: 11px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.petugasListBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(151, 176, 255, 0.3);
+  color: #254188;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(65, 91, 164, 0.1);
+}
+
+.petugasListDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #415ba4;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.petugasListItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.petugasListItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(237, 238, 239, 0.4);
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.petugasListItem:hover {
+  background: #edeeef;
+}
+
+.petugasListAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #edeeef;
+  color: #735c00;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-shrink: 0;
+}
+
+.petugasListInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.petugasListName {
+  font-weight: 600;
+  font-size: 13px;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.petugasListLocation {
+  font-size: 11px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.petugasListBtn {
+  margin-top: auto;
+  width: 100%;
+  padding: 10px;
+  color: #735c00;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 10px;
+  border: 1px solid rgba(115, 92, 0, 0.1);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.petugasListBtn:hover {
+  background: rgba(115, 92, 0, 0.05);
+}
+
+/* ============================================================
+   LOGS SECTION
+   ============================================================ */
+.logsSection {
+  grid-column: 1 / -1;
+}
+
+.logsContainer {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 40px -8px rgba(0,0,0,0.08), 0 10px 15px -3px rgba(0,0,0,0.03);
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logsHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logsTitle {
+  font-size: 18px;
+  font-weight: 900;
+  color: #191c1d;
+  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsSubtitle {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.logsHeaderRight {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.logsFilterBtn {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(208, 197, 175, 0.4);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(77, 70, 53, 0.6);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsFilterBtn:hover {
+  background: #edeeef;
+  color: #191c1d;
+}
+
+.logsFullBtn {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #735c00;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsFullBtn:hover {
+  background: rgba(115, 92, 0, 0.05);
+}
+
+/* ============================================================
+   RECENT SCANS LIST
+   ============================================================ */
+.logsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logsItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid rgba(208, 197, 175, 0.05);
+  transition: all 0.2s ease;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.logsItem:hover {
+  background: #edeeef;
+}
+
+.logsItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.logsItemInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.logsItemName {
+  font-weight: 600;
+  color: #191c1d;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsItemSku {
+  font-size: 11px;
+  color: rgba(77, 70, 53, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.logsItemRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.logsItemQty {
+  font-weight: 700;
+  font-size: 16px;
+  color: #735c00;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.logsItemStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.statusMatch {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.15);
+}
+
+.statusPlus {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.statusMinus {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.statusPending {
+  background: rgba(113, 113, 122, 0.1);
+  color: #71717a;
+  border: 1px solid rgba(113, 113, 122, 0.1);
+}
+
+.logsItemTime {
+  font-size: 10px;
+  color: rgba(77, 70, 53, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.logsEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.logsEmptyIcon span {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: rgba(77, 70, 53, 0.1);
+  border: 1px solid rgba(208, 197, 175, 0.1);
+}
+
+.logsEmptyTitle {
+  font-size: 18px;
+  font-weight: 900;
+  color: #191c1d;
+  margin-top: 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsEmptyDesc {
+  font-size: 13px;
+  color: rgba(77, 70, 53, 0.7);
+  font-weight: 500;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.logsEmptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.logsEmptyPrimary {
+  padding: 12px 28px;
+  background: #735c00;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsEmptyPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -8px rgba(0,0,0,0.15);
+}
+
+.logsEmptySecondary {
+  padding: 12px 28px;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 12px;
+  border: 2px solid rgba(208, 197, 175, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.logsEmptySecondary:hover {
+  background: rgba(237, 238, 239, 0.5);
+}
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+.logsLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.logsLoading span {
+  font-size: 32px;
+  margin-bottom: 8px;
+  color: #735c00;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .statsSection {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard {
+    padding: 0 20px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 0 16px 16px;
+  }
+  
+  .headerTitle {
+    font-size: 22px;
+  }
+  
+  .mainStats {
+    padding: 16px;
+  }
+  
+  .mainStatsNumber {
+    font-size: 36px;
+  }
+  
+  .mainStatsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .mainStatsGridValue {
+    font-size: 18px;
+  }
+  
+  .mainStatsProgress {
+    padding: 16px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .mainStatsProgressRight {
+    text-align: center;
+  }
+  
+  .petugasList {
+    padding: 16px;
+  }
+  
+  .logsContainer {
+    padding: 16px;
+  }
+  
+  .logsItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .logsItemRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 0 12px 12px;
+  }
+  
+  .headerTitle {
+    font-size: 18px;
+  }
+  
+  .mainStatsNumber {
+    font-size: 28px;
+  }
+  
+  .mainStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .mainStatsGridValue {
+    font-size: 16px;
+  }
+  
+  .mainStatsGridLabel {
+    font-size: 8px;
+  }
+  
+  .mainStatsProgressTitle {
+    font-size: 16px;
+  }
+  
+  .mainStatsProgressNumber {
+    font-size: 24px;
+  }
+  
+  .petugasList {
+    padding: 12px;
+  }
+  
+  .petugasListItem {
+    padding: 8px 12px;
+  }
+  
+  .petugasListAvatar {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .petugasListName {
+    font-size: 12px;
+  }
+  
+  .logsContainer {
+    padding: 12px;
+  }
+  
+  .logsTitle {
+    font-size: 16px;
+  }
+  
+  .logsItem {
+    padding: 8px 12px;
+  }
+  
+  .logsItemName {
+    font-size: 12px;
+  }
+  
+  .logsItemStatus {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+  
+  .logsEmptyTitle {
+    font-size: 16px;
+  }
+}

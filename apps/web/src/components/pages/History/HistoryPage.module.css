@@ -1,0 +1,630 @@
+/* ============================================================
+   HISTORY PAGE - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.historyPage {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   HEADER TOP
+   ============================================================ */
+.historyHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.historyBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  margin-bottom: 8px;
+}
+
+.historyBreadcrumb span {
+  font-size: 14px;
+}
+
+.breadcrumbActive {
+  color: #735c00;
+  font-weight: 700;
+}
+
+.historyTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.01em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 4px;
+}
+
+.historySubtitle {
+  font-size: 16px;
+  color: rgba(77, 70, 53, 0.6);
+  max-width: 640px;
+  font-weight: 400;
+}
+
+.historyActions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.historyFilterBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #191c1d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.historyFilterBtn:hover {
+  background: #edeeef;
+}
+
+.historyFilterBtn span {
+  font-size: 18px;
+}
+
+.historyExportBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #735c00;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 20px rgba(115, 92, 0, 0.15);
+}
+
+.historyExportBtn:hover {
+  opacity: 0.9;
+}
+
+.historyExportBtn span {
+  font-size: 18px;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.historyStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.historyStatCard {
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.historyStatLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.6);
+  margin-bottom: 4px;
+}
+
+.historyStatValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.textError {
+  color: #ba1a1a;
+}
+
+.textPrimary {
+  color: #735c00;
+}
+
+.historyStatTrend {
+  font-size: 10px;
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.historyStatTrend span {
+  font-size: 12px;
+}
+
+.historyStatSub {
+  font-size: 10px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.historyStatAvatars {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.historyStatAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #e9c349;
+  margin-right: -8px;
+}
+
+.historyStatAvatar:last-child {
+  margin-right: 0;
+}
+
+.avatarTertiary {
+  background: #dbe1ff;
+}
+
+.avatarSecondary {
+  background: #e5e2e1;
+}
+
+.historyStatAvatarMore {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #edeeef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.historyBox {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  overflow: hidden;
+}
+
+.historyTableWrap {
+  overflow-x: auto;
+}
+
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.historyTable thead {
+  background: rgba(237, 238, 239, 0.3);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.15);
+}
+
+.historyTable th {
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.historyRow {
+  border-bottom: 1px solid rgba(208, 197, 175, 0.05);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.historyRow:hover {
+  background: rgba(237, 238, 239, 0.3);
+}
+
+.historyRow td {
+  padding: 20px 24px;
+  vertical-align: middle;
+}
+
+.historyDate {
+  font-size: 16px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.historyTime {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.6);
+  margin-top: 2px;
+}
+
+.historyPetugas {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.historyPetugasAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  flex-shrink: 0;
+}
+
+.historyPetugasAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.historyItems {
+  font-size: 16px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.historyItemsLabel {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.6);
+  margin-left: 4px;
+}
+
+.historyStatus {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.statusSelesai {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+.statusProses {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.statusPending {
+  background: rgba(77, 70, 53, 0.06);
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.historyMoreBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.historyMoreBtn:hover {
+  background: rgba(115, 92, 0, 0.05);
+  color: #735c00;
+}
+
+.historyMoreBtn span {
+  font-size: 20px;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.historyPagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(237, 238, 239, 0.15);
+  border-top: 1px solid rgba(208, 197, 175, 0.05);
+}
+
+.historyPaginationInfo {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.historyPaginationInfo strong {
+  color: #191c1d;
+}
+
+.historyPaginationControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.historyPaginationBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(208, 197, 175, 0.3);
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.historyPaginationBtn:hover:not(:disabled) {
+  background: #edeeef;
+}
+
+.historyPaginationBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.historyPaginationBtn span {
+  font-size: 20px;
+}
+
+.historyPaginationPage {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.historyPaginationPage:hover {
+  background: #edeeef;
+}
+
+.historyPaginationPage.active {
+  background: #735c00;
+  color: #ffffff;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.historyFooter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.historyFooterItem {
+  padding: 24px;
+  border-radius: 12px;
+  background: rgba(237, 238, 239, 0.2);
+  border: 1px solid rgba(208, 197, 175, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: all 0.3s ease;
+}
+
+.historyFooterItem:hover {
+  background: rgba(237, 238, 239, 0.4);
+}
+
+.footerHighlight {
+  background: rgba(233, 195, 73, 0.08);
+  border-color: rgba(115, 92, 0, 0.15);
+}
+
+.footerHighlight:hover {
+  background: rgba(233, 195, 73, 0.15);
+}
+
+.historyFooterIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(115, 92, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #735c00;
+  flex-shrink: 0;
+}
+
+.footerIconPrimary {
+  background: rgba(115, 92, 0, 0.12);
+}
+
+.historyFooterIcon span {
+  font-size: 32px;
+}
+
+.historyFooterItem h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.historyFooterItem p {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .historyStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .historyFooter {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .historyPage {
+    padding: 16px 16px 60px;
+  }
+  
+  .historyHeaderTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .historyActions {
+    width: 100%;
+  }
+  
+  .historyFilterBtn,
+  .historyExportBtn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .historyTitle {
+    font-size: 24px;
+  }
+  
+  .historyStats {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .historyStatCard {
+    padding: 12px 16px;
+  }
+  
+  .historyStatValue {
+    font-size: 20px;
+  }
+  
+  .historyTable th,
+  .historyTable td {
+    padding: 12px 16px;
+  }
+  
+  .historyPagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .historyFooterItem {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historyStats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .historyTitle {
+    font-size: 20px;
+  }
+  
+  .historyTable th,
+  .historyTable td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .historyDate {
+    font-size: 13px;
+  }
+  
+  .historyItems {
+    font-size: 13px;
+  }
+  
+  .historyPetugas {
+    gap: 8px;
+  }
+  
+  .historyPetugasAvatar {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .historyPaginationControls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .historyActions {
+    flex-direction: column;
+  }
+  
+  .historyFilterBtn,
+  .historyExportBtn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,374 @@
+/* apps/web/src/components/pages/AuditLog/AuditLogPage.module.css */
+
+.auditPage {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.auditHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.auditTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.auditSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.auditRefreshBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auditRefreshBtn:hover {
+  background: #edeeef;
+}
+
+/* Summary */
+.auditSummary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.auditSummaryItem {
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.auditSummaryLabel {
+  display: block;
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.4);
+  font-weight: 500;
+}
+
+.auditSummaryValue {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #191c1d;
+  margin-top: 4px;
+}
+
+/* Filters */
+.auditFilters {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.auditFilterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auditFilterGroup label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auditFilterGroup select,
+.auditFilterGroup input {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid rgba(208, 197, 175, 0.15);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-width: 140px;
+}
+
+.auditFilterBtn {
+  padding: 8px 24px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  height: 40px;
+  align-self: flex-end;
+}
+
+.auditFilterBtn:hover {
+  background: #5c4a00;
+}
+
+/* Table */
+.auditTableWrap {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.auditTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.auditTable th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.795);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(237, 238, 239, 0.2);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.05);
+}
+
+.auditTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.03);
+  vertical-align: middle;
+}
+
+.auditRow:hover {
+  background: rgba(237, 238, 239, 0.1);
+}
+
+.auditTime {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.788);
+  white-space: nowrap;
+}
+
+.auditUser {
+  display: flex;
+  flex-direction: column;
+}
+
+.auditUserName {
+  font-weight: 600;
+  font-size: 13px;
+  color: #191c1d;
+}
+
+.auditUserRole {
+  font-size: 10px;
+  color: rgba(77, 70, 53, 0.753);
+  text-transform: uppercase;
+}
+
+/* Badges */
+.auditBadge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badgeCreate {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+.badgeUpdate {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.badgeDelete {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.badgeRead {
+  background: rgba(65, 91, 164, 0.1);
+  color: #415ba4;
+}
+
+.badgeDefault {
+  background: rgba(77, 70, 53, 0.05);
+  color: rgba(77, 70, 53, 0.719);
+}
+
+.auditEntity {
+  display: flex;
+  flex-direction: column;
+}
+
+.auditEntityType {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.auditEntityId {
+  font-size: 11px;
+  color: rgba(77, 70, 53, 0.63);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.auditDetail {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  max-width: 300px;
+  overflow: hidden;
+}
+
+.auditChanges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.oldData {
+  color: #ef4444;
+}
+
+.newData {
+  color: #34d399;
+}
+
+.arrow {
+  color: rgba(77, 70, 53, 0.2);
+}
+
+.detailEmpty {
+  color: rgba(77, 70, 53, 0.2);
+}
+
+.auditIp {
+  font-size: 11px;
+  color: rgba(77, 70, 53, 0.3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Loading & Empty */
+.auditLoading,
+.auditEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: rgba(77, 70, 53, 0.2);
+}
+
+.auditLoading span,
+.auditEmpty span {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.auditEmpty span {
+  color: rgba(77, 70, 53, 0.1);
+}
+
+/* Pagination */
+.auditPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.auditPageBtn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(208, 197, 175, 0.15);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.auditPageBtn:hover:not(:disabled) {
+  background: #edeeef;
+}
+
+.auditPageBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.auditPageInfo {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auditSummary {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .auditFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .auditFilterBtn {
+    width: 100%;
+  }
+  
+  .auditTable {
+    font-size: 12px;
+    min-width: 800px;
+  }
+  
+  .auditDetail {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auditSummary {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .auditTitle {
+    font-size: 22px;
+  }
+}

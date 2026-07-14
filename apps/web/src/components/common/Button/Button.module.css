@@ -1,0 +1,113 @@
+.button {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: var(--border-width) var(--border-style) var(--color-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 44px;
+}
+
+.button:active {
+  transform: translate(2px, 2px);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.button__primary {
+  background: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+}
+
+.button__primary:hover:not(:disabled) {
+  background: var(--color-red-dark);
+  border-color: var(--color-red-dark);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.button__secondary {
+  background: transparent;
+  color: var(--color-off-white);
+  border-color: var(--color-gray);
+}
+
+.button__secondary:hover:not(:disabled) {
+  background: var(--color-gray);
+  border-color: var(--color-light-gray);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow);
+}
+
+.button__success {
+  background: transparent;
+  color: var(--color-yellow);
+  border-color: var(--color-yellow);
+}
+
+.button__success:hover:not(:disabled) {
+  background: var(--color-yellow-dark);
+  color: var(--color-white);
+  border-color: var(--color-yellow-dark);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.button__danger {
+  background: transparent;
+  color: var(--color-red);
+  border-color: var(--color-red);
+}
+
+.button__danger:hover:not(:disabled) {
+  background: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.button__ghost {
+  background: transparent;
+  color: var(--color-light-gray);
+  border-color: transparent;
+}
+
+.button__ghost:hover:not(:disabled) {
+  color: var(--color-off-white);
+  border-color: var(--color-gray);
+}
+
+.button__sm {
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.75rem;
+  min-height: 32px;
+}
+
+.button__md {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+
+.button__lg {
+  padding: var(--space-md) var(--space-xl);
+  font-size: 1rem;
+  min-height: 52px;
+}
+
+.button__full {
+  width: 100%;
+  justify-content: center;
+}

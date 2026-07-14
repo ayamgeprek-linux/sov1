@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: stock-postgres
+    environment:
+      POSTGRES_USER: stockopname
+      POSTGRES_PASSWORD: stockopname
+      POSTGRES_DB: stockopname
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stock-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: stock-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - stock-network
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: stock-api
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=postgresql://stockopname:stockopname@postgres:5432/stockopname
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=super-secret-key-change-in-production
+      - SUPABASE_URL=${SUPABASE_URL:-https://gltdmddapvqyvuafnbuv.supabase.co}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdGRtZGRhcHZxeXZ1YWZuYnV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxODg0NTk0NywiZXhwIjoyMDM0NDIxOTQ3fQ.8ZxQnV2YpQoXQdGmZ2xQnV2YpQoXQdGmZ2xQnV2YpQo}
+      - CORS_ORIGIN=http://localhost:3000,http://localhost:80
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - stock-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: stock-web
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - stock-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  stock-network:
+    driver: bridge

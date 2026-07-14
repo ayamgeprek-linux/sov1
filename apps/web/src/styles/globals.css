@@ -1,0 +1,188 @@
+/* apps/web/src/index.css atau App.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f8f9fa;
+}
+
+/* ============================================================
+   LAYOUT UTAMA
+   ============================================================ */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #f8f9fa;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid rgba(208, 197, 175, 0.1);
+  padding: 20px 16px;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  font-size: 18px;
+  font-weight: 800;
+  color: #735c00;
+  margin-bottom: 24px;
+  padding: 0 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.sidebar-item:hover {
+  background: rgba(237, 238, 239, 0.5);
+  color: #191c1d;
+}
+
+.sidebar-item.active {
+  background: rgba(115, 92, 0, 0.08);
+  color: #735c00;
+}
+
+.sidebar-item .material-symbols-outlined {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: rgba(208, 197, 175, 0.1);
+  margin: 12px 8px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(208, 197, 175, 0.1);
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+  background: #f8f9fa;
+}
+
+/* ============================================================
+   RESPONSIVE SIDEBAR
+   ============================================================ */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    padding: 16px 12px;
+  }
+  
+  .sidebar-item {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 64px;
+    min-width: 64px;
+    padding: 12px 8px;
+  }
+  
+  .sidebar-logo {
+    font-size: 12px;
+    text-align: center;
+    padding: 0;
+  }
+  
+  .sidebar-item {
+    justify-content: center;
+    padding: 10px 8px;
+  }
+  
+  .sidebar-item span:last-child {
+    display: none;
+  }
+  
+  .sidebar-item .material-symbols-outlined {
+    font-size: 22px;
+    margin: 0;
+  }
+  
+  .sidebar-divider {
+    margin: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 56px;
+    min-width: 56px;
+    padding: 8px 4px;
+  }
+  
+  .sidebar-item {
+    padding: 8px 4px;
+  }
+  
+  .sidebar-item .material-symbols-outlined {
+    font-size: 20px;
+  }
+}
+@font-face {
+  font-family: 'spa';
+  src: url('../assets/Splatink_PERSONAL_USE_ONLY.otf') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'mater';
+  src: url('../assets/Mathreal.ttf') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

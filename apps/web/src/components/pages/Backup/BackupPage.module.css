@@ -1,0 +1,288 @@
+/* apps/web/src/components/pages/Backup/BackupPage.module.css */
+
+.backupPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.backupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.backupTitle {
+  font-size: 30px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.backupSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.backupCreateBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backupCreateBtn:hover:not(:disabled) {
+  background: #5c4a00;
+  transform: scale(0.98);
+}
+
+.backupCreateBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.backupStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.backupStatItem {
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+}
+
+.backupStatLabel {
+  display: block;
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.backupStatValue {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #191c1d;
+  margin-top: 4px;
+}
+
+.backupTableWrap {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.backupTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.backupTable th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(237, 238, 239, 0.2);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.05);
+}
+
+.backupTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.03);
+  vertical-align: middle;
+}
+
+.backupRow:hover {
+  background: rgba(237, 238, 239, 0.1);
+}
+
+.backupTime {
+  font-size: 13px;
+  color: rgba(77, 70, 53, 0.6);
+  white-space: nowrap;
+}
+
+.backupTableName {
+  font-weight: 600;
+  color: #191c1d;
+}
+
+.backupType {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(77, 70, 53, 0.05);
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+}
+
+.backupStatus {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusSuccess {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+.statusFailed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.backupActionBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-right: 4px;
+}
+
+.backupActionBtn:hover:not(:disabled) {
+  background: rgba(77, 70, 53, 0.05);
+  color: #191c1d;
+}
+
+.backupActionBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.backupActionBtn:last-child:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.backupLoading,
+.backupEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: rgba(77, 70, 53, 0.2);
+}
+
+.backupLoading span,
+.backupEmpty span {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.backupEmpty span {
+  color: rgba(77, 70, 53, 0.1);
+}
+
+.backupEmptySub {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.3);
+  margin-top: 4px;
+}
+
+.backupPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.backupPageBtn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(208, 197, 175, 0.15);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.backupPageBtn:hover:not(:disabled) {
+  background: #edeeef;
+}
+
+.backupPageBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.backupPageInfo {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .backupStats {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .backupTable {
+    font-size: 12px;
+    min-width: 700px;
+  }
+  
+  .backupHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .backupCreateBtn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .backupStats {
+    grid-template-columns: 1fr;
+  }
+  
+  .backupTitle {
+    font-size: 22px;
+  }
+}

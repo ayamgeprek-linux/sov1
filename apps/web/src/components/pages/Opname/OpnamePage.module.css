@@ -1,0 +1,1412 @@
+/* apps/web/src/components/pages/Opname/OpnamePage.module.css */
+
+/* ============================================================
+   OPNAME PAGE - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.opnamePage {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 16px;
+  background: #f8f9fa;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+}
+
+.opnameContainer {
+  max-width: 560px;
+  width: 100%;
+  background: #1a1c1d;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 90vh;
+  max-height: 95vh;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.opnameHeader {
+  background: #111314;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+
+.opnameBack {
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opnameBack:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+}
+
+.opnameBack span {
+  font-size: 20px;
+}
+
+.opnameHeaderCenter {
+  flex: 1;
+  text-align: center;
+}
+
+.opnameStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 9999px;
+  color: #e9c349;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.opnameStatusBadge span {
+  font-size: 14px;
+}
+
+.opnamePutaran {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.opnamePutaranNumber {
+  color: #34d399;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.opnamePutaranLabel {
+  font-size: 8px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   BODY - FLEXIBLE
+   ============================================================ */
+.opnameBody {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  background: #1a1c1d;
+  min-height: 0;
+}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+.opnameSearch {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.opnameSearchWrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.opnameSearchWrapper span {
+  position: absolute;
+  left: 14px;
+  color: #e9c349;
+  font-size: 18px;
+}
+
+.opnameSearch input {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 2px solid #e9c349;
+  border-radius: 12px;
+  padding: 0 14px 0 46px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.opnameSearch input:focus {
+  box-shadow: 0 0 20px rgba(233, 195, 73, 0.1);
+}
+
+.opnameSearch input::placeholder {
+  color: rgba(255,255,255,0.3);
+  font-weight: 400;
+}
+
+.opnameSearch input.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.opnameScanBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 44px;
+  background: #2e3132;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-shrink: 0;
+}
+
+.opnameScanBtn:hover:not(:disabled) {
+  background: #3a3d3e;
+}
+
+.opnameScanBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.opnameScanBtn span {
+  font-size: 18px;
+}
+
+/* ============================================================
+   SUGGESTIONS
+   ============================================================ */
+.opnameSuggestions {
+  flex: 1;
+  overflow-y: auto;
+  background: #2e3132;
+  border-radius: 12px;
+  padding: 4px;
+  max-height: 200px;
+  border: 1px solid rgba(255,255,255,0.05);
+  min-height: 0;
+}
+
+.opnameSuggestionItem {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 10px;
+}
+
+.opnameSuggestionItem:last-child {
+  border-bottom: none;
+}
+
+.opnameSuggestionItem:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.opnameSuggestionItem.allDone {
+  border-left: 3px solid #34d399;
+}
+
+.suggestionLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestionSku {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #e9c349;
+}
+
+.suggestionName {
+  font-weight: 700;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.suggestionInfo {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.suggestionBadge {
+  font-size: 8px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.4);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggestionRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.suggestionSizes {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.suggestionStatus {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 4px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ============================================================
+   SIZE CHIPS
+   ============================================================ */
+.sizeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.sizeChip.sizePending {
+  background: rgba(251,146,60,0.12);
+  color: #fb923c;
+  border-color: rgba(251,146,60,0.2);
+}
+
+.sizeChip.sizeMatch {
+  background: rgba(52,211,153,0.15);
+  color: #34d399;
+  border-color: rgba(52,211,153,0.25);
+}
+
+.sizeChip.sizeLess {
+  background: rgba(245,158,11,0.12);
+  color: #f59e0b;
+  border-color: rgba(245,158,11,0.2);
+}
+
+.sizeChip.sizeMore {
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.2);
+}
+
+.sizeCheck {
+  font-size: 7px;
+  margin-left: 1px;
+}
+
+/* ============================================================
+   DETAIL - COMPACT
+   ============================================================ */
+.opnameDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #2e3132;
+  border-radius: 12px;
+  padding: 16px;
+  animation: slideUp 0.3s ease;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.opnameDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.opnameDetailInfo {
+  flex: 1;
+}
+
+.opnameDetailSku {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #e9c349;
+}
+
+.opnameDetailName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.opnameDetailMeta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.opnameDetailClose {
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.05);
+  border: none;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.opnameDetailClose:hover {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+
+.opnameDetailClose span {
+  font-size: 16px;
+}
+
+/* ============================================================
+   SIZE SELECTOR - COMPACT
+   ============================================================ */
+.opnameDetailSizes {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  flex-shrink: 0;
+}
+
+.opnameDetailSizesLabel {
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.opnameDetailSizesGrid {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sizeSelectBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 2px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+}
+
+.sizeSelectBtn:hover:not(.active) {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+}
+
+.sizeSelectBtn.active {
+  border-color: #e9c349;
+  background: rgba(233,195,73,0.08);
+}
+
+.sizeSelectBtn.sizeDone {
+  border-color: rgba(52,211,153,0.25);
+  background: rgba(52,211,153,0.05);
+}
+
+.sizeSelectLabel {
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #ffffff;
+}
+
+.sizeSelectStock {
+  font-size: 8px;
+  color: rgba(255,255,255,0.3);
+}
+
+.sizeSelectStatus {
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   SIZE SUMMARY - COMPACT
+   ============================================================ */
+.sizeSummary {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+}
+
+.sizeSummaryItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.sizeSummaryLabel {
+  color: rgba(255,255,255,0.3);
+}
+
+.sizeSummaryStatus {
+  font-size: 9px;
+}
+
+.sizeSummaryStatus.statusMatch {
+  color: #34d399;
+}
+
+.sizeSummaryStatus.statusPending {
+  color: #fb923c;
+}
+
+/* ============================================================
+   QTY - COMPACT
+   ============================================================ */
+.opnameDetailQty {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  flex-shrink: 0;
+}
+
+.opnameDetailQtyRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.4);
+}
+
+.opnameDetailQtyValue {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: #ffffff;
+}
+
+.opnameDetailQtyInput {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #e9c349;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.2);
+  transition: border-color 0.2s;
+}
+
+.opnameDetailQtyInput:focus-within {
+  box-shadow: 0 0 20px rgba(233,195,73,0.05);
+}
+
+.opnameDetailQtyLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e9c349;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.opnameDetailQtyLabel span {
+  font-size: 18px;
+}
+
+.opnameDetailQtyField {
+  width: 80px;
+  text-align: right;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 300;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.opnameDetailQtyField::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.opnameDetailSelisih {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.3);
+}
+
+.selisihOk { color: #34d399; font-weight: 700; }
+.selisihMinus { color: #ef4444; font-weight: 700; }
+.selisihPlus { color: #34d399; font-weight: 700; }
+
+/* ============================================================
+   BARCODE - COMPACT
+   ============================================================ */
+.opnameDetailBarcode {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  flex-shrink: 0;
+}
+
+.opnameDetailBarcodeLabel {
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.opnameDetailBarcodeArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+}
+
+.opnameDetailBarcodeArea span {
+  font-size: 18px;
+  color: rgba(255,255,255,0.2);
+}
+
+.opnameDetailBarcodeValue {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+
+/* ============================================================
+   EMPTY
+   ============================================================ */
+.opnameEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  min-height: 0;
+}
+
+.opnameEmptyIcon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.opnameEmptyIcon span {
+  font-size: 32px;
+  color: rgba(255,255,255,0.06);
+}
+
+.opnameEmptyText {
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.opnameEmptyTip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.04);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 16px;
+}
+
+.opnameEmptyTip span {
+  font-size: 14px;
+}
+
+/* ============================================================
+   FOOTER - COMPACT
+   ============================================================ */
+.opnameFooter {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #111314;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+
+.opnameSaveBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 44px;
+  background: #e9c349;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.opnameSaveBtn:hover:not(:disabled) {
+  background: #d4af37;
+  transform: scale(0.98);
+  box-shadow: 0 0 30px rgba(233,195,73,0.15);
+}
+
+.opnameSaveBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.opnameSaveBtn span {
+  font-size: 18px;
+}
+
+.opnameFinishBtn {
+  flex: 0.4;
+  height: 44px;
+  background: transparent;
+  color: rgba(255,255,255,0.3);
+  border: 2px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.opnameFinishBtn:hover {
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ============================================================
+   TOMBOL + TAMBAH SIZE - COMPACT
+   ============================================================ */
+.addSizeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: transparent;
+  border: 2px dashed rgba(255,255,255,0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  min-width: 40px;
+  min-height: 44px;
+  transition: all 0.2s ease;
+}
+
+.addSizeBtn:hover {
+  border-color: #e9c349;
+  background: rgba(233,195,73,0.04);
+}
+
+.addSizeBtn:active {
+  transform: scale(0.95);
+}
+
+.addSizeIcon {
+  font-size: 20px;
+  color: rgba(255,255,255,0.2);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.addSizeBtn:hover .addSizeIcon {
+  color: #e9c349;
+}
+
+/* ============================================================
+   MODAL TAMBAH SIZE - COMPACT
+   ============================================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease;
+}
+
+.modalContainer {
+  background: #1a1c1d;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 20px 24px;
+  max-width: 360px;
+  width: 90%;
+  z-index: 10000;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.modalTitle {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.modalClose:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+}
+
+.modalClose span {
+  font-size: 18px;
+}
+
+.modalSubtitle {
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modalField label {
+  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalInput {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modalInput:focus {
+  border-color: #e9c349;
+}
+
+.modalInput::placeholder {
+  color: rgba(255,255,255,0.15);
+}
+
+.modalFooter {
+  display: flex;
+  gap: 8px;
+}
+
+.modalCancel {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.3);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.modalCancel:hover {
+  border-color: rgba(255,255,255,0.12);
+  color: #ffffff;
+}
+
+.modalConfirm {
+  flex: 1;
+  padding: 8px;
+  background: #e9c349;
+  border: none;
+  border-radius: 8px;
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.modalConfirm:hover:not(:disabled) {
+  background: #d4af37;
+  transform: scale(0.98);
+}
+
+.modalConfirm:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE - HP FRIENDLY
+   ============================================================ */
+
+/* Mobile - 480px */
+@media (max-width: 480px) {
+    .opnamePage {
+    padding: 0;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  .opnameContainer {
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .opnameBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .opnameHeader {
+    padding: 10px 12px;
+  }
+
+  .opnameStatusBadge {
+    font-size: 9px;
+    padding: 3px 10px;
+  }
+
+  .opnamePutaranNumber {
+    font-size: 16px;
+  }
+
+  .opnameSearch input {
+    height: 40px;
+    font-size: 13px;
+    padding: 0 12px 0 40px;
+  }
+
+  .opnameSearchWrapper span {
+    left: 12px;
+    font-size: 16px;
+  }
+
+  .opnameScanBtn {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 10px;
+  }
+
+  .opnameScanBtn span {
+    font-size: 16px;
+  }
+
+  .opnameSuggestions {
+    max-height: 150px;
+  }
+
+  .opnameSuggestionItem {
+    padding: 8px 12px;
+  }
+
+  .suggestionName {
+    font-size: 12px;
+  }
+
+  .suggestionSku {
+    font-size: 9px;
+  }
+
+  .opnameDetail {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .opnameDetailName {
+    font-size: 15px;
+  }
+
+  .opnameDetailSku {
+    font-size: 10px;
+  }
+
+  .opnameDetailSizes {
+    padding: 10px;
+  }
+
+  .sizeSelectBtn {
+    min-width: 34px;
+    padding: 4px 8px;
+  }
+
+  .sizeSelectLabel {
+    font-size: 10px;
+  }
+
+  .sizeSelectStock {
+    font-size: 7px;
+  }
+
+  .opnameDetailQty {
+    padding: 10px;
+  }
+
+  .opnameDetailQtyField {
+    font-size: 18px;
+    width: 60px;
+  }
+
+  .opnameDetailQtyLabel {
+    font-size: 11px;
+  }
+
+  .opnameDetailBarcode {
+    padding: 10px;
+  }
+
+  .opnameFooter {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .opnameSaveBtn {
+    height: 40px;
+    font-size: 12px;
+    flex: 2;
+  }
+
+  .opnameFinishBtn {
+    height: 40px;
+    font-size: 11px;
+    flex: 1;
+  }
+
+  .addSizeBtn {
+    min-width: 34px;
+    min-height: 38px;
+    padding: 4px 8px;
+  }
+
+  .addSizeIcon {
+    font-size: 16px;
+  }
+
+  .modalContainer {
+    padding: 16px 18px;
+    margin: 0 12px;
+    border-radius: 12px;
+  }
+
+  .modalTitle {
+    font-size: 13px;
+  }
+
+  .modalInput {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .modalFooter {
+    gap: 6px;
+  }
+
+  .modalCancel,
+  .modalConfirm {
+    font-size: 11px;
+    padding: 8px;
+  }
+
+  .opnameEmpty {
+    padding: 16px 12px;
+  }
+
+  .opnameEmptyIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .opnameEmptyIcon span {
+    font-size: 24px;
+  }
+
+  .opnameEmptyText {
+    font-size: 12px;
+  }
+
+  .opnameEmptyTip {
+    font-size: 9px;
+    padding: 4px 12px;
+  }
+
+  .opnameDetailClose {
+    width: 24px;
+    height: 24px;
+  }
+
+  .opnameDetailClose span {
+    font-size: 14px;
+  }
+
+  .sizeSummary {
+    gap: 4px;
+  }
+
+  .sizeSummaryItem {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+   .opnameFooter {
+    position: sticky;
+    bottom: 0;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+}
+
+/* HP Kecil - 375px */
+@media (max-width: 375px) {
+  .opnameBody {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .opnameHeader {
+    padding: 8px 10px;
+  }
+
+  .opnameStatusBadge {
+    font-size: 8px;
+    padding: 2px 8px;
+  }
+
+  .opnameSearch input {
+    height: 36px;
+    font-size: 12px;
+    padding: 0 10px 0 34px;
+  }
+
+  .opnameSearchWrapper span {
+    left: 10px;
+    font-size: 14px;
+  }
+
+  .opnameScanBtn {
+    height: 36px;
+    padding: 0 10px;
+    font-size: 9px;
+  }
+
+  .opnameScanBtn span {
+    font-size: 14px;
+  }
+
+  .opnameDetail {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .opnameDetailName {
+    font-size: 13px;
+  }
+
+  .opnameDetailSizes {
+    padding: 8px;
+  }
+
+  .sizeSelectBtn {
+    min-width: 30px;
+    padding: 3px 6px;
+  }
+
+  .sizeSelectLabel {
+    font-size: 9px;
+  }
+
+  .opnameDetailQty {
+    padding: 8px;
+  }
+
+  .opnameDetailQtyField {
+    font-size: 16px;
+    width: 50px;
+  }
+
+  .opnameFooter {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .opnameSaveBtn {
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .opnameFinishBtn {
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .modalContainer {
+    padding: 14px 14px;
+  }
+
+  .modalTitle {
+    font-size: 12px;
+  }
+
+  .modalInput {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .addSizeBtn {
+    min-width: 30px;
+    min-height: 34px;
+  }
+
+  .addSizeIcon {
+    font-size: 14px;
+  }
+}
+
+/* Landscape mode HP */
+@media (max-height: 600px) and (orientation: landscape) {
+  .opnameContainer {
+    min-height: 95vh;
+    max-height: 98vh;
+    border-radius: 12px;
+    margin: 4px auto;
+   
+  }
+
+  .opnameBody {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .opnameHeader {
+    padding: 6px 12px;
+  }
+
+  .opnameDetail {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .opnameSuggestions {
+    max-height: 100px;
+  }
+
+  .opnameFooter {
+    padding: 6px 12px;
+  }
+
+  .opnameSaveBtn,
+  .opnameFinishBtn {
+    height: 32px;
+    font-size: 10px;
+  }
+
+  .opnameSearch input {
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .opnameScanBtn {
+    height: 32px;
+    font-size: 9px;
+    padding: 0 10px;
+  }
+
+  .sizeSelectBtn {
+    min-width: 30px;
+    padding: 3px 6px;
+  }
+
+  .opnameDetailQtyField {
+    font-size: 16px;
+  }
+
+  .modalContainer {
+    max-width: 300px;
+    padding: 12px 16px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  .opnamePage {
+    padding: 12px;
+  }
+
+  .opnameContainer {
+    max-height: 92vh;
+    min-height: 80vh;
+  }
+
+  .opnameBody {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .opnameDetail {
+    padding: 14px;
+  }
+
+  .opnameFooter {
+    padding: 12px 16px;
+  }
+}

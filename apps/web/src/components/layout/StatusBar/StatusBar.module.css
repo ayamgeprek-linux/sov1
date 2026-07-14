@@ -1,0 +1,64 @@
+/* ============================================================
+   STATUSBAR - INDUSTRIAL POP PUNK
+   ============================================================ */
+
+.statusBar {
+  height: 32px;
+  background: #ffffff;
+  border-top: 1px solid #1a1a1e;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #3f3f46;
+  flex-shrink: 0;
+}
+
+.statusBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusBarDot {
+  width: 6px;
+  height: 6px;
+  background: #34d399;
+  border-radius: 0px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.statusBarRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.statusBarSync {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.statusBarSync:hover {
+  color: #a1a1aa;
+}
+
+.statusBarDivider {
+  width: 2px;
+  height: 12px;
+  background: #1a1a1e;
+}
+
+.statusBarClock {
+  font-feature-settings: "tnum";
+}

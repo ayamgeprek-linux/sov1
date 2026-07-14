@@ -1,0 +1,241 @@
+// apps/api/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS
+// ============================================================
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   @db.Text
+  name      String
+  role      Role     @default(PETUGAS)
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  auditLogs AuditLog[]
+  opnames   Opname[]
+  sessions  Session[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  PETUGAS
+}
+
+// ============================================================
+// SESSIONS
+// ============================================================
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ============================================================
+// PRODUCTS (MASTER DATA)
+// ============================================================
+model Product {
+  id           String   @id @default(cuid())
+  sku          String
+  namaBarang   String
+  kategori     String?
+  warna        String?
+  size         String   @default("OS")
+  stockSistem  Int      @default(0)
+  minStock     Int      @default(5)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  barcodes     Barcode[]
+  opnames      Opname[]
+  warehouses   WarehouseProduct[]
+
+  @@unique([sku, size])
+  @@map("temp_master")
+}
+
+// ============================================================
+// BARCODES
+// ============================================================
+model Barcode {
+  id        String   @id @default(cuid())
+  barcode   String   @unique
+  productId String
+  size      String   @default("OS")
+  
+  createdAt DateTime @default(now())
+  
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("temp_barcode")
+}
+
+// ============================================================
+// OPNAME
+// ============================================================
+model Opname {
+  id         String   @id @default(cuid())
+  productId  String
+  size       String   @default("OS")
+  stockReal  Int
+  selisih    Int
+  status     Status   @default(SESUAI)
+  userId     String?
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id])
+
+  @@unique([productId, size])
+  @@map("temp_opname")
+}
+
+enum Status {
+  SESUAI
+  KELUAR
+  MASUK
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  userEmail  String?
+  userRole   String?
+  action     String
+  entityType String
+  entityId   String?
+  oldData    Json?
+  newData    Json?
+  changes    Json?
+  ipAddress  String?
+  userAgent  String?
+  durationMs Int?
+  statusCode Int?
+  
+  createdAt  DateTime @default(now())
+  
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_log")
+}
+
+// ============================================================
+// BACKUP LOG
+// ============================================================
+model BackupLog {
+  id          String   @id @default(cuid())
+  tableName   String
+  recordCount Int
+  backupData  Json?
+  backupType  BackupType @default(MANUAL)
+  status      BackupStatus @default(SUCCESS)
+  errorMsg    String?
+  
+  createdAt   DateTime @default(now())
+
+  @@map("backup_log")
+}
+
+enum BackupType {
+  AUTO
+  MANUAL
+  SCHEDULED
+}
+
+enum BackupStatus {
+  SUCCESS
+  FAILED
+}
+
+// ============================================================
+// WAREHOUSE
+// ============================================================
+model Warehouse {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  branch    String?
+  address   String?
+  isActive  Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  products  WarehouseProduct[]
+
+  @@map("warehouses")
+}
+
+model WarehouseProduct {
+  id          String   @id @default(cuid())
+  warehouseId String
+  productId   String
+  stock       Int      @default(0)
+  
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([warehouseId, productId])
+  @@map("warehouse_products")
+}
+
+// ============================================================
+// INVENTORY TRANSACTIONS (LEDGER)
+// ============================================================
+model InventoryTransaction {
+  id          String   @id @default(cuid())
+  productId   String
+  warehouseId String?
+  quantity    Int
+  type        TransactionType
+  referenceId String?
+  notes       String?
+  userId      String?
+  
+  createdAt   DateTime @default(now())
+  
+  product   Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@map("inventory_transactions")
+}
+
+enum TransactionType {
+  IN
+  OUT
+  TRANSFER
+  ADJUSTMENT
+  DAMAGE
+  RETURN
+}

@@ -1,0 +1,653 @@
+/* ============================================================
+   PETUGAS DASHBOARD - MATERIAL DESIGN (MATCH HTML)
+   ============================================================ */
+
+.petugasDashboard {
+  max-width: 100%;
+  width: 100%;
+  padding: 40px 40px 40px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+  background-image: radial-gradient(circle at 2px 2px, #e1e3e4 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.heroSection {
+  text-align: center;
+  padding: 16px 0 32px;
+}
+
+.onlineBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(52, 211, 153, 0.08);
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 16px;
+  height: 28px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(52, 211, 153, 0.1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #191c1d;
+  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: rgba(77, 70, 53, 0.6);
+  font-weight: 400;
+}
+
+.subtitleHighlight {
+  color: #735c00;
+  font-weight: 600;
+}
+
+/* ============================================================
+   MENU GRID
+   ============================================================ */
+.menuGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menuCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: #2e3132;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 200px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.menuCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background: radial-gradient(circle at 30% 30%, #ffffff, transparent 70%);
+  transition: opacity 0.3s ease;
+}
+
+.menuCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.menuCard:hover::before {
+  opacity: 0.15;
+}
+
+.menuCard:active {
+  transform: scale(0.98);
+}
+
+.menuCardLight {
+  background: #ffffff;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+}
+
+.menuCardLight:hover {
+  border-color: rgba(115, 92, 0, 0.2);
+}
+
+.menuIcon {
+  width: 64px;
+  height: 64px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+}
+
+.menuCard:hover .menuIcon {
+  transform: rotate(6deg);
+}
+
+.menuIcon span {
+  font-size: 32px;
+  color: #ffffff;
+}
+
+.menuCardLight .menuIcon {
+  background: rgba(237, 238, 239, 0.5);
+  box-shadow: none;
+}
+
+.menuIconLight span {
+  color: #735c00;
+}
+
+.menuLabel {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.menuLabelLight {
+  color: #191c1d;
+}
+
+.menuDesc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.menuCardLight .menuDesc {
+  color: rgba(77, 70, 53, 0.5);
+}
+
+/* ============================================================
+   STATS BOX
+   ============================================================ */
+.statsBox {
+  max-width: 900px;
+  margin: 32px auto 0;
+  background: #2e3132;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  color: #ffffff;
+}
+
+.statsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.statsHeaderLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statsHeaderTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-top: 2px;
+}
+
+.statsCountWrapper {
+  text-align: right;
+}
+
+.statsCount {
+  font-size: 24px;
+  font-weight: 600;
+  color: #e9c349;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.statsCountTotal {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Progress Bar */
+.statsBar {
+  height: 16px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.statsFill {
+  height: 100%;
+  background: #e9c349;
+  border-radius: 9999px;
+  position: relative;
+  transition: width 1s ease;
+  width: 45%;
+}
+
+.statsShimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.statsItem {
+  text-align: center;
+}
+
+.statsNumber {
+  font-size: 40px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.statsNumber.textOrange {
+  color: #e9c349;
+}
+
+.statsLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Border untuk item tengah */
+.statsItem:nth-child(2) {
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  max-width: 900px;
+  margin: 24px auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  opacity: 0.6;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(77, 70, 53, 0.5);
+}
+
+.footerLeft {
+  display: flex;
+  gap: 16px;
+}
+
+.footerItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footerItem span {
+  font-size: 16px;
+}
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #735c00;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .petugasDashboard {
+    padding: 24px 20px 32px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .menuGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .menuCard {
+    padding: 32px;
+    min-height: 140px;
+  }
+
+  .menuIcon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .menuIcon span {
+    font-size: 28px;
+  }
+
+  .menuLabel {
+    font-size: 20px;
+  }
+
+  .statsBox {
+    padding: 24px;
+    margin-top: 24px;
+    border-radius: 20px;
+  }
+
+  .statsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .statsCountWrapper {
+    text-align: left;
+  }
+
+  .statsGrid {
+    gap: 16px;
+    padding-top: 20px;
+  }
+
+  .statsNumber {
+    font-size: 32px;
+  }
+
+  .statsItem:nth-child(2) {
+    border-left: none;
+    border-right: none;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+  }
+
+  .footerLeft {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .petugasDashboard {
+    padding: 16px 12px 24px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .onlineBadge {
+    font-size: 10px;
+    padding: 3px 12px;
+    height: 24px;
+  }
+
+  .menuCard {
+    padding: 24px 16px;
+    min-height: 120px;
+    border-radius: 20px;
+  }
+
+  .menuIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .menuIcon span {
+    font-size: 24px;
+  }
+
+  .menuLabel {
+    font-size: 18px;
+  }
+
+  .menuDesc {
+    font-size: 12px;
+  }
+
+  .statsBox {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .statsHeaderTitle {
+    font-size: 18px;
+  }
+
+  .statsCount {
+    font-size: 20px;
+  }
+
+  .statsCountTotal {
+    font-size: 20px;
+  }
+
+  .statsBar {
+    height: 12px;
+  }
+
+  .statsNumber {
+    font-size: 28px;
+  }
+
+  .statsLabel {
+    font-size: 12px;
+  }
+
+  .statsGrid {
+    gap: 8px;
+  }
+
+  .footer {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .petugasDashboard {
+    padding: 12px 8px 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .menuCard {
+    padding: 16px 12px;
+    min-height: 100px;
+    border-radius: 16px;
+  }
+
+  .menuIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .menuIcon span {
+    font-size: 20px;
+  }
+
+  .menuLabel {
+    font-size: 16px;
+  }
+
+  .menuDesc {
+    font-size: 11px;
+  }
+
+  .statsNumber {
+    font-size: 22px;
+  }
+
+  .statsBox {
+    padding: 16px;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MOBILE
+   ============================================================ */
+@media (max-height: 600px) and (orientation: landscape) {
+  .petugasDashboard {
+    padding: 16px 24px 16px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .heroSection {
+    padding: 8px 0 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .menuGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .menuCard {
+    padding: 20px 12px;
+    min-height: 100px;
+  }
+
+  .menuIcon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .menuIcon span {
+    font-size: 20px;
+  }
+
+  .menuLabel {
+    font-size: 16px;
+  }
+
+  .menuDesc {
+    font-size: 11px;
+  }
+
+  .statsBox {
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .statsHeaderTitle {
+    font-size: 18px;
+  }
+
+  .statsCount {
+    font-size: 18px;
+  }
+
+  .statsCountTotal {
+    font-size: 18px;
+  }
+
+  .statsBar {
+    height: 10px;
+    margin-bottom: 16px;
+  }
+
+  .statsNumber {
+    font-size: 24px;
+  }
+
+  .statsGrid {
+    padding-top: 16px;
+    gap: 12px;
+  }
+
+  .footer {
+    margin-top: 12px;
+  }
+}
