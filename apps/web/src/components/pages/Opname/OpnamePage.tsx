@@ -1,8 +1,10 @@
+// apps/web/src/components/pages/Opname/OpnamePage.tsx
 import { useState, useEffect, useRef } from 'react'
 import { useProducts } from '../../../hooks/useProducts'
 import { api } from '../../../api/client'
 import { useAuth } from '../../../auth/contexts/AuthContext'
 import styles from './OpnamePage.module.css'
+import { Html5Qrcode } from 'html5-qrcode'
 
 interface OpnamePageProps {
   products: any[]
@@ -10,6 +12,8 @@ interface OpnamePageProps {
   showToast: (msg: string) => void
   refreshProducts: () => void
 }
+
+const READER_ELEMENT_ID = 'barcode-reader'
 
 export function OpnamePage({ 
   products, 
@@ -32,21 +36,48 @@ export function OpnamePage({
   const [newSize, setNewSize] = useState('')
   const [newSizeQty, setNewSizeQty] = useState('')
 
+  // ===== CAMERA SCAN STATE =====
+  const [showCamera, setShowCamera] = useState(false)
+  const [cameraError, setCameraError] = useState<string | null>(null)
+  const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null)
+  const [scanLookupLoading, setScanLookupLoading] = useState(false)
+  const html5QrCodeRef = useRef<any>(null)
+  const isLookingUpRef = useRef(false)
+  const isSavingRef = useRef(false)
+  const [isAutoSave, setIsAutoSave] = useState(false)
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
   }, [])
 
+  // 🔥 AUTO SAVE HANYA DARI SCAN (bukan dari search)
+  useEffect(() => {
+    if (selectedProduct && !loading && isAutoSave) {
+      const autoSave = async () => {
+        const qty = parseInt(qtyFisik) || 1
+        if (qty >= 0) {
+          await handleSave()
+        }
+      }
+      
+      const timer = setTimeout(() => {
+        autoSave()
+      }, 800)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [selectedProduct, qtyFisik, isAutoSave])
+
   useEffect(() => {
     if (selectedProduct) {
-      const qty = selectedProduct.qty_fisik || 0
+      const qty = selectedProduct.qty_fisik || 1
       setQtyFisik(qty.toString())
       setCurrentSize(selectedProduct.size)
     }
   }, [selectedProduct])
 
-  // SYNC data dari props ke selectedProduct
   useEffect(() => {
     if (selectedProduct) {
       const latestProduct = products.find(
@@ -76,8 +107,21 @@ export function OpnamePage({
     }
   }, [products])
 
+  useEffect(() => {
+    return () => {
+      if (html5QrCodeRef.current) {
+        html5QrCodeRef.current.stop().catch(() => {})
+      }
+      const readerElement = document.getElementById(READER_ELEMENT_ID)
+      if (readerElement) {
+        readerElement.innerHTML = ''
+      }
+    }
+  }, [])
+
   const handleSearch = (value: string) => {
     setSearchTerm(value)
+    setIsAutoSave(false) // 🔥 RESET AUTO SAVE KALO SEARCH
     
     if (value.length < 2) {
       setShowSuggestions(false)
@@ -115,6 +159,8 @@ export function OpnamePage({
   }
 
   const selectProduct = (group: any) => {
+    setIsAutoSave(false) // 🔥 SEARCH = MANUAL SAVE
+    
     const sortedSizes = [...group.sizes].sort((a: any, b: any) => {
       if (!a.isDone && b.isDone) return -1
       if (a.isDone && !b.isDone) return 1
@@ -144,16 +190,49 @@ export function OpnamePage({
         ...fullProduct,
         allSizes: allSizesWithData
       })
-      setQtyFisik(fullProduct.qty_fisik?.toString() || '')
+      setQtyFisik(fullProduct.qty_fisik?.toString() || '1')
       setCurrentSize(fullProduct.size)
       setShowSuggestions(false)
       setSearchTerm('')
-      
-      setTimeout(() => {
-        const qtyInput = document.getElementById('qty-input') as HTMLInputElement
-        if (qtyInput) qtyInput.focus()
-      }, 300)
     }
+  }
+
+  const selectProductBySkuSize = (sku: string, size: string): boolean => {
+    setIsAutoSave(true) // 🔥 SCAN = AUTO SAVE
+    
+    const matchedProduct = products.find((p: any) => p.sku === sku && p.size === size)
+    
+    if (!matchedProduct) {
+      showToast('⚠️ Produk tidak ditemukan')
+      return false
+    }
+
+    const allSizesWithData = products
+      .filter((p: any) => p.sku === sku)
+      .map((p: any) => ({
+        size: p.size || 'OS',
+        stock_sistem: p.stock_sistem || 0,
+        qty_fisik: p.qty_fisik,
+        status_mapping: p.status_mapping || false,
+        isDone: p.qty_fisik !== null && p.qty_fisik !== undefined
+      }))
+
+    setSelectedProduct({
+      ...matchedProduct,
+      allSizes: allSizesWithData
+    })
+
+    setQtyFisik(
+      matchedProduct.qty_fisik !== null && matchedProduct.qty_fisik !== undefined
+        ? matchedProduct.qty_fisik.toString()
+        : '1'
+    )
+    setCurrentSize(matchedProduct.size)
+    setShowSuggestions(false)
+    setSearchTerm('')
+
+    showToast(`✅ ${matchedProduct.nama_barang} (${matchedProduct.size})`)
+    return true
   }
 
   const handleSizeChange = (size: string) => {
@@ -167,31 +246,26 @@ export function OpnamePage({
       qty_fisik: sizeData.qty_fisik,
       status_mapping: sizeData.status_mapping
     })
-    setQtyFisik(sizeData.isDone ? (sizeData.qty_fisik ?? 0).toString() : '')
+    setQtyFisik(sizeData.isDone ? (sizeData.qty_fisik ?? 0).toString() : '1')
     setCurrentSize(size)
   }
 
   const handleSave = async () => {
-    if (!selectedProduct) {
-      showToast('⚠️ Pilih barang dulu!')
-      return
-    }
+    if (!selectedProduct || isSavingRef.current) return
 
-    const qty = parseInt(qtyFisik)
-    if (isNaN(qty) || qty < 0) {
-      showToast('⚠️ Input qty real dulu!')
-      return
-    }
+    const qty = parseInt(qtyFisik) || 1
+    if (qty < 0) return
 
+    isSavingRef.current = true
     setLoading(true)
     try {
       const result = await saveOpname(selectedProduct.sku, selectedProduct.size, qty)
       if (result) {
         const selisih = qty - (selectedProduct.stock_sistem || 0)
         let statusMsg = ''
-        if (selisih === 0) statusMsg = '✅ Sesuai'
-        else if (selisih < 0) statusMsg = `⬇️ Minus ${Math.abs(selisih)}`
-        else statusMsg = `⬆️ Plus ${selisih}`
+        if (selisih === 0) statusMsg = 'Sesuai'
+        else if (selisih < 0) statusMsg = `Minus ${Math.abs(selisih)}`
+        else statusMsg = `Plus ${selisih}`
         
         showToast(`✅ ${selectedProduct.sku} - ${selectedProduct.size}: ${statusMsg}`)
         
@@ -216,15 +290,22 @@ export function OpnamePage({
           await refreshProducts()
         }
         
-        setQtyFisik('')
-        if (inputRef.current) {
-          inputRef.current.focus()
-        }
+        // Reset setelah save
+        setTimeout(() => {
+          setSelectedProduct(null)
+          setQtyFisik('')
+          setCurrentSize('')
+          setIsAutoSave(false)
+          if (inputRef.current) {
+            inputRef.current.focus()
+          }
+        }, 500)
       }
     } catch (error) {
       showToast('❌ Gagal: ' + (error as Error).message)
     } finally {
       setLoading(false)
+      isSavingRef.current = false
     }
   }
 
@@ -270,7 +351,7 @@ export function OpnamePage({
       )
       
       if (result.success) {
-        showToast(`✅ Size ${newSize.toUpperCase()} (${qty}) ditambahkan! ➕`)
+        showToast(`✅ Size ${newSize.toUpperCase()} (${qty}) ditambahkan!`)
         
         const newSizeData = {
           size: newSize.toUpperCase(),
@@ -310,39 +391,145 @@ export function OpnamePage({
     setShowAddSizeModal(false)
     setNewSize('')
     setNewSizeQty('')
+    setIsAutoSave(false)
     if (inputRef.current) {
       inputRef.current.focus()
     }
   }
 
-  const handleScan = () => {
-    const available = products.filter((p: any) => 
-      p.stock_sistem > 0 && (p.qty_fisik === null || p.qty_fisik === undefined)
-    )
-    const pool = available.length > 0 ? available : products.filter((p: any) => p.stock_sistem > 0)
-    
-    if (pool.length === 0) {
-      showToast('⚠️ Gak ada barang buat di-scan')
-      return
-    }
+  // ============================================================
+  // 🔥 START CAMERA - SUPER CEPAT
+  // ============================================================
+  const startCamera = async () => {
+    try {
+      setShowCamera(true)
+      setShowSuggestions(false)
+      setCameraError(null)
+      setDetectedBarcode(null)
+      isLookingUpRef.current = false
 
-    const random = pool[Math.floor(Math.random() * pool.length)]
-    const group = suggestions.find((s: any) => s.sku === random.sku) || {
-      sku: random.sku,
-      nama_barang: random.nama_barang,
-      kategori: random.kategori,
-      warna: random.warna,
-      sizes: products.filter((p: any) => p.sku === random.sku).map((p: any) => ({
-        size: p.size || 'OS',
-        stock_sistem: p.stock_sistem || 0,
-        qty_fisik: p.qty_fisik,
-        status_mapping: p.status_mapping || false,
-        isDone: p.qty_fisik !== null && p.qty_fisik !== undefined
-      }))
+      if (html5QrCodeRef.current) {
+        try {
+          await html5QrCodeRef.current.stop()
+        } catch (e) {}
+        html5QrCodeRef.current = null
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 250))
+
+      const readerElement = document.getElementById(READER_ELEMENT_ID)
+      
+      if (!readerElement) {
+        setCameraError('Elemen reader tidak ditemukan')
+        showToast('❌ Elemen reader tidak ditemukan')
+        setShowCamera(false)
+        return
+      }
+
+      readerElement.innerHTML = ''
+
+      if (typeof Html5Qrcode !== 'function') {
+        setCameraError('Library barcode gagal dimuat')
+        showToast('❌ Library barcode gagal dimuat')
+        setShowCamera(false)
+        return
+      }
+
+      html5QrCodeRef.current = new Html5Qrcode(READER_ELEMENT_ID, {
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        },
+        verbose: false
+      } as any)
+
+      await html5QrCodeRef.current.start(
+        { facingMode: 'environment' },
+        {
+          fps: 30,
+          qrbox: { width: 400, height: 100 },
+          aspectRatio: 1.777
+        },
+        (decodedText: string) => {
+          console.log('[Opname] 🎯 BARCODE DETECTED:', decodedText)
+          setDetectedBarcode(decodedText)
+          handleBarcodeDetected(decodedText)
+        },
+        () => {}
+      )
+
+      showToast('📷 Arahkan ke barcode')
+
+    } catch (error) {
+      console.error('[Opname] Error:', error)
+      setCameraError('Gagal akses kamera')
+      showToast('❌ Gagal akses kamera')
+      setShowCamera(false)
     }
+  }
+
+  const stopCamera = async () => {
+    try {
+      if (html5QrCodeRef.current) {
+        await html5QrCodeRef.current.stop()
+        html5QrCodeRef.current = null
+      }
+      const readerElement = document.getElementById(READER_ELEMENT_ID)
+      if (readerElement) {
+        readerElement.innerHTML = ''
+      }
+    } catch (error) {
+      console.error('[Opname] Stop error:', error)
+    }
+    setShowCamera(false)
+    setDetectedBarcode(null)
+    setCameraError(null)
+  }
+
+  const handleBarcodeDetected = async (barcode: string) => {
+    if (isLookingUpRef.current) return
     
-    selectProduct(group)
-    showToast(`📷 Scan: ${random.sku} - ${random.size || 'OS'}`)
+    const trimmed = barcode.trim()
+    if (!trimmed) return
+
+    isLookingUpRef.current = true
+    setDetectedBarcode(trimmed)
+    setScanLookupLoading(true)
+
+    try {
+      const result = await api.get<{ success: boolean; data?: any; error?: string }>(
+        `/api/mapping/barcode/${trimmed}`,
+        token || undefined
+      )
+
+      if (result?.success && result.data) {
+        const { sku, size } = result.data
+        
+        const allSizes = products.filter((p: any) => p.sku === sku)
+        const sizeExists = allSizes.some((p: any) => p.size === size)
+        
+        if (!sizeExists) {
+          showToast(`⚠️ Size ${size} tidak ditemukan`)
+          setTimeout(() => { isLookingUpRef.current = false }, 1200)
+          return
+        }
+        
+        const found = selectProductBySkuSize(sku, size)
+
+        if (found) {
+          showToast(`📷 ${sku} - ${size} ditemukan`)
+          await stopCamera()
+        }
+      } else {
+        showToast(`❌ Barcode ${trimmed} belum di-mapping`)
+        setTimeout(() => { isLookingUpRef.current = false }, 1200)
+      }
+    } catch (error) {
+      console.error('[Opname] Error:', error)
+      showToast('❌ Gagal mencari barcode')
+      setTimeout(() => { isLookingUpRef.current = false }, 1200)
+    } finally {
+      setScanLookupLoading(false)
+    }
   }
 
   const handleFinish = () => {
@@ -354,7 +541,12 @@ export function OpnamePage({
     setShowAddSizeModal(false)
     setNewSize('')
     setNewSizeQty('')
+    setIsAutoSave(false)
     
+    if (showCamera) {
+      stopCamera()
+    }
+
     if (inputRef.current) {
       inputRef.current.focus()
     }
@@ -387,11 +579,11 @@ export function OpnamePage({
   }
 
   const getStatusTitle = (s: any) => {
-    if (!s.isDone) return `Size ${s.size}: Belum di-opname`
+    if (!s.isDone) return `Size ${s.size}: Belum`
     const selisih = getSelisih(s)
-    if (selisih === 0) return `Size ${s.size}: ✅ Sesuai`
-    if (selisih < 0) return `Size ${s.size}: ⬇️ Kurang ${Math.abs(selisih)}`
-    return `Size ${s.size}: ⬆️ Lebih ${selisih}`
+    if (selisih === 0) return `Size ${s.size}: Sesuai`
+    if (selisih < 0) return `Size ${s.size}: Kurang ${Math.abs(selisih)}`
+    return `Size ${s.size}: Lebih ${selisih}`
   }
 
   const isDisplay = (sizes: any[]) => {
@@ -404,10 +596,10 @@ export function OpnamePage({
         {/* HEADER */}
         <div className={styles.opnameHeader}>
           <button className={styles.opnameBack} onClick={() => navigateTo('dashboard')}>
-            <i className="fa-solid fa-arrow-left"></i>
+            <span className="material-symbols-outlined">arrow_back</span>
           </button>
           <div className={styles.opnameHeaderCenter}>
-            <span className={styles.opnameBadge}>📦 OPNAME</span>
+            <span className={styles.opnameBadge}>OPNAME</span>
           </div>
           <div className={styles.opnamePutaran}>
             <div className={styles.opnamePutaranNumber}>
@@ -419,29 +611,59 @@ export function OpnamePage({
 
         {/* BODY */}
         <div className={styles.opnameBody}>
-          {/* SEARCH */}
+          {/* SEARCH + SCAN */}
           <div className={styles.opnameSearch}>
             <input
               ref={inputRef}
               type="text"
-              placeholder="🔍 Cari SKU / Nama..."
+              placeholder="Cari SKU / Nama..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              disabled={!!selectedProduct}
-              className={selectedProduct ? styles.disabled : ''}
+              disabled={!!selectedProduct || showCamera}
+              className={selectedProduct || showCamera ? styles.disabled : ''}
             />
             <button 
               className={styles.opnameScanBtn} 
-              onClick={handleScan}
+              onClick={showCamera ? stopCamera : startCamera}
               disabled={!!selectedProduct}
             >
-              <i className="fa-solid fa-camera"></i>
-              <span>SCAN</span>
+              <span className="material-symbols-outlined">
+                {showCamera ? 'close' : 'qr_code_scanner'}
+              </span>
+              <span>{showCamera ? 'STOP' : 'SCAN'}</span>
             </button>
           </div>
 
+          {/* CAMERA */}
+          {showCamera && (
+            <div className={styles.opnameCameraContainer}>
+              <div id={READER_ELEMENT_ID} className={styles.opnameCameraReader}></div>
+              <div className={styles.opnameCameraOverlay}>
+                <div className={styles.opnameCameraFrame}>
+                  <span className={styles.opnameCornerTL}></span>
+                  <span className={styles.opnameCornerTR}></span>
+                  <span className={styles.opnameCornerBL}></span>
+                  <span className={styles.opnameCornerBR}></span>
+                  <span className={styles.opnameScanLine}></span>
+                </div>
+                <p className={styles.opnameCameraHint}>
+                  {scanLookupLoading ? (
+                    <>⏳ Mencari produk...</>
+                  ) : detectedBarcode ? (
+                    <>✅ {detectedBarcode}</>
+                  ) : (
+                    <>Arahkan barcode ke kamera</>
+                  )}
+                </p>
+                {cameraError && (
+                  <p className={styles.opnameCameraError}>{cameraError}</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* SUGGESTIONS */}
-          {showSuggestions && suggestions.length > 0 && !selectedProduct && (
+          {showSuggestions && suggestions.length > 0 && !selectedProduct && !showCamera && (
             <div className={styles.opnameSuggestions}>
               {suggestions.map((group: any, idx: number) => {
                 const allDone = group.sizes.every((s: any) => s.isDone)
@@ -461,7 +683,7 @@ export function OpnamePage({
                         <span>•</span>
                         <span>{group.warna}</span>
                         <span className={styles.suggestionBadge}>
-                          {isDisplayMode ? '🏪 Display' : '📦 Multi'}
+                          {isDisplayMode ? 'Display' : 'Multi'}
                         </span>
                       </div>
                     </div>
@@ -479,7 +701,7 @@ export function OpnamePage({
                         ))}
                       </div>
                       <div className={styles.suggestionStatus}>
-                        {allDone ? '✅ Selesai' : '⏳ Proses'}
+                        {allDone ? 'Selesai' : 'Proses'}
                       </div>
                     </div>
                   </div>
@@ -500,17 +722,25 @@ export function OpnamePage({
                     <span>•</span>
                     <span>{selectedProduct.warna}</span>
                     <span className={styles.detailBadge}>
-                      {isDisplay(selectedProduct.allSizes) ? '🏪 Display' : '📦 Gudang'}
+                      {isDisplay(selectedProduct.allSizes) ? 'Display' : 'Gudang'}
                     </span>
                   </div>
+                  {isAutoSave && (
+                    <div className={styles.autoSaveBadge}>
+                      <span className="material-symbols-outlined">schedule</span>
+                      Auto save...
+                    </div>
+                  )}
                 </div>
-                <button className={styles.opnameDetailClose} onClick={closeDetail}>✕</button>
+                <button className={styles.opnameDetailClose} onClick={closeDetail}>
+                  <span className="material-symbols-outlined">close</span>
+                </button>
               </div>
 
-              {/* SIZE SELECTOR + TOMBOL + */}
+              {/* SIZE */}
               <div className={styles.opnameDetailSizes}>
                 <div className={styles.opnameDetailSizesLabel}>
-                  {isDisplay(selectedProduct.allSizes) ? 'Size:' : 'Pilih Size:'}
+                  {isDisplay(selectedProduct.allSizes) ? 'Size' : 'Pilih Size'}
                 </div>
                 <div className={styles.opnameDetailSizesGrid}>
                   {selectedProduct.allSizes?.map((s: any, index: number) => {
@@ -538,7 +768,7 @@ export function OpnamePage({
                   <button 
                     className={styles.addSizeBtn}
                     onClick={() => setShowAddSizeModal(true)}
-                    title="Tambah size baru yang ga ada di master"
+                    title="Tambah size baru"
                   >
                     <span className={styles.addSizeIcon}>+</span>
                   </button>
@@ -558,21 +788,21 @@ export function OpnamePage({
                 </div>
               </div>
 
-              {/* QTY INPUT */}
+              {/* QTY */}
               <div className={styles.opnameDetailQty}>
                 <div className={styles.opnameDetailQtyRow}>
-                  <span className={styles.opnameDetailQtyLabel}>📊 Stock Sistem</span>
+                  <span className={styles.opnameDetailQtyLabel}>Stock Sistem</span>
                   <span className={styles.opnameDetailQtyValue}>{selectedProduct.stock_sistem}</span>
                 </div>
                 <div className={styles.opnameDetailQtyInput}>
-                  <span className={styles.opnameDetailQtyLabel}>📦 Stock Real</span>
+                  <span className={styles.opnameDetailQtyLabel}>Stock Real</span>
                   <input
                     id="qty-input"
                     type="number"
                     className={styles.opnameDetailQtyField}
                     value={qtyFisik}
                     onChange={(e) => setQtyFisik(e.target.value)}
-                    placeholder="0"
+                    placeholder="1"
                     min="0"
                   />
                 </div>
@@ -588,11 +818,11 @@ export function OpnamePage({
 
               {/* BARCODE STATUS */}
               <div className={styles.opnameDetailBarcode}>
-                <div className={styles.opnameDetailBarcodeLabel}>🏷️ BARCODE</div>
+                <div className={styles.opnameDetailBarcodeLabel}>Barcode</div>
                 <div className={styles.opnameDetailBarcodeArea}>
-                  <i className="fa-solid fa-barcode"></i>
+                  <span className="material-symbols-outlined">barcode</span>
                   <div className={styles.opnameDetailBarcodeValue}>
-                    {selectedProduct.status_mapping ? '✅ Sudah mapping' : '⚠️ Belum mapping'}
+                    {selectedProduct.status_mapping ? 'Sudah mapping' : 'Belum mapping'}
                   </div>
                 </div>
               </div>
@@ -600,18 +830,18 @@ export function OpnamePage({
           )}
 
           {/* EMPTY */}
-          {!selectedProduct && !showSuggestions && (
+          {!selectedProduct && !showSuggestions && !showCamera && (
             <div className={styles.opnameEmpty}>
               <div className={styles.opnameEmptyIcon}>
-                <i className="fa-solid fa-qrcode"></i>
+                <span className="material-symbols-outlined">qr_code_scanner</span>
               </div>
               <div className={styles.opnameEmptyText}>
-                {products.length === 0 ? '📂 Import data master dulu' : 'Scan atau cari barang'}
+                {products.length === 0 ? 'Import data master dulu' : 'Scan atau cari barang'}
               </div>
               {products.length > 0 && (
                 <div className={styles.opnameEmptyTip}>
-                  <i className="fa-solid fa-wand-magic-sparkles"></i>
-                  <span>Tips: ketik SKU atau nama</span>
+                  <span className="material-symbols-outlined">lightbulb</span>
+                  <span>Arahkan kamera ke barcode atau cari manual</span>
                 </div>
               )}
             </div>
@@ -623,26 +853,31 @@ export function OpnamePage({
           <button 
             className={styles.opnameSaveBtn} 
             onClick={handleSave} 
-            disabled={!selectedProduct || loading || qtyFisik === ''}
+            disabled={!selectedProduct || loading}
           >
-            {loading ? '⏳ ...' : '💾 SIMPAN'}
+            <span className="material-symbols-outlined">save</span>
+            {loading ? '...' : 'SIMPAN'}
           </button>
           <button 
             className={styles.opnameFinishBtn} 
             onClick={handleFinish}
           >
+            <span className="material-symbols-outlined">check_circle</span>
             SELESAI
           </button>
         </div>
       </div>
 
-      {/* MODAL TAMBAH SIZE */}
+      {/* MODAL */}
       {showAddSizeModal && (
         <>
           <div className={styles.modalOverlay} onClick={() => setShowAddSizeModal(false)} />
           <div className={styles.modalContainer}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>+ TAMBAH SIZE BARU</h3>
+              <h3 className={styles.modalTitle}>
+                <span className="material-symbols-outlined">add_box</span>
+                Tambah Size Baru
+              </h3>
               <button 
                 className={styles.modalClose}
                 onClick={() => {
@@ -651,7 +886,7 @@ export function OpnamePage({
                   setNewSizeQty('')
                 }}
               >
-                ✕
+                <span className="material-symbols-outlined">close</span>
               </button>
             </div>
             
@@ -702,7 +937,8 @@ export function OpnamePage({
                 onClick={handleAddNewSize}
                 disabled={!newSize || newSizeQty === '' || loading}
               >
-                {loading ? '⏳ ...' : '+ TAMBAH'}
+                <span className="material-symbols-outlined">add</span>
+                {loading ? '...' : 'TAMBAH'}
               </button>
             </div>
           </div>

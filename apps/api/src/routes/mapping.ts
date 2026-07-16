@@ -7,53 +7,65 @@ import { logAudit } from '../utils/audit.js'
 
 const router = Router()
 
+// Schema
 const mappingSchema = z.object({
   sku: z.string().min(1, 'SKU wajib diisi'),
   size: z.string().min(1, 'Size wajib diisi'),
-  barcode: z.string().min(8, 'Barcode minimal 8 digit'),
+  barcode: z.string().min(4, 'Barcode minimal 4 digit'),
 })
 
 // ============================================================
-// POST /api/mapping - Mapping barcode (DENGAN AUDIT)
+// POST /api/mapping - Simpan mapping barcode
 // ============================================================
 router.post('/', authMiddleware, async (req: AuthRequest, res) => {
   const startTime = Date.now()
-  
+
   try {
     const { sku, size, barcode } = mappingSchema.parse(req.body)
 
-    // Cek apakah barcode sudah dipakai
     const { data: existing, error: checkError } = await supabase
       .from(TABLES.BARCODE)
       .select('*')
       .eq('barcode', barcode)
       .maybeSingle()
 
-    if (checkError && checkError.code !== 'PGRST116') {
-      throw checkError
-    }
+    if (checkError) throw checkError
 
     if (existing) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Barcode sudah digunakan untuk produk lain' 
+      return res.status(400).json({
+        success: false,
+        error: `Barcode ${barcode} sudah digunakan untuk ${existing.sku} - ${existing.size}`
       })
     }
 
-    // Ambil data lama (untuk audit)
-    const { data: oldData, error: oldError } = await supabase
+    const { data: product, error: productError } = await supabase
+      .from(TABLES.MASTER)
+      .select('*')
+      .eq('sku', sku)
+      .eq('size', size)
+      .maybeSingle()
+
+    if (productError) throw productError
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Produk tidak ditemukan'
+      })
+    }
+
+    const { data: oldData } = await supabase
       .from(TABLES.BARCODE)
       .select('*')
       .eq('sku', sku)
       .eq('size', size)
       .maybeSingle()
 
-    // Simpan mapping
     const { data, error } = await supabase
       .from(TABLES.BARCODE)
-      .upsert({ 
-        barcode, 
-        sku, 
+      .upsert({
+        barcode,
+        sku,
         size,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -62,51 +74,47 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 
     if (error) throw error
 
-    // Update status_mapping di temp_master
-    const { error: updateError } = await supabase
+    const { data: updateData, error: updateError } = await supabase
       .from(TABLES.MASTER)
-      .update({ 
+      .update({
         status_mapping: true,
         updated_at: new Date().toISOString()
       })
       .eq('sku', sku)
       .eq('size', size)
+      .select()
 
     if (updateError) {
-      console.error('[Mapping] Update master error:', updateError)
+      console.error('[Mapping] Gagal update status_mapping:', updateError)
+      throw updateError
     }
 
-    // ============================================================
-    // 📝 AUDIT LOG - Mapping barcode
-    // ============================================================
+    if (!updateData || updateData.length === 0) {
+      console.warn(
+        `[Mapping] ⚠️ status_mapping update 0 rows affected untuk sku=${sku} size=${size}.`
+      )
+    }
+
     await logAudit({
       userId: req.user!.id,
       action: oldData ? 'MAPPING_UPDATE' : 'MAPPING_CREATE',
       entityType: 'temp_barcode',
       entityId: `${sku}-${size}`,
       oldData: oldData || null,
-      newData: {
-        sku,
-        size,
-        barcode,
-        product_name: req.body.product_name || null
-      },
+      newData: { sku, size, barcode },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
       durationMs: Date.now() - startTime,
       statusCode: 200
     })
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: data?.[0],
-      message: `Barcode ${barcode} berhasil dimapping ke ${sku} - ${size}`
+      message: `✅ Barcode ${barcode} → ${sku} (${size})`
     })
 
   } catch (error) {
-    // ============================================================
-    // 📝 AUDIT LOG - Mapping gagal
-    // ============================================================
     await logAudit({
       userId: req.user?.id || 'unknown',
       action: 'MAPPING_FAILED',
@@ -118,198 +126,97 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       statusCode: 500
     })
 
-    console.error('[Mapping] POST error:', error)
-    
+    console.error('[Mapping] Error:', error)
+
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Validasi gagal', 
-        details: error.errors 
+      return res.status(400).json({
+        success: false,
+        error: 'Validasi gagal',
+        details: error.errors
       })
     }
-    
-    res.status(500).json({ 
-      success: false, 
-      error: (error as Error).message 
+
+    res.status(500).json({
+      success: false,
+      error: (error as Error).message
     })
   }
 })
 
 // ============================================================
-// GET /api/mapping/:sku/:size - Ambil mapping by SKU + Size
-// ============================================================
-router.get('/:sku/:size', authMiddleware, async (req: AuthRequest, res) => {
-  try {
-    const { sku, size } = req.params
-
-    const { data, error } = await supabase
-      .from(TABLES.BARCODE)
-      .select('*')
-      .eq('sku', sku)
-      .eq('size', size)
-      .maybeSingle()
-
-    if (error) throw error
-
-    // 📝 AUDIT LOG - View mapping
-    await logAudit({
-      userId: req.user!.id,
-      action: 'MAPPING_VIEW',
-      entityType: 'temp_barcode',
-      entityId: `${sku}-${size}`,
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent']
-    })
-
-    res.json({ success: true, data: data || null })
-
-  } catch (error) {
-    console.error('[Mapping] GET error:', error)
-    res.status(500).json({ success: false, error: (error as Error).message })
-  }
-})
-
-// ============================================================
-// GET /api/mapping/barcode/:barcode - Ambil mapping by Barcode
+// GET /api/mapping/barcode/:barcode - Cari mapping by barcode
 // ============================================================
 router.get('/barcode/:barcode', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { barcode } = req.params
 
-    const { data, error } = await supabase
+    // Step 1: cari baris barcode-nya dulu di temp_barcode
+    // (TIDAK pakai embedded select temp_master(...) lagi — itu butuh
+    // FK relationship formal antar tabel yang gak selalu ke-detect
+    // konsisten oleh PostgREST schema cache, dan sempat bikin PGRST200
+    // di endpoint /mapped sebelumnya)
+    const { data: barcodeRow, error: barcodeError } = await supabase
       .from(TABLES.BARCODE)
-      .select('*, temp_master(nama_barang, kategori, warna, stock_sistem)')
+      .select('*')
       .eq('barcode', barcode)
       .maybeSingle()
 
-    if (error) throw error
+    if (barcodeError) throw barcodeError
 
-    if (!data) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Barcode tidak ditemukan' 
+    if (!barcodeRow) {
+      return res.status(404).json({
+        success: false,
+        error: 'Barcode tidak ditemukan'
       })
     }
 
-    // 📝 AUDIT LOG - Scan barcode
-    await logAudit({
-      userId: req.user!.id,
-      action: 'BARCODE_SCAN',
-      entityType: 'temp_barcode',
-      entityId: data.id,
-      newData: {
-        barcode: data.barcode,
-        sku: data.sku,
-        size: data.size
-      },
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent']
-    })
+    // Step 2: cari detail produknya secara manual dari temp_master
+    // pakai sku + size yang didapat dari step 1
+    const { data: product, error: productError } = await supabase
+      .from(TABLES.MASTER)
+      .select('nama_barang, kategori, warna, stock_sistem')
+      .eq('sku', barcodeRow.sku)
+      .eq('size', barcodeRow.size)
+      .maybeSingle()
 
-    res.json({ 
-      success: true, 
+    if (productError) throw productError
+
+    res.json({
+      success: true,
       data: {
-        ...data,
-        product: data.temp_master
+        ...barcodeRow,
+        product: product || null
       }
     })
 
   } catch (error) {
-    console.error('[Mapping] GET barcode error:', error)
+    console.error('[Mapping] Get by barcode error:', error)
     res.status(500).json({ success: false, error: (error as Error).message })
   }
 })
 
 // ============================================================
-// DELETE /api/mapping/:id - Hapus mapping (DENGAN AUDIT)
+// GET /api/mapping/unmapped - Produk belum mapping
 // ============================================================
-router.delete('/:id', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
-  const startTime = Date.now()
-  
+router.get('/unmapped', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params
-
-    // Ambil data sebelum dihapus (buat audit)
-    const { data: oldData, error: findError } = await supabase
-      .from(TABLES.BARCODE)
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (findError) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Mapping not found' 
-      })
-    }
-
-    // Update status_mapping di temp_master jadi false
-    const { error: updateError } = await supabase
-      .from(TABLES.MASTER)
-      .update({ 
-        status_mapping: false,
-        updated_at: new Date().toISOString()
-      })
-      .eq('sku', oldData.sku)
-      .eq('size', oldData.size)
-
-    if (updateError) {
-      console.error('[Mapping] Update master error:', updateError)
-    }
-
-    const { error } = await supabase
-      .from(TABLES.BARCODE)
-      .delete()
-      .eq('id', id)
-
-    if (error) throw error
-
-    // ============================================================
-    // 📝 AUDIT LOG - Delete mapping
-    // ============================================================
-    await logAudit({
-      userId: req.user!.id,
-      action: 'MAPPING_DELETE',
-      entityType: 'temp_barcode',
-      entityId: id,
-      oldData: oldData,
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent'],
-      durationMs: Date.now() - startTime,
-      statusCode: 200
-    })
-
-    res.json({ 
-      success: true, 
-      message: 'Mapping berhasil dihapus' 
-    })
-
-  } catch (error) {
-    console.error('[Mapping] DELETE error:', error)
-    res.status(500).json({ 
-      success: false, 
-      error: (error as Error).message 
-    })
-  }
-})
-
-// ============================================================
-// GET /api/mapping/unmapped - Ambil daftar produk belum mapping
-// ============================================================
-router.get('/unmapped/list', authMiddleware, async (req: AuthRequest, res) => {
-  try {
-    const { limit = 50, page = 1 } = req.query
+    const { limit = 50, page = 1, search } = req.query
 
     const limitNum = Math.min(parseInt(limit as string) || 50, 100)
     const pageNum = parseInt(page as string) || 1
     const offset = (pageNum - 1) * limitNum
 
-    // Ambil produk yang belum mapping (status_mapping = false atau null)
-    const { data, error, count } = await supabase
+    let query = supabase
       .from(TABLES.MASTER)
       .select('*', { count: 'exact' })
       .or('status_mapping.is.null,status_mapping.eq.false')
       .order('nama_barang', { ascending: true })
+
+    if (search) {
+      query = query.or(`nama_barang.ilike.%${search}%,sku.ilike.%${search}%`)
+    }
+
+    const { data, error, count } = await query
       .range(offset, offset + limitNum - 1)
 
     if (error) throw error
@@ -327,31 +234,33 @@ router.get('/unmapped/list', authMiddleware, async (req: AuthRequest, res) => {
     })
 
   } catch (error) {
-    console.error('[Mapping] GET unmapped error:', error)
-    res.status(500).json({ 
-      success: false, 
-      error: (error as Error).message 
-    })
+    console.error('[Mapping] Unmapped error:', error)
+    res.status(500).json({ success: false, error: (error as Error).message })
   }
 })
 
 // ============================================================
-// GET /api/mapping/mapped - Ambil daftar produk sudah mapping
+// GET /api/mapping/mapped - Produk sudah mapping
 // ============================================================
-router.get('/mapped/list', authMiddleware, async (req: AuthRequest, res) => {
+router.get('/mapped', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { limit = 50, page = 1 } = req.query
+    const { limit = 50, page = 1, search } = req.query
 
     const limitNum = Math.min(parseInt(limit as string) || 50, 100)
     const pageNum = parseInt(page as string) || 1
     const offset = (pageNum - 1) * limitNum
 
-    // Ambil produk yang sudah mapping
-    const { data, error, count } = await supabase
+    let query = supabase
       .from(TABLES.MASTER)
-      .select('*, temp_barcode(barcode)')
+      .select('*', { count: 'exact' })
       .eq('status_mapping', true)
       .order('nama_barang', { ascending: true })
+
+    if (search) {
+      query = query.or(`nama_barang.ilike.%${search}%,sku.ilike.%${search}%`)
+    }
+
+    const { data, error, count } = await query
       .range(offset, offset + limitNum - 1)
 
     if (error) throw error
@@ -369,11 +278,8 @@ router.get('/mapped/list', authMiddleware, async (req: AuthRequest, res) => {
     })
 
   } catch (error) {
-    console.error('[Mapping] GET mapped error:', error)
-    res.status(500).json({ 
-      success: false, 
-      error: (error as Error).message 
-    })
+    console.error('[Mapping] Mapped error:', error)
+    res.status(500).json({ success: false, error: (error as Error).message })
   }
 })
 

@@ -33,17 +33,13 @@ export function Topbar({
             <i className="fa-solid fa-store"></i>
           </span>
           <span className={styles.topbarStoreName}>
-            {isMobile ? 'Avalon' : 'Semarang • Indonesia'}
+            {isMobile ? 'semarang' : 'Semarang • Indonesia'}
           </span>
         </div>
       </div>
 
       <div className={styles.topbarRight}>
-        {isMobile && (
-          <button className={styles.topbarSearchMobile} onClick={onQuickSearch}>
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </button>
-        )}
+        
 
         
       </div>

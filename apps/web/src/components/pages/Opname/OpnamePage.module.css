@@ -129,20 +129,6 @@
   flex-shrink: 0;
 }
 
-.opnameSearchWrapper {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.opnameSearchWrapper span {
-  position: absolute;
-  left: 14px;
-  color: #e9c349;
-  font-size: 18px;
-}
-
 .opnameSearch input {
   width: 100%;
   height: 44px;
@@ -172,37 +158,66 @@
   cursor: not-allowed;
 }
 
-.opnameScanBtn {
+/* ============================================================
+   BARCODE INPUT
+   ============================================================ */
+.opnameBarcodeInput {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 16px;
-  height: 44px;
-  background: #2e3132;
-  border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 12px;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  gap: 10px;
   flex-shrink: 0;
 }
 
-.opnameScanBtn:hover:not(:disabled) {
-  background: #3a3d3e;
+.barcodeInputField {
+  flex: 1;
+  height: 44px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: all 0.2s;
 }
 
-.opnameScanBtn:disabled {
-  opacity: 0.3;
+.barcodeInputField:focus {
+  border-color: #e9c349;
+  box-shadow: 0 0 20px rgba(233,195,73,0.05);
+}
+
+.barcodeInputField::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+.barcodeInputField:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.opnameScanBtn span {
-  font-size: 18px;
+.barcodeSearchBtn {
+  padding: 0 20px;
+  height: 44px;
+  background: #e9c349;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+}
+
+.barcodeSearchBtn:hover:not(:disabled) {
+  background: #d4af37;
+  transform: scale(0.98);
+}
+
+.barcodeSearchBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 /* ============================================================
@@ -976,6 +991,185 @@
 }
 
 /* ============================================================
+   CAMERA SCAN BARCODE - DENGAN ANIMASI
+   ============================================================ */
+.opnameCameraContainer {
+  position: relative;
+  background: #000000;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  aspect-ratio: 4/3;
+  max-height: 320px;
+  min-height: 280px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.opnameCameraReader {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.opnameCameraReader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* ============================================================
+   OVERLAY & FRAME - LEBIH BESAR
+   ============================================================ */
+.opnameCameraOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.opnameCameraFrame {
+  position: relative;
+  width: 92%;
+  max-width: 380px;
+  height: 120px;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+}
+
+.opnameCornerTL,
+.opnameCornerTR,
+.opnameCornerBL,
+.opnameCornerBR {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e9c349;
+}
+
+.opnameCornerTL {
+  top: 0; left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 8px;
+}
+
+.opnameCornerTR {
+  top: 0; right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 8px;
+}
+
+.opnameCornerBL {
+  bottom: 0; left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+}
+
+.opnameCornerBR {
+  bottom: 0; right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 8px;
+}
+
+/* 🔥 ANIMASI SCAN LINE */
+.opnameScanLine {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, #e9c349 20%, #e9c349 80%, transparent);
+  box-shadow: 0 0 12px rgba(233, 195, 73, 0.9);
+  animation: scanMove 1.8s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+@keyframes scanMove {
+  0%   { top: 6%; opacity: 0.2; }
+  50%  { top: 94%; opacity: 1; }
+  100% { top: 6%; opacity: 0.2; }
+}
+
+/* 🔥 ANIMASI PULSE FRAME */
+.opnameCameraFrame::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px solid rgba(233, 195, 73, 0.1);
+  border-radius: 14px;
+  animation: pulseFrame 2s ease-in-out infinite;
+}
+
+@keyframes pulseFrame {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+/* ============================================================
+   CAMERA HINT
+   ============================================================ */
+.opnameCameraHint {
+  color: #ffffff;
+  font-size: 13px;
+  margin-top: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.4);
+  padding: 6px 18px;
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.opnameCameraHint .barcode-detected {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.opnameCameraError {
+  color: #fca5a5;
+  font-size: 12px;
+  margin-top: 8px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  pointer-events: auto;
+  max-width: 85%;
+  text-align: center;
+  background: rgba(0,0,0,0.4);
+  padding: 4px 16px;
+  border-radius: 9999px;
+}
+
+.opnameCameraStopBtn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: rgba(239, 68, 68, 0.8);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.opnameCameraStopBtn:hover {
+  background: #ef4444;
+}
+
+/* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeIn {
@@ -1000,7 +1194,7 @@
 
 /* Mobile - 480px */
 @media (max-width: 480px) {
-    .opnamePage {
+  .opnamePage {
     padding: 0;
     height: 100dvh;
     overflow: hidden;
@@ -1023,34 +1217,49 @@
     padding: 10px 12px;
   }
 
-  .opnameStatusBadge {
-    font-size: 9px;
-    padding: 3px 10px;
-  }
-
-  .opnamePutaranNumber {
-    font-size: 16px;
-  }
-
   .opnameSearch input {
     height: 40px;
     font-size: 13px;
     padding: 0 12px 0 40px;
   }
 
-  .opnameSearchWrapper span {
-    left: 12px;
-    font-size: 16px;
-  }
-
-  .opnameScanBtn {
+  .barcodeInputField {
     height: 40px;
-    padding: 0 12px;
-    font-size: 10px;
+    font-size: 13px;
   }
 
-  .opnameScanBtn span {
-    font-size: 16px;
+  .barcodeSearchBtn {
+    height: 40px;
+    font-size: 12px;
+    padding: 0 14px;
+  }
+
+  .opnameCameraContainer {
+    max-height: 240px;
+    min-height: 200px;
+  }
+
+  .opnameCameraFrame {
+    height: 90px;
+    max-width: 280px;
+  }
+
+  .opnameCornerTL,
+  .opnameCornerTR,
+  .opnameCornerBL,
+  .opnameCornerBR {
+    width: 22px;
+    height: 22px;
+  }
+
+  .opnameScanLine {
+    height: 2px;
+  }
+
+  @keyframes scanMove {
+    0%   { top: 8%; opacity: 0.2; }
+    50%  { top: 92%; opacity: 1; }
+    100% { top: 8%; opacity: 0.2; }
   }
 
   .opnameSuggestions {
@@ -1208,11 +1417,23 @@
     font-size: 9px;
     padding: 2px 6px;
   }
-   .opnameFooter {
+
+  .opnameFooter {
     position: sticky;
     bottom: 0;
     flex-shrink: 0;
     z-index: 20;
+  }
+
+  .opnameCameraStopBtn {
+    font-size: 10px;
+    padding: 4px 12px;
+    bottom: 6px;
+  }
+
+  .opnameCameraHint {
+    font-size: 11px;
+    padding: 4px 12px;
   }
 }
 
@@ -1227,30 +1448,40 @@
     padding: 8px 10px;
   }
 
-  .opnameStatusBadge {
-    font-size: 8px;
-    padding: 2px 8px;
-  }
-
   .opnameSearch input {
     height: 36px;
     font-size: 12px;
     padding: 0 10px 0 34px;
   }
 
-  .opnameSearchWrapper span {
-    left: 10px;
-    font-size: 14px;
-  }
-
-  .opnameScanBtn {
+  .barcodeInputField {
     height: 36px;
-    padding: 0 10px;
-    font-size: 9px;
+    font-size: 12px;
   }
 
-  .opnameScanBtn span {
-    font-size: 14px;
+  .barcodeSearchBtn {
+    height: 36px;
+    font-size: 11px;
+    padding: 0 10px;
+  }
+
+  .opnameCameraContainer {
+    max-height: 200px;
+    min-height: 160px;
+  }
+
+  .opnameCameraFrame {
+    height: 70px;
+    max-width: 240px;
+  }
+
+  .opnameCornerTL,
+  .opnameCornerTR,
+  .opnameCornerBL,
+  .opnameCornerBR {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
   }
 
   .opnameDetail {
@@ -1320,6 +1551,11 @@
   .addSizeIcon {
     font-size: 14px;
   }
+
+  .opnameCameraHint {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
 }
 
 /* Landscape mode HP */
@@ -1329,7 +1565,6 @@
     max-height: 98vh;
     border-radius: 12px;
     margin: 4px auto;
-   
   }
 
   .opnameBody {
@@ -1339,6 +1574,16 @@
 
   .opnameHeader {
     padding: 6px 12px;
+  }
+
+  .opnameCameraContainer {
+    max-height: 180px;
+    min-height: 140px;
+  }
+
+  .opnameCameraFrame {
+    height: 70px;
+    max-width: 240px;
   }
 
   .opnameDetail {
@@ -1365,9 +1610,14 @@
     font-size: 12px;
   }
 
-  .opnameScanBtn {
+  .barcodeInputField {
     height: 32px;
-    font-size: 9px;
+    font-size: 12px;
+  }
+
+  .barcodeSearchBtn {
+    height: 32px;
+    font-size: 10px;
     padding: 0 10px;
   }
 
@@ -1383,6 +1633,16 @@
   .modalContainer {
     max-width: 300px;
     padding: 12px 16px;
+  }
+
+  .opnameCameraStopBtn {
+    font-size: 9px;
+    padding: 3px 10px;
+  }
+
+  .opnameCameraHint {
+    font-size: 10px;
+    padding: 3px 10px;
   }
 }
 
@@ -1409,4 +1669,85 @@
   .opnameFooter {
     padding: 12px 16px;
   }
+
+  .opnameCameraContainer {
+    max-height: 280px;
+    min-height: 220px;
+  }
+
+  .opnameCameraFrame {
+    height: 100px;
+    max-width: 320px;
+  }
+}
+
+/* ============================================================
+   TEST BTN
+   ============================================================ */
+.testBtn {
+  background: rgba(52, 211, 153, 0.15) !important;
+  border-color: rgba(52, 211, 153, 0.2) !important;
+  color: #34d399 !important;
+}
+
+.testBtn:hover:not(:disabled) {
+  background: rgba(52, 211, 153, 0.25) !important;
+}
+
+.opnameScanBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 44px;
+  background: #2e3132;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  flex-shrink: 0;
+}
+
+.opnameScanBtn:hover:not(:disabled) {
+  background: #3a3d3e;
+}
+
+.opnameScanBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.opnameScanBtn span {
+  font-size: 18px;
+}
+
+.autoSaveBadge {
+  font-size: 11px;
+  color: #e9c349;
+  margin-top: 6px;
+  font-weight: 500;
+  animation: pulse 1s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.autoSaveBadge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e9c349;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }

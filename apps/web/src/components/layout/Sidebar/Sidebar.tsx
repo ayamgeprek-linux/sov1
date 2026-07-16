@@ -175,9 +175,7 @@ export function Sidebar({
         </div>
 
 
-        <span className={styles.version}>
-          v2.0
-        </span>
+        
 
 
       </div>

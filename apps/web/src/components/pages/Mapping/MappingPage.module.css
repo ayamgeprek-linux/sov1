@@ -1,1029 +1,652 @@
-/* ============================================================
-   MAPPING PAGE - MATERIAL DESIGN (MATCH HTML)
-   ============================================================ */
+/* apps/web/src/components/pages/Mapping/MappingPage.module.css */
 
 .mappingPage {
-  max-width: 672px;
-  margin: 0 auto;
-  padding: 24px 0;
-  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-  position: relative;
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+  max-width: 100%;
+  padding: 24px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
 }
 
-/* ============================================================
-   MAIN CARD
-   ============================================================ */
-.mappingCard {
-  width: 100%;
-  border-radius: 32px;
-  padding: 40px 48px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.mappingCardGradient {
-  background: linear-gradient(135deg, #191c1d 0%, #2e3132 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15);
-}
-
-.mappingCardGlow {
-  position: absolute;
-  right: -80px;
-  top: -80px;
-  width: 256px;
-  height: 256px;
-  background: rgba(212, 175, 55, 0.15);
-  border-radius: 50%;
-  filter: blur(48px);
-  pointer-events: none;
-}
-
-.mappingCardContent {
-  position: relative;
-  z-index: 10;
-}
-
-/* ============================================================
-   HEADER
-   ============================================================ */
+/* HEADER */
 .mappingHeader {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 24px;
-}
-
-.mappingHeaderIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 16px;
-}
-
-.mappingHeaderIcon span {
-  font-size: 32px;
-  color: #e9c349;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .mappingTitle {
-  font-size: 32px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #191c1d;
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
 }
 
 .mappingSubtitle {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.6);
+  margin-top: 4px;
 }
 
-/* ============================================================
-   SEARCH
-   ============================================================ */
-.mappingSearch {
-  max-width: 448px;
-  margin: 0 auto;
-}
-
-.mappingSearchWrapper {
-  position: relative;
+.mappingStats {
   display: flex;
+  gap: 20px;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  flex-wrap: wrap;
+}
+
+.mappingStatItem {
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.mappingSearchWrapper span {
-  position: absolute;
-  left: 20px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 24px;
+.mappingStatLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.mappingSearchWrapper input {
-  width: 100%;
-  padding: 16px 20px 16px 60px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 400;
-  outline: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+.mappingStatValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-.mappingSearchWrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+.textGreen { color: #059669; }
+.textOrange { color: #d97706; }
+
+/* MODE TOGGLE */
+.mappingModeToggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-.mappingSearchWrapper input:focus {
-  border-color: rgba(212, 175, 55, 0.4);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
-}
-
-/* ============================================================
-   SCANNER STATUS
-   ============================================================ */
-.mappingScannerStatus {
+.modeBtn {
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: center;
-  margin-top: 16px;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.mappingCard:hover .mappingScannerStatus {
-  opacity: 1;
-}
-
-.mappingScannerDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #e9c349;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(0.8); }
-}
-
-.mappingScannerLabel {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.5);
+  padding: 10px 24px;
+  border: 2px solid rgba(208, 197, 175, 0.2);
+  border-radius: 12px;
+  background: transparent;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.5);
+  cursor: pointer;
+  transition: all 0.2s;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* ============================================================
-   CARD PULSE ANIMATION
-   ============================================================ */
-.cardPulse {
-  animation: cardPulse 0.3s ease;
+.modeBtn:hover {
+  border-color: #735c00;
+  color: #735c00;
 }
 
-@keyframes cardPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.995); }
-  100% { transform: scale(1); }
+.modeBtn.active {
+  border-color: #735c00;
+  background: rgba(115, 92, 0, 0.06);
+  color: #735c00;
 }
 
-/* ============================================================
-   RESULTS
-   ============================================================ */
-.mappingResults {
-  max-width: 448px;
-  margin: 12px auto 0;
-  max-height: 256px;
-  overflow-y: auto;
-  background: #ffffff;
+.modeBtn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* CAMERA */
+.cameraContainer {
+  position: relative;
+  background: #1a1c1d;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 20px;
+  aspect-ratio: 4/3;
+}
+
+.cameraReader {
+  width: 100%;
+  height: 100%;
+}
+
+.cameraReader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.cameraOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Frame scan persegi panjang, ngikutin bentuk barcode 1D */
+.cameraFrame {
+  position: relative;
+  width: 85%;
+  max-width: 320px;
+  height: 120px;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.cameraFrame .cornerTL,
+.cameraFrame .cornerTR,
+.cameraFrame .cornerBL,
+.cameraFrame .cornerBR {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e9c349;
+}
+
+.cameraFrame .cornerTL {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 10px;
+}
+
+.cameraFrame .cornerTR {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 10px;
+}
+
+.cameraFrame .cornerBL {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 10px;
+}
+
+.cameraFrame .cornerBR {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 10px;
+}
+
+.cameraFrame .scanLine {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e9c349 20%, #e9c349 80%, transparent);
+  box-shadow: 0 0 8px rgba(233, 195, 73, 0.8);
+  animation: scanMove 1.8s ease-in-out infinite;
+}
+
+@keyframes scanMove {
+  0%   { top: 8%; opacity: 0.3; }
+  50%  { top: 92%; opacity: 1; }
+  100% { top: 8%; opacity: 0.3; }
+}
+
+.cameraHint {
+  color: #ffffff;
+  font-size: 13px;
+  margin-top: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.cameraError {
+  color: #fca5a5;
+  font-size: 12px;
+  margin-top: 8px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  pointer-events: auto;
+  max-width: 80%;
+  text-align: center;
+}
+
+/* SEARCH */
+.mappingSearch {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.mappingSearchInput {
+  width: 100%;
+  height: 48px;
+  background: #ffffff;
+  border: 2px solid rgba(208, 197, 175, 0.2);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.mappingSearchInput:focus {
+  border-color: #735c00;
+  box-shadow: 0 0 0 4px rgba(115, 92, 0, 0.06);
+}
+
+.mappingClearBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: rgba(77, 70, 53, 0.3);
+  cursor: pointer;
+}
+
+/* SUGGESTIONS */
+.mappingSuggestions {
+  background: #ffffff;
+  border-radius: 12px;
   border: 1px solid rgba(208, 197, 175, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 16px;
 }
 
-.mappingResults::-webkit-scrollbar {
-  width: 4px;
-}
-
-.mappingResults::-webkit-scrollbar-thumb {
-  background: #d4af37;
-  border-radius: 10px;
-}
-
-.mappingResultItem {
-  padding: 16px 20px;
+.mappingSuggestionItem {
+  padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(208, 197, 175, 0.05);
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s;
 }
 
-.mappingResultItem:last-child {
-  border-bottom: none;
+.mappingSuggestionItem:hover {
+  background: rgba(115, 92, 0, 0.03);
 }
 
-.mappingResultItem:hover {
-  background: rgba(237, 238, 239, 0.5);
+.mappingSuggestionItem.allMapped {
+  border-left: 3px solid #059669;
 }
 
-.mappingResultName {
-  font-weight: 600;
-  font-size: 14px;
-  color: #191c1d;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingResultSku {
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  color: rgba(77, 70, 53, 0.5);
-  margin-top: 2px;
-}
-
-.mappingResultStatus {
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingResultStatus.mapped {
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.1);
-}
-
-.mappingResultStatus.unmapped {
-  color: #735c00;
-  background: rgba(115, 92, 0, 0.08);
-}
-
-.mappingNoResults {
-  padding: 24px;
-  text-align: center;
-  color: rgba(77, 70, 53, 0.4);
-  font-size: 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* ============================================================
-   SELECTED PRODUCT
-   ============================================================ */
-.mappingSelected {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 32px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(208, 197, 175, 0.1);
-}
-
-.mappingSelectedInfo {
-  display: flex;
-  gap: 32px;
-}
-
-.mappingSelectedLeft {
-  flex: 1;
-}
-
-.mappingSelectedLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(77, 70, 53, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingSelectedSku {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 28px;
-  color: #735c00;
-  font-weight: 700;
-}
-
-.mappingSelectedName {
-  font-weight: 600;
-  font-size: 20px;
-  color: #191c1d;
-  margin-top: 4px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingSelectedDetails {
-  display: flex;
-  gap: 24px;
-  margin-top: 32px;
-}
-
-.mappingSelectedValue {
-  font-weight: 600;
-  color: #191c1d;
-  margin-top: 2px;
-  font-size: 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* ============================================================
-   SCANNER PANEL
-   ============================================================ */
-.mappingScanner {
-  width: 240px;
-  background: #f8f9fa;
-  border: 1px solid rgba(208, 197, 175, 0.1);
-  border-radius: 24px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.mappingScannerLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-weight: 700;
-  text-align: center;
-  color: #735c00;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.barcodeVisual {
-  width: 100%;
-  padding: 12px 16px;
-  background: #ffffff;
-  border-radius: 9999px;
-  border: 1px solid rgba(208, 197, 175, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #191c1d;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  margin-top: 16px;
-  min-height: 48px;
-  letter-spacing: 2px;
-}
-
-.scannerDivider {
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(to right, transparent, #735c00, transparent);
-  margin: 16px 0;
-}
-
-.barcodeInput {
-  text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  background: #ffffff;
-  border: 1px solid rgba(208, 197, 175, 0.2);
-  border-radius: 9999px;
-  padding: 12px 16px;
-  color: #191c1d;
-  font-size: 14px;
-  width: 100%;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.barcodeInput:focus {
-  border-color: #735c00;
-  box-shadow: 0 0 0 4px rgba(115, 92, 0, 0.08);
-}
-
-.barcodeInput::placeholder {
-  color: rgba(77, 70, 53, 0.3);
-}
-
-.saveBtn {
-  width: 100%;
-  padding: 12px;
-  background: #735c00;
-  color: #ffffff;
-  border: none;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 16px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.saveBtn:hover {
-  background: #5c4a00;
-  transform: scale(0.98);
-}
-
-.saveBtn:active {
-  transform: scale(0.95);
-}
-
-.cancelBtn {
-  color: rgba(77, 70, 53, 0.4);
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 12px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.cancelBtn:hover {
-  color: #191c1d;
-}
-
-/* ============================================================
-   INFO GRID
-   ============================================================ */
-.mappingInfoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  width: 100%;
-}
-
-.mappingInfoItem {
-  background: #ffffff;
-  padding: 16px 20px;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 1px solid rgba(208, 197, 175, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-}
-
-.mappingInfoIcon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mappingInfoIcon span {
-  font-size: 24px;
-  color: #735c00;
-}
-
-.mappingInfoLabel {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  color: rgba(77, 70, 53, 0.4);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingInfoValue {
-  font-size: 14px;
-  font-weight: 600;
-  color: #191c1d;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* ============================================================
-   TOAST/FOOTER
-   ============================================================ */
-.mappingToast {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  color: rgba(77, 70, 53, 0.3);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  padding: 8px 16px;
-  background: transparent;
-  width: 100%;
-  justify-content: center;
-}
-
-.mappingToastDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #34d399;
-}
-
-.mappingToastDivider {
-  color: rgba(208, 197, 175, 0.3);
-}
-
-.mappingToastTime {
-  color: #191c1d;
-  font-weight: 600;
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 768px) {
-  .mappingCard {
-    padding: 24px 20px;
-    border-radius: 24px;
-  }
-
-  .mappingTitle {
-    font-size: 24px;
-  }
-
-  .mappingHeaderIcon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .mappingHeaderIcon span {
-    font-size: 24px;
-  }
-
-  .mappingSelectedInfo {
-    flex-direction: column;
-  }
-
-  .mappingScanner {
-    width: 100%;
-  }
-
-  .mappingInfoGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .mappingInfoItem {
-    border-radius: 16px;
-  }
-
-  .mappingSelected {
-    padding: 20px;
-    border-radius: 24px;
-  }
-
-  .mappingSelectedSku {
-    font-size: 22px;
-  }
-
-  .mappingSelectedDetails {
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .mappingCard {
-    padding: 20px 16px;
-    border-radius: 20px;
-  }
-
-  .mappingTitle {
-    font-size: 20px;
-  }
-
-  .mappingSubtitle {
-    font-size: 14px;
-  }
-
-  .mappingSearchWrapper input {
-    font-size: 14px;
-    padding: 14px 16px 14px 52px;
-  }
-
-  .mappingSearchWrapper span {
-    left: 16px;
-    font-size: 20px;
-  }
-
-  .mappingSelected {
-    padding: 16px;
-  }
-
-  .barcodeVisual {
-    font-size: 12px;
-    min-height: 40px;
-  }
-
-  .saveBtn {
-    font-size: 11px;
-    padding: 10px;
-  }
-
-  .mappingToast {
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-  }
-}/* ============================================================
-   ADDITIONAL STYLES
-   ============================================================ */
-
-/* Scanner button */
-.scanBtn {
-  width: 100%;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 9999px;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  margin-top: 8px;
-}
-
-.scanBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #e9c349;
-}
-
-.scanBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.scanBtn span {
-  font-size: 20px;
-}
-
-/* Barcode check mark */
-.barcodeCheck {
-  position: absolute;
-  right: 12px;
-  color: #34d399;
-  font-size: 16px;
-}
-
-.barcodeVisual {
-  position: relative;
-}
-
-/* Status badge */
-.mappingStatusInfo {
-  margin-top: 16px;
-}
-
-.mappingStatusBadge {
-  display: inline-block;
-  padding: 4px 16px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.mappingStatusBadge.mapped {
-  background: rgba(52, 211, 153, 0.1);
-  color: #34d399;
-}
-
-.mappingStatusBadge.unmapped {
-  background: rgba(115, 92, 0, 0.08);
-  color: #735c00;
-}
-
-/* No results icon */
-.mappingNoResults {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 32px 20px;
-  color: rgba(77, 70, 53, 0.4);
-  font-size: 14px;
-}
-
-.mappingNoResults span {
-  font-size: 40px;
-  color: rgba(77, 70, 53, 0.15);
-}
-
-/* Disabled search */
-.mappingSearchWrapper input:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Responsive scanner */
-@media (max-width: 768px) {
-  .scanBtn {
-    font-size: 11px;
-    padding: 8px;
-  }
-}
-/* ============================================================
-   SIZE SELECTOR
-   ============================================================ */
-
-.mappingSizeSelector {
-  margin-top: 20px;
-}
-
-.mappingSizeGrid {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.sizeSelectBtn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 16px;
-  border: 1px solid rgba(208, 197, 175, 0.2);
-  border-radius: 9999px;
-  background: #ffffff;
-  color: #191c1d;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.sizeSelectBtn:hover:not(:disabled) {
-  border-color: #735c00;
-  background: rgba(115, 92, 0, 0.05);
-}
-
-.sizeSelectBtn.active {
-  border-color: #735c00;
-  background: #735c00;
-  color: #ffffff;
-}
-
-.sizeSelectBtn.mapped {
-  border-color: #34d399;
-  background: rgba(52, 211, 153, 0.08);
-}
-
-.sizeSelectBtn.mapped.active {
-  background: #34d399;
-  color: #ffffff;
-  border-color: #34d399;
-}
-
-.sizeSelectBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.sizeSelectLabel {
-  font-size: 13px;
-}
-
-.sizeSelectCheck {
-  font-size: 12px;
-  color: #34d399;
-}
-
-.sizeSelectBtn.active .sizeSelectCheck {
-  color: #ffffff;
-}
-
-/* ============================================================
-   INPUT METHOD TOGGLE
-   ============================================================ */
-
-.inputMethodToggle {
-  display: flex;
-  gap: 4px;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 9999px;
-  padding: 4px;
-  margin-top: 12px;
-}
-
-.methodBtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 9999px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.methodBtn:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.methodBtn.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-
-.methodBtn span {
-  font-size: 18px;
-}
-
-/* ============================================================
-   MAPPING RESULT SIZES
-   ============================================================ */
-
-.mappingResultSizes {
-  display: flex;
-  gap: 4px;
-  margin-top: 4px;
-  flex-wrap: wrap;
-}
+.suggestionLeft { flex: 1; min-width: 0; }
+.suggestionSku { font-size: 11px; color: #735c00; font-family: 'JetBrains Mono', monospace; }
+.suggestionName { font-weight: 700; font-size: 14px; color: #191c1d; }
+.suggestionInfo { font-size: 12px; color: rgba(77, 70, 53, 0.4); display: flex; gap: 4px; margin-top: 2px; flex-wrap: wrap; }
+.suggestionRight { text-align: right; flex-shrink: 0; }
+.suggestionSizes { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
+.suggestionStatus { font-size: 11px; font-weight: 700; margin-top: 4px; color: rgba(77, 70, 53, 0.3); }
 
 .sizeChip {
-  display: inline-block;
-  padding: 1px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
   border-radius: 9999px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'JetBrains Mono', monospace;
 }
 
 .sizeChip.mapped {
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  color: #059669;
 }
 
 .sizeChip.unmapped {
-  background: rgba(115, 92, 0, 0.08);
-  color: #735c00;
+  background: rgba(251, 146, 60, 0.12);
+  color: #d97706;
+}
+/* SIZE PICKER */
+.sizePickerPanel {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  margin-bottom: 16px;
 }
 
-/* ============================================================
-   SCANNER SUBTITLE
-   ============================================================ */
+.sizePickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
 
-.mappingScannerSub {
-  display: block;
-  font-size: 10px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.3);
+.sizePickerLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.sizePickerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.sizePickerChip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 10px;
+  background: #f8f9fa;
+  border: 2px solid rgba(208, 197, 175, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sizePickerChip:hover {
+  border-color: #735c00;
+  background: rgba(115, 92, 0, 0.06);
+}
+
+.sizePickerChip.sizePickerChipMapped {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.sizePickerChipSize {
+  font-size: 16px;
+  font-weight: 800;
+  color: #191c1d;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.sizePickerChipStatus {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.5);
+}
+/* DETAIL */
+.mappingDetail {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+  margin-bottom: 16px;
+}
+
+.mappingDetailSku {
+  font-size: 12px;
+  color: #735c00;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.mappingDetailName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #191c1d;
   margin-top: 2px;
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+.mappingDetailInfo {
+  font-size: 13px;
+  color: rgba(77, 70, 53, 0.5);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
 
+.detailSize {
+  background: rgba(115, 92, 0, 0.08);
+  color: #735c00;
+  padding: 2px 12px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* BARCODE INPUT */
+.mappingBarcodeInput {
+  margin: 16px 0;
+}
+
+.mappingBarcodeInput label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.barcodeInputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.barcodeInput {
+  flex: 1;
+  height: 44px;
+  background: #f8f9fa;
+  border: 2px solid rgba(208, 197, 175, 0.2);
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.barcodeInput:focus {
+  border-color: #735c00;
+  box-shadow: 0 0 0 4px rgba(115, 92, 0, 0.06);
+}
+
+.barcodeScanBtn {
+  width: 44px;
+  height: 44px;
+  background: #735c00;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.barcodeScanBtn:hover {
+  background: #5a4700;
+}
+
+.barcodeScanBtn .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.detectedBarcode {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #059669;
+  background: rgba(52, 211, 153, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+/* ACTIONS */
+.mappingActions {
+  display: flex;
+  gap: 10px;
+}
+
+.mappingSaveBtn {
+  flex: 1;
+  height: 44px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.mappingSaveBtn:hover:not(:disabled) {
+  background: #5a4700;
+  transform: scale(0.98);
+}
+
+.mappingSaveBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mappingCancelBtn {
+  padding: 0 20px;
+  height: 44px;
+  background: transparent;
+  color: rgba(77, 70, 53, 0.5);
+  border: 2px solid rgba(208, 197, 175, 0.2);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.mappingCancelBtn:hover {
+  border-color: rgba(77, 70, 53, 0.3);
+  color: #191c1d;
+}
+
+/* EMPTY */
+.mappingEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.mappingEmptyIcon span {
+  font-size: 64px;
+  color: rgba(208, 197, 175, 0.2);
+}
+
+.mappingEmptyText {
+  font-size: 16px;
+  color: rgba(77, 70, 53, 0.4);
+  margin-top: 16px;
+}
+
+.mappingEmptyTip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(115, 92, 0, 0.05);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  color: rgba(77, 70, 53, 0.5);
+  margin-top: 16px;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .mappingSizeGrid {
-    gap: 6px;
+  .mappingPage {
+    padding: 16px;
   }
-  
-  .sizeSelectBtn {
-    padding: 4px 12px;
-    font-size: 12px;
+
+  .mappingHeader {
+    flex-direction: column;
   }
-  
-  .inputMethodToggle {
-    flex-direction: row;
+
+  .mappingStats {
+    width: 100%;
+    justify-content: space-around;
   }
-  
-  .methodBtn {
-    font-size: 10px;
-    padding: 6px 8px;
+
+  .mappingModeToggle {
+    flex-direction: column;
   }
-  
-  .methodBtn span {
+
+  .modeBtn {
+    justify-content: center;
+  }
+
+  .cameraFrame {
+    height: 100px;
+    max-width: 280px;
+  }
+
+  .mappingDetail {
+    padding: 16px;
+  }
+
+  .mappingDetailName {
     font-size: 16px;
+  }
+
+  .barcodeInput {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .mappingSizeGrid {
-    gap: 4px;
+  .mappingPage {
+    padding: 12px;
   }
-  
-  .sizeSelectBtn {
-    padding: 3px 10px;
-    font-size: 11px;
+
+  .mappingTitle {
+    font-size: 22px;
   }
-  
-  .mappingScannerSub {
-    font-size: 9px;
+
+  .mappingStats {
+    padding: 10px 14px;
+    gap: 12px;
   }
-}
-/* ============================================================
-   CAMERA STYLES
-   ============================================================ */
 
-.cameraPreview {
-  position: relative;
-  width: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-top: 8px;
-  background: #000000;
-}
+  .mappingStatValue {
+    font-size: 18px;
+  }
 
-.cameraVideo {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-}
+  .mappingActions {
+    flex-direction: column;
+  }
 
-.cameraOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
+  .cameraFrame {
+    height: 80px;
+    max-width: 240px;
+  }
 
-.cameraFrame {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 60%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
-}
-
-.cameraControls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.cameraCaptureBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
-  background: #735c00;
-  color: #ffffff;
-  border: none;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.cameraCaptureBtn:hover {
-  background: #5c4a00;
-  transform: scale(0.98);
-}
-
-.cameraCloseBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cameraCloseBtn:hover {
-  background: rgba(255, 0, 0, 0.3);
-  border-color: #ef4444;
-}
-
-/* Method buttons - tambahan */
-.methodBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  .cameraFrame .cornerTL,
+  .cameraFrame .cornerTR,
+  .cameraFrame .cornerBL,
+  .cameraFrame .cornerBR {
+    width: 22px;
+    height: 22px;
+  }
 }
