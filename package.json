@@ -1,5 +1,5 @@
 {
-  "name": "sov1",
+  "name": "stock-opname",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
