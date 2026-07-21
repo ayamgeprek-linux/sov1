@@ -1,15 +1,17 @@
 {
-  "name": "stock-opname-enterprise",
-  "version": "2.0.0",
+  "name": "sov1",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
-    "dev:web": "cd apps/web && npm run dev",
-    "dev:api": "cd apps/api && npm run dev",
-    "build": "turbo run build"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@stock-opname/web",
+    "build:api": "turbo run build --filter=@stock-opname/api"
   },
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "turbo": "^1.12.0"
+    "turbo": "^2.3.0"
   }
 }
