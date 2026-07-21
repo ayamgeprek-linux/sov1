@@ -1,11 +1,10 @@
 {
-   "name": "@stock-opname/web",
+  "name": "@stock-opname/web",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
