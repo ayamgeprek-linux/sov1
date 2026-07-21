@@ -5,6 +5,8 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import compression from 'compression'
 import dotenv from 'dotenv'
+
+// 🔥 IMPORT ROUTES - PAKE .js EXTENSION (ES Module)
 import userRoutes from './routes/users.js'
 import authRoutes from './routes/auth.js'
 import productsRoutes from './routes/products.js'
@@ -19,6 +21,7 @@ import backupRoutes from './routes/backup.js'
 dotenv.config()
 
 const app = express()
+const PORT = parseInt(process.env.PORT || '7860', 10)
 
 // ============================================================
 // MIDDLEWARE
@@ -26,12 +29,13 @@ const app = express()
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
 }))
 
 app.use(compression())
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || '*',
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -39,7 +43,10 @@ app.use(cors({
 
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
-app.use(morgan('dev'))
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'))
+}
 
 // ============================================================
 // ROUTES
@@ -62,15 +69,19 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'StockOpname API',
+    service: 'DOCTOR SO API',
+    version: '1.0.0',
     env: process.env.NODE_ENV || 'development',
+    port: PORT,
+    uptime: process.uptime()
   })
 })
 
 app.get('/api/test', (req, res) => {
   res.json({ 
     message: 'API is running! 🚀',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    status: 'OK'
   })
 })
 
@@ -89,7 +100,7 @@ app.use((req, res) => {
 // ERROR HANDLER
 // ============================================================
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error('[Error]', err.stack)
+  console.error('[Error]', err.stack || err.message)
   
   const statusCode = err.statusCode || 500
   const message = err.message || 'Internal server error'
@@ -101,4 +112,7 @@ app.use((err: any, req: any, res: any, next: any) => {
   })
 })
 
+// ============================================================
+// EXPORT
+// ============================================================
 export default app

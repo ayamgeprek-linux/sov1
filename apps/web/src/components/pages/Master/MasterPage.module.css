@@ -29,7 +29,7 @@
   font-weight: 700;
   color: #191c1d;
   letter-spacing: -0.01em;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'mater', sans-serif;
 }
 
 .masterSubtitle {
@@ -417,7 +417,556 @@
   background: #d4af37;
   border-radius: 10px;
 }
+/* apps/web/src/components/pages/Master/MasterPage.module.css */
 
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+.masterStatsBar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.masterStatItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.masterStatLabel {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.5);
+  font-weight: 500;
+}
+
+.masterStatValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: #191c1d;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.textGreen {
+  color: #059669;
+}
+
+.textOrange {
+  color: #d97706;
+}
+
+.masterImportBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterImportBtn:hover:not(:disabled) {
+  background: #5c4a00;
+  transform: translateY(-1px);
+}
+
+.masterImportBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.masterImportBtn span {
+  font-size: 18px;
+}
+
+/* ============================================================
+   RAK BADGE
+   ============================================================ */
+.rakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background: rgba(233, 195, 73, 0.12);
+  border: 1px solid rgba(233, 195, 73, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #735c00;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.rakBadge span {
+  font-size: 14px;
+}
+
+.rakEmpty {
+  color: rgba(77, 70, 53, 0.2);
+  font-size: 12px;
+}
+
+/* ============================================================
+   CATEGORY BADGES
+   ============================================================ */
+.categoryBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.accessories {
+  background: rgba(168, 85, 247, 0.1);
+  color: #7c3aed;
+}
+
+.bag {
+  background: rgba(236, 72, 153, 0.1);
+  color: #db2777;
+}
+
+.jaket {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.celana {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.tas {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.default {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 12px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+
+.mapped {
+  background: rgba(52, 211, 153, 0.1);
+  color: #059669;
+}
+
+.unmapped {
+  background: rgba(251, 146, 60, 0.1);
+  color: #d97706;
+  cursor: pointer;
+}
+
+.unmapped:hover {
+  background: rgba(251, 146, 60, 0.2);
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   SIZE LABEL
+   ============================================================ */
+.sizeLabel {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(77, 70, 53, 0.05);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.masterPage {
+  padding: 24px 32px 40px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.masterHeader {
+  margin-bottom: 24px;
+}
+
+.masterHeaderTop {
+  margin-bottom: 16px;
+}
+
+.masterTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #191c1d;
+  margin-bottom: 4px;
+}
+
+.masterSubtitle {
+  font-size: 14px;
+  color: rgba(77, 70, 53, 0.5);
+}
+
+.masterControls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.masterSearch {
+  flex: 1;
+  min-width: 200px;
+}
+
+.masterSearch input {
+  width: 100%;
+  padding: 8px 14px;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #ffffff;
+}
+
+.masterSearch input:focus {
+  border-color: #735c00;
+}
+
+.masterFilterWrapper {
+  min-width: 120px;
+}
+
+.masterFilter {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  background: #ffffff;
+  color: #191c1d;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterFilter:focus {
+  border-color: #735c00;
+}
+
+.masterTableWrap {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 197, 175, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.masterTableScroll {
+  overflow-x: auto;
+  padding: 0 4px 4px 4px;
+}
+
+.masterTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 800px;
+}
+
+.masterTable thead {
+  background: rgba(248, 249, 250, 0.5);
+}
+
+.masterTable th {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(77, 70, 53, 0.4);
+  border-bottom: 1px solid rgba(208, 197, 175, 0.06);
+}
+
+.masterTable td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(208, 197, 175, 0.04);
+  color: #191c1d;
+}
+
+.masterRow {
+  transition: background 0.15s;
+}
+
+.masterRow:hover {
+  background: rgba(212, 175, 55, 0.02);
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.textXs {
+  font-size: 11px;
+}
+
+.fontMono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px !important;
+  color: rgba(77, 70, 53, 0.3) !important;
+  font-size: 14px !important;
+}
+
+.masterFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(208, 197, 175, 0.06);
+}
+
+.masterTotal {
+  font-size: 12px;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.masterTotal strong {
+  color: #191c1d;
+}
+
+.masterFooterActions {
+  display: flex;
+  gap: 8px;
+}
+
+.masterExportBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.masterExportBtn:hover {
+  background: rgba(212, 175, 55, 0.05);
+  border-color: #735c00;
+  color: #735c00;
+}
+
+.masterExportBtn span {
+  font-size: 16px;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  .masterPage {
+    background: #0d0d0d;
+  }
+
+  .masterTitle {
+    color: #f0f0f0;
+  }
+
+  .masterSubtitle {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .masterSearch input {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.06);
+    color: #f0f0f0;
+  }
+
+  .masterSearch input:focus {
+    border-color: #d4af37;
+  }
+
+  .masterFilter {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.06);
+    color: #f0f0f0;
+  }
+
+  .masterFilter:focus {
+    border-color: #d4af37;
+  }
+
+  .masterStatsBar {
+    background: #141414;
+  }
+
+  .masterStatLabel {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .masterStatValue {
+    color: #f0f0f0;
+  }
+
+  .masterTableWrap {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .masterTable thead {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .masterTable th {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .masterTable td {
+    color: #e0e0e0;
+    border-bottom-color: rgba(255, 255, 255, 0.03);
+  }
+
+  .masterRow:hover {
+    background: rgba(212, 175, 55, 0.03);
+  }
+
+  .rakBadge {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+  }
+
+  .rakEmpty {
+    color: rgba(255, 255, 255, 0.15);
+  }
+
+  .masterTotal {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .masterTotal strong {
+    color: #f0f0f0;
+  }
+
+  .masterExportBtn {
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .masterExportBtn:hover {
+    background: rgba(212, 175, 55, 0.05);
+    border-color: #d4af37;
+    color: #d4af37;
+  }
+
+  .masterImportBtn {
+    background: #d4af37;
+    color: #0a0a0a;
+  }
+
+  .masterImportBtn:hover:not(:disabled) {
+    background: #c4a030;
+  }
+
+  .emptyState {
+    color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .textGreen {
+    color: #34d399;
+  }
+
+  .textOrange {
+    color: #fb923c;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .masterPage {
+    padding: 16px;
+  }
+
+  .masterControls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .masterSearch {
+    width: 100%;
+  }
+
+  .masterFilterWrapper {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .masterStatsBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .masterStatItem {
+    justify-content: space-between;
+  }
+
+  .masterTitle {
+    font-size: 22px;
+  }
+
+  .masterTable {
+    font-size: 12px;
+    min-width: 600px;
+  }
+
+  .masterTable th,
+  .masterTable td {
+    padding: 8px 10px;
+  }
+}
 /* ============================================================
    RESPONSIVE
    ============================================================ */

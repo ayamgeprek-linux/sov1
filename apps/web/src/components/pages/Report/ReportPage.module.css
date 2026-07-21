@@ -1,3 +1,5 @@
+/* apps/web/src/components/pages/Report/ReportPage.module.css */
+
 /* ============================================================
    REPORT PAGE - MATERIAL DESIGN (MATCH HTML)
    ============================================================ */
@@ -28,7 +30,7 @@
   font-weight: 700;
   color: #191c1d;
   letter-spacing: -0.01em;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'mater','Plus Jakarta Sans', sans-serif;
 }
 
 .reportSubtitle {
@@ -352,7 +354,7 @@
 }
 
 /* ============================================================
-   SIZE DETAILS
+   SIZE DETAILS - FIX: CHIPS CONTAINER
    ============================================================ */
 .sizeDetails {
   font-size: 12px;
@@ -363,21 +365,105 @@
   line-height: 1.8;
 }
 
+.sizeChipsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sizeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+/* Size Chip Colors */
+.sizeIconMuted {
+  background: rgba(77, 70, 53, 0.04);
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.sizeIconPending {
+  background: rgba(251, 146, 60, 0.08);
+  color: #d97706;
+  border-color: rgba(251, 146, 60, 0.15);
+}
+
+.sizeIconOk {
+  background: rgba(52, 211, 153, 0.08);
+  color: #059669;
+  border-color: rgba(52, 211, 153, 0.15);
+}
+
+.sizeIconMinus {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+.sizeIconPlus {
+  background: rgba(217, 119, 6, 0.08);
+  color: #d97706;
+  border-color: rgba(217, 119, 6, 0.15);
+}
+
+/* ============================================================
+   RAK BADGE - FIX: LEBIH TERLIHAT
+   ============================================================ */
+.rakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 12px 3px 8px;
+  background: rgba(115, 92, 0, 0.08);
+  border: 1px solid rgba(115, 92, 0, 0.15);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #735c00;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s ease;
+}
+
+.rakBadge span {
+  font-size: 16px;
+  color: #735c00;
+}
+
+.rakBadge:hover {
+  background: rgba(115, 92, 0, 0.15);
+  transform: scale(1.02);
+}
+
+.rakEmpty {
+  color: rgba(77, 70, 53, 0.2);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 /* ============================================================
    SELISIH
    ============================================================ */
 .selisihMinus {
-  color: #ba1a1a;
+  color: #dc2626;
   font-weight: 700;
 }
 
 .selisihPlus {
-  color: #415ba4;
+  color: #d97706;
   font-weight: 700;
 }
 
 .selisihZero {
-  color: rgba(77, 70, 53, 0.3);
+  color: #059669;
+  font-weight: 700;
 }
 
 /* ============================================================
@@ -387,7 +473,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -396,23 +482,23 @@
 }
 
 .statusMinus {
-  background: rgba(186, 26, 26, 0.08);
-  color: #ba1a1a;
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
 }
 
 .statusPlus {
-  background: rgba(65, 91, 164, 0.08);
-  color: #415ba4;
+  background: rgba(217, 119, 6, 0.08);
+  color: #d97706;
 }
 
 .statusOk {
-  background: rgba(52, 211, 153, 0.08);
-  color: #34d399;
+  background: rgba(5, 150, 105, 0.08);
+  color: #059669;
 }
 
 .statusBelum {
   background: rgba(77, 70, 53, 0.05);
-  color: rgba(77, 70, 53, 0.6);
+  color: rgba(77, 70, 53, 0.5);
 }
 
 .statusDot {
@@ -524,6 +610,41 @@
 }
 
 /* ============================================================
+   FILTERS
+   ============================================================ */
+.reportFilters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.reportFilterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(77, 70, 53, 0.6);
+}
+
+.reportFilterSelect {
+  padding: 8px 16px;
+  border: 1px solid rgba(208, 197, 175, 0.2);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #191c1d;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+}
+
+.reportFilterSelect:focus {
+  border-color: #735c00;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1024px) {
@@ -615,6 +736,15 @@
     font-size: 11px;
     max-width: 200px;
   }
+  
+  .rakBadge {
+    font-size: 10px;
+    padding: 2px 8px 2px 6px;
+  }
+  
+  .rakBadge span {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -652,5 +782,273 @@
   .sizeDetails {
     font-size: 10px;
     max-width: 150px;
+  }
+  
+  .sizeChip {
+    font-size: 9px;
+    padding: 1px 6px 1px 4px;
+  }
+  
+  .rakBadge {
+    font-size: 9px;
+    padding: 2px 6px 2px 4px;
+  }
+  
+  .rakBadge span {
+    font-size: 12px;
+  }
+  
+  .reportFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .reportFilterSelect {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   DARK MODE SUPPORT
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  .reportPage {
+    background: #0d0d0d;
+  }
+  
+  .reportTitle {
+    color: #f0f0f0;
+  }
+  
+  .reportSubtitle {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .reportContent {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportSummaryItem {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportSummaryNumber {
+    color: #f0f0f0;
+  }
+  
+  .reportSummaryLabel {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .reportMetricsStrip {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .reportMetricsValue {
+    color: #f0f0f0;
+  }
+  
+  .reportMetricsLabel {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .reportMetricsDivider {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportMetricsDate {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .reportTab {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .reportTab:hover {
+    color: #f0f0f0;
+  }
+  
+  .reportTab.active {
+    color: #d4af37;
+    border-bottom-color: #d4af37;
+  }
+  
+  .reportTable thead {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  .reportTable th {
+    color: rgba(255, 255, 255, 0.3);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportTable td {
+    color: #e0e0e0;
+    border-bottom-color: rgba(255, 255, 255, 0.03);
+  }
+  
+  .reportTable tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  .rowMinus {
+    background: rgba(239, 68, 68, 0.03);
+  }
+  
+  .rowMinus:hover {
+    background: rgba(239, 68, 68, 0.06) !important;
+  }
+  
+  .rowPlus {
+    background: rgba(251, 146, 60, 0.03);
+  }
+  
+  .rowPlus:hover {
+    background: rgba(251, 146, 60, 0.06) !important;
+  }
+  
+  .rowZero {
+    background: rgba(52, 211, 153, 0.02);
+  }
+  
+  .rowZero:hover {
+    background: rgba(52, 211, 153, 0.05) !important;
+  }
+  
+  .sku {
+    color: #d4af37;
+  }
+  
+  .rakBadge {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+  }
+  
+  .rakBadge span {
+    color: #d4af37;
+  }
+  
+  .rakEmpty {
+    color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .statusMinus {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+  }
+  
+  .statusPlus {
+    background: rgba(251, 146, 60, 0.08);
+    color: #fb923c;
+  }
+  
+  .statusOk {
+    background: rgba(52, 211, 153, 0.08);
+    color: #34d399;
+  }
+  
+  .statusBelum {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .sizeIconMuted {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .sizeIconPending {
+    background: rgba(251, 146, 60, 0.08);
+    color: #fb923c;
+  }
+  
+  .sizeIconOk {
+    background: rgba(52, 211, 153, 0.08);
+    color: #34d399;
+  }
+  
+  .sizeIconMinus {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+  }
+  
+  .sizeIconPlus {
+    background: rgba(251, 146, 60, 0.08);
+    color: #fb923c;
+  }
+  
+  .reportPaginationInfo {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .reportPaginationBtn {
+    border-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .reportPaginationBtn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportPaginationPage {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .reportPaginationPage:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportPaginationPage.active {
+    background: #d4af37;
+    color: #0a0a0a;
+  }
+  
+  .reportPaginationDots {
+    color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .reportBackBtn {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #f0f0f0;
+  }
+  
+  .reportBackBtn:hover {
+    background: #1a1a1a;
+  }
+  
+  .reportExportBtn {
+    background: #d4af37;
+    color: #0a0a0a;
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+  }
+  
+  .reportExportBtn:hover:not(:disabled) {
+    background: #c4a030;
+  }
+  
+  .reportFilterSelect {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #f0f0f0;
+  }
+  
+  .reportFilterSelect:focus {
+    border-color: #d4af37;
+  }
+  
+  .reportFilterLabel {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .reportEmpty {
+    color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .reportEmpty p {
+    color: rgba(255, 255, 255, 0.2);
   }
 }

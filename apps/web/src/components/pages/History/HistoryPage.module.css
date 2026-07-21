@@ -47,7 +47,7 @@
   font-weight: 700;
   color: #191c1d;
   letter-spacing: -0.01em;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'mater','Plus Jakarta Sans', sans-serif;
   margin-bottom: 4px;
 }
 
@@ -512,7 +512,95 @@
   line-height: 1.5;
   margin-top: 2px;
 }
+/* apps/web/src/components/pages/History/HistoryPage.module.css */
 
+/* ============================================================
+   RAK BADGE
+   ============================================================ */
+.rakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background: rgba(233, 195, 73, 0.12);
+  border: 1px solid rgba(233, 195, 73, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #e9c349;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.rakBadge span {
+  font-size: 14px;
+}
+
+.rakEmpty {
+  color: rgba(255,255,255,0.15);
+  font-size: 12px;
+}
+
+/* ============================================================
+   SELISIH
+   ============================================================ */
+.selisihMatch {
+  color: #34d399;
+}
+
+.selisihMinus {
+  color: #ef4444;
+}
+
+.selisihPlus {
+  color: #f59e0b;
+}
+
+.historySelisih {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+/* ============================================================
+   SKU, NAME, SIZE
+   ============================================================ */
+.historySku {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #e9c349;
+}
+
+.historyName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4d4949;
+}
+
+.historySize {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(90, 89, 89, 0.6);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.historyStock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #413f3f;
+}
+
+/* ============================================================
+   TABLE HEADER
+   ============================================================ */
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
 /* ============================================================
    RESPONSIVE
    ============================================================ */

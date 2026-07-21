@@ -21,12 +21,20 @@ interface ScanLog {
   status: string
   user_name?: string
   created_at: string
+  lokasi_rak?: string | null
 }
 
 interface ActiveUser {
   name: string
   scans: number
   avatar: string
+}
+
+interface RakStat {
+  rak: string
+  total: number
+  done: number
+  percentage: number
 }
 
 export function Dashboard({ products, navigateTo, showToast, isPetugas = false }: DashboardProps) {
@@ -46,11 +54,10 @@ export function Dashboard({ products, navigateTo, showToast, isPetugas = false }
   })
   const [recentScans, setRecentScans] = useState<ScanLog[]>([])
   const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([])
+  const [rakStats, setRakStats] = useState<RakStat[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // ============================================================
-  // GET GREETING BASED ON TIME
-  // ============================================================
   const getGreeting = () => {
     const hour = new Date().getHours()
     if (hour < 12) return 'Selamat Pagi'
@@ -59,102 +66,135 @@ export function Dashboard({ products, navigateTo, showToast, isPetugas = false }
     return 'Selamat Malam'
   }
 
-  // ============================================================
-  // GET USER NAME FROM AUTH
-  // ============================================================
   const userName = user?.name || user?.email?.split('@')[0] || 'Pengguna'
   const userRole = user?.role || 'admin'
 
   // ============================================================
-  // FETCH USERS - AMBIL DARI OPNAME + USER LOGIN (NAMA ASLI)
+  // FETCH USERS - AMAN (TANPA RAK)
   // ============================================================
- // ============================================================
-// FETCH USERS - AMBIL DARI OPNAME + USER LOGIN
-// ============================================================
-const fetchUsers = useCallback(async () => {
-  try {
-    console.log('[Dashboard] Fetching users from opname + current user...')
-    
-    // Ambil data opname
-    const result = await api.get<{ data: any[] }>('/api/opname', token || undefined)
-    const opnameData = result.data || []
-    
-    console.log('[Dashboard] Opname data:', opnameData.length)
-    
-    // Map user dari opname (pake user_name)
-    const userMap = new Map<string, { name: string; scans: number }>()
-    opnameData.forEach((item: any) => {
-      const name = item.user_name || 'Petugas'
-      if (userMap.has(name)) {
-        userMap.get(name)!.scans += 1
-      } else {
-        userMap.set(name, { name, scans: 1 })
+  const fetchUsers = useCallback(async () => {
+    try {
+      const result = await api.get<{ data: any[] }>('/api/opname', token || undefined)
+      const opnameData = result?.data || []
+      
+      const userMap = new Map<string, { name: string; scans: number }>()
+      opnameData.forEach((item: any) => {
+        const name = item.user_name || 'Petugas'
+        if (userMap.has(name)) {
+          userMap.get(name)!.scans += 1
+        } else {
+          userMap.set(name, { name, scans: 1 })
+        }
+      })
+      
+      if (user?.name && user.name.toLowerCase() !== 'admin' && user.name.toLowerCase() !== 'system') {
+        const existing = userMap.get(user.name)
+        if (existing) {
+          existing.scans += 1
+        } else {
+          userMap.set(user.name, { name: user.name, scans: 1 })
+        }
       }
-    })
-    
-    // TAMBAHKAN USER YANG SEDANG LOGIN
-    if (user?.name) {
-      const existing = userMap.get(user.name)
-      if (existing) {
-        existing.scans += 1
+      
+      const users: ActiveUser[] = Array.from(userMap.entries()).map(([key, value]) => ({
+        name: value.name,
+        scans: value.scans,
+        avatar: value.name.charAt(0).toUpperCase()
+      }))
+      
+      users.sort((a, b) => b.scans - a.scans)
+      
+      const filteredUsers = users.filter(u => {
+        const lowerName = u.name.toLowerCase()
+        return lowerName !== 'admin' && lowerName !== 'system'
+      })
+      
+      setActiveUsers(filteredUsers)
+      
+    } catch (error) {
+      console.error('[Dashboard] Fetch users error:', error)
+      if (user?.name && user.name.toLowerCase() !== 'admin') {
+        setActiveUsers([{
+          name: user.name,
+          scans: 0,
+          avatar: user.name.charAt(0).toUpperCase()
+        }])
       } else {
-        userMap.set(user.name, { name: user.name, scans: 1 })
+        setActiveUsers([])
       }
-      console.log('[Dashboard] Current user added:', user.name)
     }
-    
-    // Convert ke array
-    const users: ActiveUser[] = Array.from(userMap.entries()).map(([key, value]) => ({
-      name: value.name,
-      scans: value.scans,
-      avatar: value.name.charAt(0).toUpperCase()
-    }))
-    
-    // Urutkan berdasarkan scan terbanyak
-    users.sort((a, b) => b.scans - a.scans)
-    
-    // 🔥 FILTER: HANYA HAPUS "admin" dan "system" (TAPI "Petugas" TETAP MUNCUL)
-    const filteredUsers = users.filter(u => {
-      const lowerName = u.name.toLowerCase()
-      return lowerName !== 'admin' && lowerName !== 'system'
-    })
-    
-    console.log('[Dashboard] Final users:', filteredUsers)
-    setActiveUsers(filteredUsers)
-    
-  } catch (error) {
-    console.error('[Dashboard] Fetch users error:', error)
-    
-    // FALLBACK: tampilin user login (kecuali admin)
-    if (user?.name && user.name.toLowerCase() !== 'admin') {
-      setActiveUsers([{
-        name: user.name,
-        scans: 0,
-        avatar: user.name.charAt(0).toUpperCase()
-      }])
-    } else {
-      setActiveUsers([])
-    }
-  }
-}, [token, user])
+  }, [token, user])
+
   // ============================================================
-  // FETCH ALL DATA
+  // FETCH RAK STATS - AMAN (TANPA RAK)
+  // ============================================================
+  const fetchRakStats = useCallback(async () => {
+    try {
+      const result = await api.get<{ data: any[] }>('/api/opname', token || undefined)
+      const opnameData = result?.data || []
+      
+      const rakMap = new Map<string, { total: number; done: number }>()
+      
+      opnameData.forEach((item: any) => {
+        // 🔥 FALLBACK: kalo ga ada lokasi_rak, pake 'Tanpa Rak'
+        const rak = item.lokasi_rak || 'Tanpa Rak'
+        if (!rakMap.has(rak)) {
+          rakMap.set(rak, { total: 0, done: 0 })
+        }
+        const data = rakMap.get(rak)!
+        data.total += 1
+        if (item.status === 'sesuai' || item.status === 'masuk' || item.status === 'keluar') {
+          data.done += 1
+        }
+      })
+      
+      const rakStatsArray: RakStat[] = Array.from(rakMap.entries()).map(([rak, data]) => ({
+        rak,
+        total: data.total,
+        done: data.done,
+        percentage: data.total > 0 ? Math.round((data.done / data.total) * 100) : 0
+      }))
+      
+      rakStatsArray.sort((a, b) => b.total - a.total)
+      setRakStats(rakStatsArray)
+      
+    } catch (error) {
+      console.error('[Dashboard] Fetch rak stats error:', error)
+      setRakStats([])
+    }
+  }, [token])
+
+  // ============================================================
+  // FETCH ALL DATA - AMAN
   // ============================================================
   const fetchAllData = useCallback(async () => {
     setLoading(true)
+    setError(null)
     try {
-      // 1. Fetch opname data
-      const result = await api.get<{ data: ScanLog[] }>('/api/opname', token || undefined)
-      const opnameData = result.data || []
+      // 🔥 AMBIL DATA OPNAME
+      const result = await api.get<{ data: any[]; success?: boolean }>('/api/opname', token || undefined)
+      
+      let opnameData: any[] = []
+      
+      // 🔥 HANDLE RESPONSE (ada yang pake .data, ada yang langsung array)
+      if (result) {
+        if (Array.isArray(result)) {
+          opnameData = result
+        } else if (result.data && Array.isArray(result.data)) {
+          opnameData = result.data
+        } else if (result.success && result.data && Array.isArray(result.data)) {
+          opnameData = result.data
+        }
+      }
 
       console.log('[Dashboard] Opname data:', opnameData.length)
 
-      // 2. Hitung stats
-      const total = products.length || 0
+      // 🔥 HITUNG STATS DARI PRODUCTS
+      const total = products?.length || 0
       const opnamed = opnameData.length
       const progress = total > 0 ? Math.round((opnamed / total) * 100) : 0
       const totalSelisih = opnameData.reduce((acc, item) => acc + (item.selisih || 0), 0)
-      const mapped = products.filter(p => p.status_mapping).length || 0
+      const mapped = products?.filter(p => p.status_mapping).length || 0
       const unmapped = total - mapped
 
       setStats({
@@ -171,27 +211,33 @@ const fetchUsers = useCallback(async () => {
         remainingItems: total - opnamed
       })
 
-      // 3. Process scan logs
+      // 🔥 SET RECENT SCANS
       if (opnameData.length > 0) {
-        const logs = opnameData.map((item: any) => {
-          const product = products.find((p: any) => p.sku === item.sku && p.size === item.size)
+        const logs = opnameData.slice(0, 10).map((item: any) => {
+          const product = products?.find((p: any) => p.sku === item.sku && p.size === item.size)
           return {
             ...item,
-            nama_barang: product?.nama_barang || 'Unknown',
+            nama_barang: product?.nama_barang || item.nama_barang || 'Unknown',
             qty: item.stock_real || 0,
+            lokasi_rak: item.lokasi_rak || null
           }
         })
         setRecentScans(logs)
+      } else {
+        setRecentScans([])
       }
 
-      // 4. ✅ FETCH USERS
+      // 🔥 FETCH USERS & RAK (AMAN)
       await fetchUsers()
+      await fetchRakStats()
 
     } catch (error) {
       console.error('[Dashboard] Error fetching data:', error)
-      // Fallback: pake products
-      const total = products.length
-      const opnamed = products.filter(p => p.qty_fisik !== null && p.qty_fisik !== undefined).length
+      setError('Gagal memuat data, menggunakan data lokal')
+      
+      // 🔥 FALLBACK: pake products
+      const total = products?.length || 0
+      const opnamed = products?.filter(p => p.qty_fisik !== null && p.qty_fisik !== undefined).length || 0
       const progress = total > 0 ? Math.round((opnamed / total) * 100) : 0
       setStats(prev => ({
         ...prev,
@@ -204,20 +250,14 @@ const fetchUsers = useCallback(async () => {
     } finally {
       setLoading(false)
     }
-  }, [products, token, fetchUsers])
+  }, [products, token, fetchUsers, fetchRakStats])
 
-  // ============================================================
-  // AUTO REFRESH
-  // ============================================================
   useEffect(() => {
     fetchAllData()
     const interval = setInterval(fetchAllData, 30000)
     return () => clearInterval(interval)
   }, [fetchAllData])
 
-  // ============================================================
-  // FORMAT TIME
-  // ============================================================
   const formatTime = (dateStr: string) => {
     if (!dateStr) return '-'
     try {
@@ -234,35 +274,16 @@ const fetchUsers = useCallback(async () => {
     }
   }
 
-  // ============================================================
-  // GET STATUS BADGE
-  // ============================================================
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'sesuai': 
-        return { 
-          label: 'Sesuai', 
-          icon: 'check_circle',
-          className: styles.statusMatch 
-        }
+        return { label: 'Sesuai', icon: 'check_circle', className: styles.statusMatch }
       case 'masuk': 
-        return { 
-          label: 'Lebih', 
-          icon: 'trending_up',
-          className: styles.statusPlus 
-        }
+        return { label: 'Lebih', icon: 'trending_up', className: styles.statusPlus }
       case 'keluar': 
-        return { 
-          label: 'Kurang', 
-          icon: 'priority_high',
-          className: styles.statusMinus 
-        }
+        return { label: 'Kurang', icon: 'priority_high', className: styles.statusMinus }
       default: 
-        return { 
-          label: 'Belum', 
-          icon: 'hourglass_empty',
-          className: styles.statusPending 
-        }
+        return { label: 'Belum', icon: 'hourglass_empty', className: styles.statusPending }
     }
   }
 
@@ -302,12 +323,12 @@ const fetchUsers = useCallback(async () => {
           <div className={styles.petugasStatsHeader}>
             <span>Barang sudah dihitung</span>
             <span className={styles.petugasStatsCount}>
-              {recentScans.length} / {products.filter(p => p.stock_sistem > 0).length}
+              {recentScans.length} / {products?.filter(p => p.stock_sistem > 0).length || 0}
             </span>
           </div>
           <div className={styles.petugasStatsBar}>
             <div className={styles.petugasStatsFill} style={{ 
-              width: `${products.filter(p => p.stock_sistem > 0).length > 0 ? Math.round((recentScans.length / products.filter(p => p.stock_sistem > 0).length) * 100) : 0}%` 
+              width: `${products?.filter(p => p.stock_sistem > 0).length > 0 ? Math.round((recentScans.length / products.filter(p => p.stock_sistem > 0).length) * 100) : 0}%` 
             }}></div>
           </div>
           <div className={styles.petugasStatsGrid}>
@@ -338,7 +359,6 @@ const fetchUsers = useCallback(async () => {
   // ============================================================
   return (
     <div className={styles.dashboard}>
-      {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h2 className={styles.headerTitle}>
@@ -355,10 +375,8 @@ const fetchUsers = useCallback(async () => {
         </div>
       </div>
 
-      {/* Content Canvas */}
       <div className={styles.contentCanvas}>
         <section className={styles.statsSection}>
-          {/* Left Column: Main Stats */}
           <div className={styles.mainStats}>
             <div className={styles.mainStatsGlow}></div>
             <div className={styles.mainStatsContent}>
@@ -394,7 +412,6 @@ const fetchUsers = useCallback(async () => {
                 </div>
               </div>
 
-              {/* PROGRESS CARD */}
               <div className={styles.mainStatsProgress}>
                 <div className={styles.mainStatsProgressLeft}>
                   <p className={styles.mainStatsProgressLabel}>Progress Opname</p>
@@ -419,7 +436,6 @@ const fetchUsers = useCallback(async () => {
             </div>
           </div>
 
-          {/* Right Column: Active Users */}
           <div className={styles.petugasList}>
             <div className={styles.petugasListHeader}>
               <div>
@@ -453,16 +469,51 @@ const fetchUsers = useCallback(async () => {
                 </div>
               )}
             </div>
-            <button 
-              className={styles.petugasListBtn}
-              onClick={() => navigateTo('progress')}
-            >
+            <button className={styles.petugasListBtn} onClick={() => navigateTo('progress')}>
               Lihat Semua Petugas
             </button>
           </div>
         </section>
 
-        {/* Recent Scans Section */}
+        {/* RAK STATS - AMAN */}
+        {rakStats.length > 0 && (
+          <section className={styles.rakSection}>
+            <div className={styles.rakContainer}>
+              <div className={styles.rakHeader}>
+                <div className={styles.rakHeaderLeft}>
+                  <h4 className={styles.rakTitle}>
+                    <span className="material-symbols-outlined">inventory_2</span>
+                    Distribusi Rak
+                  </h4>
+                  <p className={styles.rakSubtitle}>Sebaran barang per lokasi rak</p>
+                </div>
+                <button className={styles.rakViewAll} onClick={() => navigateTo('report')}>
+                  Lihat Semua
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+              <div className={styles.rakGrid}>
+                {rakStats.slice(0, 8).map((rak) => (
+                  <div key={rak.rak} className={styles.rakCard}>
+                    <div className={styles.rakCardHeader}>
+                      <span className={styles.rakCardLabel}>{rak.rak}</span>
+                      <span className={styles.rakCardCount}>{rak.total} item</span>
+                    </div>
+                    <div className={styles.rakCardBar}>
+                      <div className={styles.rakCardFill} style={{ width: `${rak.percentage}%` }} />
+                    </div>
+                    <div className={styles.rakCardFooter}>
+                      <span className={styles.rakCardDone}>✅ {rak.done} selesai</span>
+                      <span className={styles.rakCardPercent}>{rak.percentage}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Recent Scans */}
         <section className={styles.logsSection}>
           <div className={styles.logsContainer}>
             <div className={styles.logsHeader}>
@@ -482,22 +533,34 @@ const fetchUsers = useCallback(async () => {
               </div>
             </div>
             
-            {/* Recent Scans List */}
             {loading ? (
               <div className={styles.logsLoading}>
                 <span className="material-symbols-outlined animate-spin">progress_activity</span>
                 <p>Memuat data...</p>
               </div>
+            ) : error ? (
+              <div className={styles.logsError}>
+                <span className="material-symbols-outlined">error</span>
+                <p>{error}</p>
+              </div>
             ) : recentScans.length > 0 ? (
               <div className={styles.logsList}>
-                {recentScans.slice(0, 10).map((scan) => {
+                {recentScans.map((scan) => {
                   const status = getStatusBadge(scan.status)
                   return (
                     <div key={scan.id} className={styles.logsItem}>
                       <div className={styles.logsItemLeft}>
                         <div className={styles.logsItemInfo}>
                           <p className={styles.logsItemName}>{scan.nama_barang}</p>
-                          <p className={styles.logsItemSku}>{scan.sku} • {scan.size}</p>
+                          <p className={styles.logsItemSku}>
+                            {scan.sku} • {scan.size}
+                            {scan.lokasi_rak && (
+                              <span className={styles.logsItemRak}>
+                                <span className="material-symbols-outlined">inventory_2</span>
+                                {scan.lokasi_rak}
+                              </span>
+                            )}
+                          </p>
                         </div>
                       </div>
                       <div className={styles.logsItemRight}>

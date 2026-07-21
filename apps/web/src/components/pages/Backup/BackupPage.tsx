@@ -153,7 +153,7 @@ export function BackupPage({ navigateTo, showToast }: BackupPageProps) {
       {/* Header */}
       <div className={styles.backupHeader}>
         <div>
-          <h1 className={styles.backupTitle}>💾 Backup & Restore</h1>
+          <h1 className={styles.backupTitle}>Backup & Restore</h1>
           <p className={styles.backupSubtitle}>Kelola backup data sistem</p>
         </div>
         <button 

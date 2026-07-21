@@ -41,9 +41,11 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
     to: ''
   })
   const [summary, setSummary] = useState<any>(null)
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
 
   // ============================================================
-  // FETCH AUDIT LOGS (PAKE TOKEN)
+  // FETCH AUDIT LOGS
   // ============================================================
   useEffect(() => {
     const fetchLogs = async () => {
@@ -66,7 +68,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
 
         const result = await api.get<{ success: boolean; data: AuditLog[]; pagination: any }>(
           `/api/audit?${params.toString()}`,
-          token // 👈 PASTIKAN TOKEN DIKIRIM
+          token
         )
 
         console.log('[AuditLog] Result:', result)
@@ -89,7 +91,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
   }, [page, limit, filters, token, showToast])
 
   // ============================================================
-  // FETCH SUMMARY (PAKE TOKEN)
+  // FETCH SUMMARY
   // ============================================================
   useEffect(() => {
     const fetchSummary = async () => {
@@ -98,7 +100,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
       try {
         const result = await api.get<{ success: boolean; data: any }>(
           '/api/audit/summary/stats',
-          token // 👈 PASTIKAN TOKEN DIKIRIM
+          token
         )
         if (result?.success) {
           setSummary(result.data)
@@ -145,6 +147,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
       'MAPPING_UPDATE': styles.badgeUpdate,
       'MAPPING_DELETE': styles.badgeDelete,
       'BARCODE_SCAN': styles.badgeRead,
+      'RAK_UPDATE': styles.badgeUpdate, // 🔥 BARU
       'TEST': styles.badgeDefault,
     }
     return actionMap[action] || styles.badgeDefault
@@ -167,9 +170,63 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
       'MAPPING_UPDATE': 'Update Mapping',
       'MAPPING_DELETE': 'Hapus Mapping',
       'BARCODE_SCAN': 'Scan Barcode',
+      'RAK_UPDATE': 'Update Rak', // 🔥 BARU
       'TEST': 'Test',
     }
     return labelMap[action] || action
+  }
+
+  // ============================================================
+  // GET ENTITY ICON
+  // ============================================================
+  const getEntityIcon = (entityType: string) => {
+    const iconMap: Record<string, string> = {
+      'auth': 'lock',
+      'temp_master': 'inventory_2',
+      'temp_opname': 'qr_code_scanner',
+      'temp_barcode': 'barcode',
+      'backup': 'backup',
+      'users': 'person',
+      'rak': 'inventory_2', // 🔥 BARU
+    }
+    return iconMap[entityType] || 'folder'
+  }
+
+  // ============================================================
+  // FORMAT DETAIL - TAMPILKAN RAK
+  // ============================================================
+  const formatDetail = (log: AuditLog) => {
+    if (log.action === 'RAK_UPDATE') {
+      const oldRak = log.old_data?.lokasi_rak || '-'
+      const newRak = log.new_data?.lokasi_rak || '-'
+      return (
+        <span className={styles.rakChange}>
+          <span className={styles.rakOld}>{oldRak}</span>
+          <span className={styles.rakArrow}>→</span>
+          <span className={styles.rakNew}>{newRak}</span>
+        </span>
+      )
+    }
+    
+    if (log.new_data) {
+      return (
+        <span className={styles.newData}>
+          {JSON.stringify(log.new_data).slice(0, 50)}
+          {JSON.stringify(log.new_data).length > 50 ? '...' : ''}
+        </span>
+      )
+    }
+    
+    if (log.old_data) {
+      return (
+        <span className={styles.oldData}>
+          {JSON.stringify(log.old_data).slice(0, 50)}
+          {JSON.stringify(log.old_data).length > 50 ? '...' : ''}
+        </span>
+      )
+    }
+    
+    return <span className={styles.detailEmpty}>-</span>
   }
 
   const totalPages = Math.ceil(total / limit)
@@ -177,6 +234,11 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
     setPage(1)
+  }
+
+  const handleRowClick = (log: AuditLog) => {
+    setSelectedLog(log)
+    setShowDetailModal(true)
   }
 
   // ============================================================
@@ -232,6 +294,12 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
             <span className={styles.auditSummaryLabel}>Total</span>
             <span className={styles.auditSummaryValue}>{total}</span>
           </div>
+          <div className={styles.auditSummaryItem}>
+            <span className={styles.auditSummaryLabel}>Update Rak</span>
+            <span className={styles.auditSummaryValue}>
+              {logs.filter(l => l.action === 'RAK_UPDATE').length}
+            </span>
+          </div>
         </div>
       )}
 
@@ -251,6 +319,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
             <option value="OPNAME_SCAN">Opname</option>
             <option value="IMPORT_MASTER">Import</option>
             <option value="MAPPING_CREATE">Mapping</option>
+            <option value="RAK_UPDATE">Update Rak</option> {/* 🔥 BARU */}
           </select>
         </div>
         <div className={styles.auditFilterGroup}>
@@ -266,6 +335,7 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
             <option value="temp_barcode">Barcode</option>
             <option value="backup">Backup</option>
             <option value="users">Users</option>
+            <option value="rak">Rak</option> {/* 🔥 BARU */}
           </select>
         </div>
         <div className={styles.auditFilterGroup}>
@@ -320,7 +390,11 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
             </thead>
             <tbody>
               {logs.map((log) => (
-                <tr key={log.id} className={styles.auditRow}>
+                <tr 
+                  key={log.id} 
+                  className={styles.auditRow}
+                  onClick={() => handleRowClick(log)}
+                >
                   <td className={styles.auditTime}>{formatDate(log.created_at)}</td>
                   <td>
                     <div className={styles.auditUser}>
@@ -335,24 +409,15 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
                   </td>
                   <td>
                     <div className={styles.auditEntity}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                        {getEntityIcon(log.entity_type)}
+                      </span>
                       <span className={styles.auditEntityType}>{log.entity_type}</span>
                       <span className={styles.auditEntityId}>{log.entity_id}</span>
                     </div>
                   </td>
                   <td className={styles.auditDetail}>
-                    {log.new_data ? (
-                      <span className={styles.newData}>
-                        {JSON.stringify(log.new_data).slice(0, 50)}
-                        {JSON.stringify(log.new_data).length > 50 ? '...' : ''}
-                      </span>
-                    ) : log.old_data ? (
-                      <span className={styles.oldData}>
-                        {JSON.stringify(log.old_data).slice(0, 50)}
-                        {JSON.stringify(log.old_data).length > 50 ? '...' : ''}
-                      </span>
-                    ) : (
-                      <span className={styles.detailEmpty}>-</span>
-                    )}
+                    {formatDetail(log)}
                   </td>
                   <td className={styles.auditIp}>{log.ip_address || '-'}</td>
                 </tr>
@@ -383,6 +448,102 @@ export function AuditLogPage({ navigateTo, showToast }: AuditLogPageProps) {
             <span className="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
+      )}
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedLog && (
+        <>
+          <div className={styles.modalOverlay} onClick={() => setShowDetailModal(false)} />
+          <div className={styles.modalContainer}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>
+                <span className="material-symbols-outlined">info</span>
+                Detail Audit Log
+              </h3>
+              <button 
+                className={styles.modalClose}
+                onClick={() => setShowDetailModal(false)}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <div className={styles.modalField}>
+                <label>ID</label>
+                <span className={styles.modalValue}>{selectedLog.id}</span>
+              </div>
+              <div className={styles.modalField}>
+                <label>Waktu</label>
+                <span className={styles.modalValue}>{formatDate(selectedLog.created_at)}</span>
+              </div>
+              <div className={styles.modalField}>
+                <label>User</label>
+                <span className={styles.modalValue}>{selectedLog.user_email || 'System'}</span>
+              </div>
+              <div className={styles.modalField}>
+                <label>Action</label>
+                <span className={`${styles.auditBadge} ${getActionBadge(selectedLog.action)}`}>
+                  {getActionLabel(selectedLog.action)}
+                </span>
+              </div>
+              <div className={styles.modalField}>
+                <label>Entity</label>
+                <span className={styles.modalValue}>{selectedLog.entity_type} - {selectedLog.entity_id}</span>
+              </div>
+              <div className={styles.modalField}>
+                <label>IP Address</label>
+                <span className={styles.modalValue}>{selectedLog.ip_address || '-'}</span>
+              </div>
+              <div className={styles.modalField}>
+                <label>User Agent</label>
+                <span className={styles.modalValue} style={{ fontSize: '11px', wordBreak: 'break-all' }}>
+                  {selectedLog.user_agent || '-'}
+                </span>
+              </div>
+              
+              {/* 🔥 Tampilkan perubahan Rak */}
+              {selectedLog.action === 'RAK_UPDATE' && (
+                <div className={styles.modalField}>
+                  <label>Perubahan Rak</label>
+                  <div className={styles.rakChangeDetail}>
+                    <div className={styles.rakChangeOld}>
+                      <span className={styles.rakChangeLabel}>Lama</span>
+                      <span className={styles.rakChangeValue}>{selectedLog.old_data?.lokasi_rak || '-'}</span>
+                    </div>
+                    <span className={styles.rakChangeArrow}>→</span>
+                    <div className={styles.rakChangeNew}>
+                      <span className={styles.rakChangeLabel}>Baru</span>
+                      <span className={styles.rakChangeValue}>{selectedLog.new_data?.lokasi_rak || '-'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {selectedLog.old_data && (
+                <div className={styles.modalField}>
+                  <label>Old Data</label>
+                  <pre className={styles.modalJson}>{JSON.stringify(selectedLog.old_data, null, 2)}</pre>
+                </div>
+              )}
+              {selectedLog.new_data && (
+                <div className={styles.modalField}>
+                  <label>New Data</label>
+                  <pre className={styles.modalJson}>{JSON.stringify(selectedLog.new_data, null, 2)}</pre>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.modalFooter}>
+              <button 
+                className={styles.modalConfirm}
+                onClick={() => setShowDetailModal(false)}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

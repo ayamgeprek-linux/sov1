@@ -1,13 +1,11 @@
 {
-  "name": "@stock-opname/web",
-  "version": "2.0.0",
-  "type": "module",
+   "name": "@stock-opname/web",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "preview": "vite preview"
+  
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -17,7 +15,8 @@
     "@zxing/library": "^0.21.3",
     "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",
-    "jspdf": "^2.5.1",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^5.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.0",

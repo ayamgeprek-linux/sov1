@@ -15,6 +15,16 @@ interface OpnamePageProps {
 
 const READER_ELEMENT_ID = 'barcode-reader'
 
+// ============================================================
+// RAK / LOKASI PRESET
+// ============================================================
+const RAK_PRESETS = [
+  'A1', 'A2', 'A3', 'A4', 'A5',
+  'B1', 'B2', 'B3', 'B4', 'B5',
+  'C1', 'C2', 'C3', 'C4', 'C5',
+  'D1', 'D2', 'D3', 'D4', 'D5',
+]
+
 export function OpnamePage({ 
   products, 
   navigateTo, 
@@ -46,13 +56,18 @@ export function OpnamePage({
   const isSavingRef = useRef(false)
   const [isAutoSave, setIsAutoSave] = useState(false)
 
+  // ===== RAK STATE =====
+  const [lokasiRak, setLokasiRak] = useState('')
+  const [isSavingRak, setIsSavingRak] = useState(false)
+  const [customRak, setCustomRak] = useState('')
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
     }
   }, [])
 
-  // 🔥 AUTO SAVE HANYA DARI SCAN (bukan dari search)
+  // 🔥 AUTO SAVE HANYA DARI SCAN
   useEffect(() => {
     if (selectedProduct && !loading && isAutoSave) {
       const autoSave = async () => {
@@ -75,6 +90,7 @@ export function OpnamePage({
       const qty = selectedProduct.qty_fisik || 1
       setQtyFisik(qty.toString())
       setCurrentSize(selectedProduct.size)
+      setLokasiRak(selectedProduct.lokasi_rak || '')
     }
   }, [selectedProduct])
 
@@ -121,7 +137,7 @@ export function OpnamePage({
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
-    setIsAutoSave(false) // 🔥 RESET AUTO SAVE KALO SEARCH
+    setIsAutoSave(false)
     
     if (value.length < 2) {
       setShowSuggestions(false)
@@ -149,7 +165,8 @@ export function OpnamePage({
         stock_sistem: curr.stock_sistem || 0,
         qty_fisik: curr.qty_fisik,
         status_mapping: curr.status_mapping || false,
-        isDone: curr.qty_fisik !== null && curr.qty_fisik !== undefined
+        isDone: curr.qty_fisik !== null && curr.qty_fisik !== undefined,
+        lokasi_rak: curr.lokasi_rak || ''
       })
       return acc
     }, {})
@@ -159,7 +176,7 @@ export function OpnamePage({
   }
 
   const selectProduct = (group: any) => {
-    setIsAutoSave(false) // 🔥 SEARCH = MANUAL SAVE
+    setIsAutoSave(false)
     
     const sortedSizes = [...group.sizes].sort((a: any, b: any) => {
       if (!a.isDone && b.isDone) return -1
@@ -182,23 +199,26 @@ export function OpnamePage({
         return {
           ...s,
           qty_fisik: productData?.qty_fisik || 0,
-          isDone: productData?.qty_fisik !== null && productData?.qty_fisik !== undefined
+          isDone: productData?.qty_fisik !== null && productData?.qty_fisik !== undefined,
+          lokasi_rak: productData?.lokasi_rak || ''
         }
       })
 
       setSelectedProduct({
         ...fullProduct,
-        allSizes: allSizesWithData
+        allSizes: allSizesWithData,
+        lokasi_rak: fullProduct.lokasi_rak || ''
       })
       setQtyFisik(fullProduct.qty_fisik?.toString() || '1')
       setCurrentSize(fullProduct.size)
+      setLokasiRak(fullProduct.lokasi_rak || '')
       setShowSuggestions(false)
       setSearchTerm('')
     }
   }
 
   const selectProductBySkuSize = (sku: string, size: string): boolean => {
-    setIsAutoSave(true) // 🔥 SCAN = AUTO SAVE
+    setIsAutoSave(true)
     
     const matchedProduct = products.find((p: any) => p.sku === sku && p.size === size)
     
@@ -214,12 +234,14 @@ export function OpnamePage({
         stock_sistem: p.stock_sistem || 0,
         qty_fisik: p.qty_fisik,
         status_mapping: p.status_mapping || false,
-        isDone: p.qty_fisik !== null && p.qty_fisik !== undefined
+        isDone: p.qty_fisik !== null && p.qty_fisik !== undefined,
+        lokasi_rak: p.lokasi_rak || ''
       }))
 
     setSelectedProduct({
       ...matchedProduct,
-      allSizes: allSizesWithData
+      allSizes: allSizesWithData,
+      lokasi_rak: matchedProduct.lokasi_rak || ''
     })
 
     setQtyFisik(
@@ -228,6 +250,7 @@ export function OpnamePage({
         : '1'
     )
     setCurrentSize(matchedProduct.size)
+    setLokasiRak(matchedProduct.lokasi_rak || '')
     setShowSuggestions(false)
     setSearchTerm('')
 
@@ -244,10 +267,12 @@ export function OpnamePage({
       size: sizeData.size,
       stock_sistem: sizeData.stock_sistem,
       qty_fisik: sizeData.qty_fisik,
-      status_mapping: sizeData.status_mapping
+      status_mapping: sizeData.status_mapping,
+      lokasi_rak: sizeData.lokasi_rak || ''
     })
     setQtyFisik(sizeData.isDone ? (sizeData.qty_fisik ?? 0).toString() : '1')
     setCurrentSize(size)
+    setLokasiRak(sizeData.lokasi_rak || '')
   }
 
   const handleSave = async () => {
@@ -274,7 +299,8 @@ export function OpnamePage({
             return {
               ...s,
               qty_fisik: qty,
-              isDone: true
+              isDone: true,
+              lokasi_rak: lokasiRak || s.lokasi_rak || ''
             }
           }
           return s
@@ -283,19 +309,25 @@ export function OpnamePage({
         setSelectedProduct({
           ...selectedProduct,
           qty_fisik: qty,
-          allSizes: updatedAllSizes
+          allSizes: updatedAllSizes,
+          lokasi_rak: lokasiRak || selectedProduct.lokasi_rak || ''
         })
+        
+        // 🔥 SAVE RAK ke database
+        if (lokasiRak && lokasiRak !== selectedProduct.lokasi_rak) {
+          await handleSaveRak(selectedProduct.sku, selectedProduct.size, lokasiRak)
+        }
         
         if (typeof refreshProducts === 'function') {
           await refreshProducts()
         }
         
-        // Reset setelah save
         setTimeout(() => {
           setSelectedProduct(null)
           setQtyFisik('')
           setCurrentSize('')
           setIsAutoSave(false)
+          setLokasiRak('')
           if (inputRef.current) {
             inputRef.current.focus()
           }
@@ -309,96 +341,70 @@ export function OpnamePage({
     }
   }
 
-  const handleAddNewSize = async () => {
-    if (!selectedProduct) {
-      showToast('⚠️ Pilih barang dulu!')
-      return
-    }
+  // ============================================================
+  // 🔥 SAVE RAK / LOKASI
+  // ============================================================
+  const handleSaveRak = async (sku: string, size: string, rak: string) => {
+    if (!rak || rak.trim() === '') return
     
-    const qty = parseInt(newSizeQty)
-    if (isNaN(qty) || qty < 0) {
-      showToast('⚠️ Input jumlah yang bener!')
-      return
-    }
-    
-    if (!newSize || newSize.trim() === '') {
-      showToast('⚠️ Masukkan size!')
-      return
-    }
-    
-    const existing = selectedProduct.allSizes.find(
-      (s: any) => s.size === newSize.toUpperCase()
-    )
-    
-    if (existing) {
-      showToast(`⚠️ Size ${newSize.toUpperCase()} udah ada!`)
-      return
-    }
-    
-    setLoading(true)
+    setIsSavingRak(true)
     try {
-      const result = await api.post<{ success: boolean; data?: any; error?: string }>(
-        '/api/opname/size',
-        {
-          sku: selectedProduct.sku,
-          size: newSize.toUpperCase(),
-          qty_fisik: qty,
-          nama_barang: selectedProduct.nama_barang,
-          kategori: selectedProduct.kategori || 'UNKNOWN',
-          warna: selectedProduct.warna || 'N/A'
-        },
+      const result = await api.post<{ success: boolean; error?: string }>(
+        '/api/opname/update-rak',
+        { sku, size, lokasi_rak: rak },
         token || undefined
       )
       
       if (result.success) {
-        showToast(`✅ Size ${newSize.toUpperCase()} (${qty}) ditambahkan!`)
-        
-        const newSizeData = {
-          size: newSize.toUpperCase(),
-          stock_sistem: 0,
-          qty_fisik: qty,
-          status_mapping: selectedProduct.status_mapping || false,
-          isDone: true
-        }
-        
-        setSelectedProduct({
-          ...selectedProduct,
-          allSizes: [...selectedProduct.allSizes, newSizeData]
-        })
-        
-        if (typeof refreshProducts === 'function') {
-          await refreshProducts()
-        }
-        
-        setShowAddSizeModal(false)
-        setNewSize('')
-        setNewSizeQty('')
+        showToast(`📍 Rak ${rak} disimpan`)
       } else {
-        showToast(`❌ ${result.error || 'Gagal tambah size'}`)
+        showToast(`⚠️ Gagal simpan rak: ${result.error}`)
       }
     } catch (error) {
-      console.error('Error adding size:', error)
-      showToast('❌ Gagal tambah size: ' + (error as Error).message)
+      console.error('[Rak] Error:', error)
     } finally {
-      setLoading(false)
-    }
-  }
-
-  const closeDetail = () => {
-    setSelectedProduct(null)
-    setQtyFisik('')
-    setCurrentSize('')
-    setShowAddSizeModal(false)
-    setNewSize('')
-    setNewSizeQty('')
-    setIsAutoSave(false)
-    if (inputRef.current) {
-      inputRef.current.focus()
+      setIsSavingRak(false)
     }
   }
 
   // ============================================================
-  // 🔥 START CAMERA - SUPER CEPAT
+  // 🔥 QTY + / - HANDLER
+  // ============================================================
+  const handleQtyIncrement = () => {
+    const current = parseInt(qtyFisik) || 0
+    setQtyFisik((current + 1).toString())
+  }
+
+  const handleQtyDecrement = () => {
+    const current = parseInt(qtyFisik) || 0
+    if (current > 0) {
+      setQtyFisik((current - 1).toString())
+    }
+  }
+
+  const handleQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value === '' || /^\d+$/.test(value)) {
+      setQtyFisik(value)
+    }
+  }
+
+  // ============================================================
+  // 🔥 RAK HANDLER
+  // ============================================================
+  const handleRakSelect = (rak: string) => {
+    setLokasiRak(rak)
+    setCustomRak('')
+  }
+
+  const handleCustomRakChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase()
+    setCustomRak(value)
+    setLokasiRak(value)
+  }
+
+  // ============================================================
+  // 🔥 START CAMERA
   // ============================================================
   const startCamera = async () => {
     try {
@@ -502,15 +508,19 @@ export function OpnamePage({
       )
 
       if (result?.success && result.data) {
-        const { sku, size } = result.data
+        const { sku, size, lokasi } = result.data
         
         const allSizes = products.filter((p: any) => p.sku === sku)
         const sizeExists = allSizes.some((p: any) => p.size === size)
         
         if (!sizeExists) {
-          showToast(`⚠️ Size ${size} tidak ditemukan`)
+          showToast(`⚠️ Size ${size} tidak ditemukan di master`)
           setTimeout(() => { isLookingUpRef.current = false }, 1200)
           return
+        }
+        
+        if (lokasi) {
+          showToast(`📦 ${sku} - ${size} (Rak ${lokasi})`)
         }
         
         const found = selectProductBySkuSize(sku, size)
@@ -520,8 +530,10 @@ export function OpnamePage({
           await stopCamera()
         }
       } else {
-        showToast(`❌ Barcode ${trimmed} belum di-mapping`)
-        setTimeout(() => { isLookingUpRef.current = false }, 1200)
+        // 🔥 BARCODE BELUM DI-MAP
+        await stopCamera()
+        showToast(`⚠️ Barcode ${trimmed} belum di-map! Cari produk manual.`)
+        setTimeout(() => { isLookingUpRef.current = false }, 500)
       }
     } catch (error) {
       console.error('[Opname] Error:', error)
@@ -542,6 +554,8 @@ export function OpnamePage({
     setNewSize('')
     setNewSizeQty('')
     setIsAutoSave(false)
+    setLokasiRak('')
+    setCustomRak('')
     
     if (showCamera) {
       stopCamera()
@@ -588,6 +602,98 @@ export function OpnamePage({
 
   const isDisplay = (sizes: any[]) => {
     return sizes.length === 1
+  }
+
+  const handleAddNewSize = async () => {
+    if (!selectedProduct) {
+      showToast('⚠️ Pilih barang dulu!')
+      return
+    }
+    
+    const qty = parseInt(newSizeQty)
+    if (isNaN(qty) || qty < 0) {
+      showToast('⚠️ Input jumlah yang bener!')
+      return
+    }
+    
+    if (!newSize || newSize.trim() === '') {
+      showToast('⚠️ Masukkan size!')
+      return
+    }
+    
+    const existing = selectedProduct.allSizes.find(
+      (s: any) => s.size === newSize.toUpperCase()
+    )
+    
+    if (existing) {
+      showToast(`⚠️ Size ${newSize.toUpperCase()} udah ada!`)
+      return
+    }
+    
+    setLoading(true)
+    try {
+      const result = await api.post<{ success: boolean; data?: any; error?: string }>(
+        '/api/opname/size',
+        {
+          sku: selectedProduct.sku,
+          size: newSize.toUpperCase(),
+          qty_fisik: qty,
+          nama_barang: selectedProduct.nama_barang,
+          kategori: selectedProduct.kategori || 'UNKNOWN',
+          warna: selectedProduct.warna || 'N/A',
+          lokasi_rak: lokasiRak || ''
+        },
+        token || undefined
+      )
+      
+      if (result.success) {
+        showToast(`✅ Size ${newSize.toUpperCase()} (${qty}) ditambahkan!`)
+        
+        const newSizeData = {
+          size: newSize.toUpperCase(),
+          stock_sistem: 0,
+          qty_fisik: qty,
+          status_mapping: selectedProduct.status_mapping || false,
+          isDone: true,
+          lokasi_rak: lokasiRak || ''
+        }
+        
+        setSelectedProduct({
+          ...selectedProduct,
+          allSizes: [...selectedProduct.allSizes, newSizeData]
+        })
+        
+        if (typeof refreshProducts === 'function') {
+          await refreshProducts()
+        }
+        
+        setShowAddSizeModal(false)
+        setNewSize('')
+        setNewSizeQty('')
+      } else {
+        showToast(`❌ ${result.error || 'Gagal tambah size'}`)
+      }
+    } catch (error) {
+      console.error('Error adding size:', error)
+      showToast('❌ Gagal tambah size: ' + (error as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const closeDetail = () => {
+    setSelectedProduct(null)
+    setQtyFisik('')
+    setCurrentSize('')
+    setShowAddSizeModal(false)
+    setNewSize('')
+    setNewSizeQty('')
+    setIsAutoSave(false)
+    setLokasiRak('')
+    setCustomRak('')
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
   }
 
   return (
@@ -788,24 +894,39 @@ export function OpnamePage({
                 </div>
               </div>
 
-              {/* QTY */}
+              {/* 🔥 QTY with + and - buttons */}
               <div className={styles.opnameDetailQty}>
                 <div className={styles.opnameDetailQtyRow}>
                   <span className={styles.opnameDetailQtyLabel}>Stock Sistem</span>
                   <span className={styles.opnameDetailQtyValue}>{selectedProduct.stock_sistem}</span>
                 </div>
+                
                 <div className={styles.opnameDetailQtyInput}>
                   <span className={styles.opnameDetailQtyLabel}>Stock Real</span>
-                  <input
-                    id="qty-input"
-                    type="number"
-                    className={styles.opnameDetailQtyField}
-                    value={qtyFisik}
-                    onChange={(e) => setQtyFisik(e.target.value)}
-                    placeholder="1"
-                    min="0"
-                  />
+                  <div className={styles.qtyControl}>
+                    <button 
+                      className={styles.qtyBtn}
+                      onClick={handleQtyDecrement}
+                      disabled={parseInt(qtyFisik) <= 0 || qtyFisik === ''}
+                    >
+                      <span className="material-symbols-outlined">remove</span>
+                    </button>
+                    <input
+                      type="text"
+                      className={styles.opnameDetailQtyField}
+                      value={qtyFisik}
+                      onChange={handleQtyChange}
+                      placeholder="0"
+                    />
+                    <button 
+                      className={styles.qtyBtn}
+                      onClick={handleQtyIncrement}
+                    >
+                      <span className="material-symbols-outlined">add</span>
+                    </button>
+                  </div>
                 </div>
+                
                 {qtyFisik !== '' && !isNaN(parseInt(qtyFisik)) && (
                   <div className={styles.opnameDetailSelisih}>
                     <span>Selisih:</span>
@@ -816,13 +937,48 @@ export function OpnamePage({
                 )}
               </div>
 
+              {/* 🔥 RAK / LOKASI - FORM PILIH RAK */}
+              <div className={styles.opnameDetailRak}>
+                <div className={styles.opnameDetailRakLabel}>
+                  <span className="material-symbols-outlined">inventory_2</span>
+                  Lokasi Rak
+                </div>
+                <div className={styles.rakGrid}>
+                  {RAK_PRESETS.map((rak) => (
+                    <button
+                      key={rak}
+                      className={`${styles.rakBtn} ${lokasiRak === rak ? styles.active : ''}`}
+                      onClick={() => handleRakSelect(rak)}
+                    >
+                      {rak}
+                    </button>
+                  ))}
+                </div>
+                <div className={styles.customRakContainer}>
+                  <input
+                    type="text"
+                    placeholder="Atau custom (contoh: Z1, RAK-01)"
+                    value={customRak}
+                    onChange={handleCustomRakChange}
+                    className={styles.rakInput}
+                  />
+                </div>
+                {lokasiRak && (
+                  <div className={styles.rakStatus}>
+                    <span className="material-symbols-outlined">check_circle</span>
+                    Rak: <strong>{lokasiRak}</strong>
+                    {isSavingRak && <span className={styles.rakSaving}>...menyimpan</span>}
+                  </div>
+                )}
+              </div>
+
               {/* BARCODE STATUS */}
               <div className={styles.opnameDetailBarcode}>
                 <div className={styles.opnameDetailBarcodeLabel}>Barcode</div>
                 <div className={styles.opnameDetailBarcodeArea}>
                   <span className="material-symbols-outlined">barcode</span>
                   <div className={styles.opnameDetailBarcodeValue}>
-                    {selectedProduct.status_mapping ? 'Sudah mapping' : 'Belum mapping'}
+                    {selectedProduct.status_mapping ? '✅ Sudah mapping' : '❌ Belum mapping'}
                   </div>
                 </div>
               </div>
@@ -868,7 +1024,7 @@ export function OpnamePage({
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* MODAL ADD SIZE */}
       {showAddSizeModal && (
         <>
           <div className={styles.modalOverlay} onClick={() => setShowAddSizeModal(false)} />

@@ -17,7 +17,8 @@
 .auditTitle {
   font-size: 30px;
   font-weight: 700;
-  color: #191c1d;
+  color: hsl(195, 7%, 11%);
+  font-family: 'mater' ,sans-serif;
 }
 
 .auditSubtitle {
@@ -331,7 +332,258 @@
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+/* apps/web/src/components/pages/AuditLog/AuditLogPage.module.css */
 
+/* ============================================================
+   RAK CHANGE
+   ============================================================ */
+.rakChange {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.rakOld {
+  color: #ef4444;
+  padding: 1px 6px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 4px;
+}
+
+.rakArrow {
+  color: rgba(77, 70, 53, 0.3);
+}
+
+.rakNew {
+  color: #34d399;
+  padding: 1px 6px;
+  background: rgba(52, 211, 153, 0.1);
+  border-radius: 4px;
+}
+
+/* ============================================================
+   RAK CHANGE DETAIL (MODAL)
+   ============================================================ */
+.rakChangeDetail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.rakChangeOld,
+.rakChangeNew {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.rakChangeLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(77, 70, 53, 0.4);
+}
+
+.rakChangeValue {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.rakChangeOld .rakChangeValue {
+  color: #ef4444;
+}
+
+.rakChangeNew .rakChangeValue {
+  color: #34d399;
+}
+
+.rakChangeArrow {
+  font-size: 20px;
+  color: rgba(77, 70, 53, 0.2);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modalContainer {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 10000;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modalTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #191c1d;
+}
+
+.modalTitle span {
+  font-size: 24px;
+  color: #735c00;
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  color: rgba(77, 70, 53, 0.3);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modalClose:hover {
+  color: #191c1d;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modalField label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(77, 70, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modalValue {
+  font-size: 14px;
+  color: #191c1d;
+  word-break: break-word;
+}
+
+.modalJson {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  overflow-x: auto;
+  max-height: 200px;
+  color: #191c1d;
+  border: 1px solid rgba(208, 197, 175, 0.1);
+}
+
+.modalFooter {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalConfirm {
+  padding: 8px 24px;
+  background: #735c00;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalConfirm:hover {
+  background: #5c4a00;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  .rakChange {
+    color: #e0e0e0;
+  }
+
+  .rakArrow {
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  .rakChangeDetail {
+    background: #141414;
+  }
+
+  .rakChangeLabel {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .modalContainer {
+    background: #1a1c1d;
+  }
+
+  .modalTitle {
+    color: #f0f0f0;
+  }
+
+  .modalValue {
+    color: #f0f0f0;
+  }
+
+  .modalJson {
+    background: #141414;
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .modalClose:hover {
+    color: #ffffff;
+  }
+
+  .modalConfirm {
+    background: #d4af37;
+    color: #0a0a0a;
+  }
+
+  .modalConfirm:hover {
+    background: #c4a030;
+  }
+}
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

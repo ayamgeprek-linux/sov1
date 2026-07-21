@@ -8,7 +8,7 @@ import { logAudit } from '../utils/audit.js'
 const router = Router()
 
 // ============================================================
-// GET /api/opname - Ambil semua data opname
+// GET /api/opname - Ambil semua data opname (TANPA JOIN)
 // ============================================================
 router.get('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -18,13 +18,14 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
     const pageNum = parseInt(page as string) || 1
     const offset = (pageNum - 1) * limitNum
 
+    // 🔥 QUERY TANPA JOIN - langsung dari temp_opname
     let query = supabase
       .from(TABLES.OPNAME)
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
 
-    if (sku) query = query.eq('sku', sku)
-    if (size) query = query.eq('size', size)
+    if (sku) query = query.eq('sku', sku as string)
+    if (size) query = query.eq('size', size as string)
 
     const { data, error, count } = await query
       .range(offset, offset + limitNum - 1)
@@ -34,9 +35,46 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
       throw error
     }
 
+    // 🔥 AMBIL DATA MASTER TERPISAH (manual join)
+    let formattedData = data || []
+    
+    if (data && data.length > 0) {
+      // Ambil semua SKU yang ada di opname
+      const skuList = [...new Set(data.map(item => item.sku))]
+      
+      // Query master untuk SKU tersebut
+      const { data: masterData, error: masterError } = await supabase
+        .from(TABLES.MASTER)
+        .select('sku, size, nama_barang, kategori, warna, stock_sistem, lokasi_rak')
+        .in('sku', skuList)
+
+      if (!masterError && masterData) {
+        // Buat map master untuk akses cepat
+        const masterMap = new Map()
+        masterData.forEach((m: any) => {
+          const key = `${m.sku}-${m.size}`
+          masterMap.set(key, m)
+        })
+
+        // Gabungkan data opname dengan master
+        formattedData = data.map((item: any) => {
+          const key = `${item.sku}-${item.size}`
+          const master = masterMap.get(key)
+          return {
+            ...item,
+            nama_barang: master?.nama_barang || item.nama_barang || 'UNKNOWN',
+            kategori: master?.kategori || item.kategori || 'UNKNOWN',
+            warna: master?.warna || item.warna || 'N/A',
+            stock_sistem: master?.stock_sistem || item.stock_sistem || 0,
+            lokasi_rak: item.lokasi_rak || master?.lokasi_rak || null
+          }
+        })
+      }
+    }
+
     res.json({ 
       success: true, 
-      data: data || [],
+      data: formattedData || [],
       total: count || 0,
       pagination: {
         page: pageNum,
@@ -55,23 +93,24 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 })
 
 // ============================================================
-// POST /api/opname - Simpan opname (DENGAN AUDIT)
+// POST /api/opname - Simpan opname
 // ============================================================
 const opnameSchema = z.object({
   sku: z.string().min(1),
   size: z.string().min(1),
   qty_fisik: z.number().int().min(0),
+  lokasi_rak: z.string().optional().nullable(),
 })
 
 router.post('/', authMiddleware, async (req: AuthRequest, res) => {
   const startTime = Date.now()
   
   try {
-    const { sku, size, qty_fisik } = opnameSchema.parse(req.body)
+    const { sku, size, qty_fisik, lokasi_rak } = opnameSchema.parse(req.body)
 
-    console.log('[Opname] 📝 Saving:', { sku, size, qty_fisik, user: req.user?.email })
+    console.log('[Opname] 📝 Saving:', { sku, size, qty_fisik, lokasi_rak, user: req.user?.email })
 
-    // Ambil data lama (sebelum update)
+    // Ambil data lama
     const { data: oldData, error: oldError } = await supabase
       .from(TABLES.OPNAME)
       .select('*')
@@ -86,7 +125,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     // Ambil stock sistem dari master
     const { data: product, error: productError } = await supabase
       .from(TABLES.MASTER)
-      .select('stock_sistem, nama_barang, kategori, warna')
+      .select('stock_sistem, nama_barang, kategori, warna, lokasi_rak')
       .eq('sku', sku)
       .eq('size', size)
       .maybeSingle()
@@ -98,12 +137,11 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       })
     }
 
-    // Hitung selisih
     const stockSistem = product.stock_sistem || 0
     const selisih = qty_fisik - stockSistem
     const status = selisih === 0 ? 'sesuai' : selisih > 0 ? 'masuk' : 'keluar'
 
-    // 🔥 UPSERT - TANPA user_id (pake user_name)
+    // UPSERT
     const { data, error } = await supabase
       .from(TABLES.OPNAME)
       .upsert({
@@ -112,6 +150,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
         stock_real: qty_fisik,
         selisih,
         status,
+        lokasi_rak: lokasi_rak || product.lokasi_rak || null,
         user_name: req.user?.email || req.user?.name || 'Petugas',
         updated_at: new Date().toISOString()
       }, { onConflict: 'sku,size' })
@@ -122,11 +161,16 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       throw error
     }
 
-    console.log('[Opname] ✅ Saved:', { sku, size, selisih, status })
+    // Update master kalo ada rak
+    if (lokasi_rak && lokasi_rak !== product.lokasi_rak) {
+      await supabase
+        .from(TABLES.MASTER)
+        .update({ lokasi_rak })
+        .eq('sku', sku)
+        .eq('size', size)
+    }
 
-    // ============================================================
-    // 📝 AUDIT LOG - Opname scan
-    // ============================================================
+    // Audit log
     await logAudit({
       userId: req.user!.id,
       action: 'OPNAME_SCAN',
@@ -135,7 +179,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       oldData: oldData ? {
         stock_real: oldData.stock_real,
         selisih: oldData.selisih,
-        status: oldData.status
+        status: oldData.status,
+        lokasi_rak: oldData.lokasi_rak
       } : null,
       newData: {
         sku,
@@ -144,7 +189,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
         stock_sistem: stockSistem,
         stock_real: qty_fisik,
         selisih,
-        status
+        status,
+        lokasi_rak: lokasi_rak || product.lokasi_rak || null
       },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
@@ -157,6 +203,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       data: data?.[0],
       selisih,
       status,
+      lokasi_rak: lokasi_rak || product.lokasi_rak || null,
       product: {
         nama_barang: product.nama_barang,
         kategori: product.kategori,
@@ -165,20 +212,6 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
     })
 
   } catch (error) {
-    // ============================================================
-    // 📝 AUDIT LOG - Opname gagal
-    // ============================================================
-    await logAudit({
-      userId: req.user?.id || 'unknown',
-      action: 'OPNAME_FAILED',
-      entityType: 'temp_opname',
-      newData: { error: (error as Error).message },
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent'],
-      durationMs: Date.now() - startTime,
-      statusCode: 500
-    })
-
     console.error('[Opname] POST error:', error)
     
     if (error instanceof z.ZodError) {
@@ -197,7 +230,68 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 })
 
 // ============================================================
-// POST /api/opname/size - Tambah size baru (DENGAN AUDIT)
+// POST /api/opname/update-rak - Update rak
+// ============================================================
+const updateRakSchema = z.object({
+  sku: z.string().min(1),
+  size: z.string().min(1),
+  lokasi_rak: z.string().min(1),
+})
+
+router.post('/update-rak', authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const { sku, size, lokasi_rak } = updateRakSchema.parse(req.body)
+
+    // Update di temp_opname
+    const { error: opnameError } = await supabase
+      .from(TABLES.OPNAME)
+      .update({ 
+        lokasi_rak,
+        updated_at: new Date().toISOString(),
+        user_name: req.user?.email || req.user?.name || 'Petugas'
+      })
+      .eq('sku', sku)
+      .eq('size', size)
+
+    if (opnameError) throw opnameError
+
+    // Update di temp_master
+    await supabase
+      .from(TABLES.MASTER)
+      .update({ lokasi_rak })
+      .eq('sku', sku)
+      .eq('size', size)
+
+    // Audit log
+    await logAudit({
+      userId: req.user!.id,
+      action: 'RAK_UPDATE',
+      entityType: 'temp_opname',
+      entityId: `${sku}-${size}`,
+      newData: { lokasi_rak },
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+      durationMs: 0,
+      statusCode: 200
+    })
+
+    res.json({
+      success: true,
+      message: `Rak ${lokasi_rak} berhasil disimpan`,
+      data: { sku, size, lokasi_rak }
+    })
+
+  } catch (error) {
+    console.error('[Opname] Update rak error:', error)
+    res.status(500).json({ 
+      success: false, 
+      error: (error as Error).message 
+    })
+  }
+})
+
+// ============================================================
+// POST /api/opname/size - Tambah size baru
 // ============================================================
 const addSizeSchema = z.object({
   sku: z.string().min(1),
@@ -206,17 +300,14 @@ const addSizeSchema = z.object({
   nama_barang: z.string().min(1),
   kategori: z.string().optional(),
   warna: z.string().optional(),
+  lokasi_rak: z.string().optional().nullable(),
 })
 
 router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
-  const startTime = Date.now()
-  
   try {
-    const { sku, size, qty_fisik, nama_barang, kategori, warna } = addSizeSchema.parse(req.body)
+    const { sku, size, qty_fisik, nama_barang, kategori, warna, lokasi_rak } = addSizeSchema.parse(req.body)
 
-    console.log('[Opname] ➕ Adding new size:', { sku, size, qty_fisik })
-
-    // 1. Tambah ke master
+    // Tambah ke master
     const { data: masterData, error: masterError } = await supabase
       .from(TABLES.MASTER)
       .insert({
@@ -225,19 +316,19 @@ router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthReque
         kategori: kategori || 'UNKNOWN',
         warna: warna || 'N/A',
         size: size,
-        stock_sistem: 0
+        stock_sistem: 0,
+        lokasi_rak: lokasi_rak || null
       })
       .select()
 
     if (masterError) {
-      console.error('[Opname] Master error:', masterError)
       return res.status(500).json({
         success: false,
         error: 'Gagal menambahkan size ke master'
       })
     }
 
-    // 2. Simpan opname
+    // Simpan opname
     const { data, error } = await supabase
       .from(TABLES.OPNAME)
       .insert({
@@ -246,24 +337,20 @@ router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthReque
         stock_real: qty_fisik,
         selisih: qty_fisik,
         status: 'masuk',
+        lokasi_rak: lokasi_rak || null,
         user_name: req.user?.email || req.user?.name || 'Petugas',
         updated_at: new Date().toISOString()
       })
       .select()
 
     if (error) {
-      console.error('[Opname] Opname error:', error)
       return res.status(500).json({
         success: false,
         error: 'Gagal menyimpan opname'
       })
     }
 
-    console.log('[Opname] ✅ New size added:', { sku, size })
-
-    // ============================================================
-    // 📝 AUDIT LOG - Add size baru
-    // ============================================================
+    // Audit log
     await logAudit({
       userId: req.user!.id,
       action: 'SIZE_ADD',
@@ -275,11 +362,12 @@ router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthReque
         nama_barang,
         kategori: kategori || 'UNKNOWN',
         warna: warna || 'N/A',
-        qty_fisik
+        qty_fisik,
+        lokasi_rak: lokasi_rak || null
       },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
-      durationMs: Date.now() - startTime,
+      durationMs: 0,
       statusCode: 200
     })
 
@@ -291,30 +379,7 @@ router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthReque
     })
 
   } catch (error) {
-    // ============================================================
-    // 📝 AUDIT LOG - Add size gagal
-    // ============================================================
-    await logAudit({
-      userId: req.user?.id || 'unknown',
-      action: 'SIZE_ADD_FAILED',
-      entityType: 'temp_master',
-      newData: { error: (error as Error).message },
-      ipAddress: req.ip,
-      userAgent: req.headers['user-agent'],
-      durationMs: Date.now() - startTime,
-      statusCode: 500
-    })
-
     console.error('[Opname] Add size error:', error)
-    
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Validasi gagal', 
-        details: error.errors 
-      })
-    }
-    
     res.status(500).json({ 
       success: false, 
       error: (error as Error).message 
@@ -323,15 +388,12 @@ router.post('/size', authMiddleware, requireRole('admin'), async (req: AuthReque
 })
 
 // ============================================================
-// DELETE /api/opname/:id - Hapus opname (DENGAN AUDIT)
+// DELETE /api/opname/:id - Hapus opname
 // ============================================================
 router.delete('/:id', authMiddleware, requireRole('admin'), async (req: AuthRequest, res) => {
-  const startTime = Date.now()
-  
   try {
     const { id } = req.params
 
-    // Ambil data sebelum dihapus (buat audit)
     const { data: oldData, error: findError } = await supabase
       .from(TABLES.OPNAME)
       .select('*')
@@ -350,16 +412,8 @@ router.delete('/:id', authMiddleware, requireRole('admin'), async (req: AuthRequ
       .delete()
       .eq('id', id)
 
-    if (error) {
-      console.error('[Opname] Delete error:', error)
-      throw error
-    }
+    if (error) throw error
 
-    console.log('[Opname] 🗑️ Deleted:', { id, sku: oldData.sku, size: oldData.size })
-
-    // ============================================================
-    // 📝 AUDIT LOG - Delete opname
-    // ============================================================
     await logAudit({
       userId: req.user!.id,
       action: 'OPNAME_DELETE',
@@ -368,7 +422,7 @@ router.delete('/:id', authMiddleware, requireRole('admin'), async (req: AuthRequ
       oldData: oldData,
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
-      durationMs: Date.now() - startTime,
+      durationMs: 0,
       statusCode: 200
     })
 
@@ -387,7 +441,7 @@ router.delete('/:id', authMiddleware, requireRole('admin'), async (req: AuthRequ
 })
 
 // ============================================================
-// GET /api/opname/stats - Statistik opname
+// GET /api/opname/stats - Statistik opname (TANPA JOIN)
 // ============================================================
 router.get('/stats', authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -395,10 +449,7 @@ router.get('/stats', authMiddleware, async (req: AuthRequest, res) => {
       .from(TABLES.OPNAME)
       .select('*', { count: 'exact', head: true })
 
-    if (countError) {
-      console.error('[Opname] Count error:', countError)
-      throw countError
-    }
+    if (countError) throw countError
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -431,11 +482,7 @@ router.get('/stats', authMiddleware, async (req: AuthRequest, res) => {
       .from(TABLES.OPNAME)
       .select('status')
 
-    const statusBreakdown = {
-      sesuai: 0,
-      masuk: 0,
-      keluar: 0
-    }
+    const statusBreakdown = { sesuai: 0, masuk: 0, keluar: 0 }
     statusData?.forEach((item: any) => {
       if (item.status === 'sesuai') statusBreakdown.sesuai++
       else if (item.status === 'masuk') statusBreakdown.masuk++

@@ -1,9 +1,9 @@
 // apps/web/src/components/pages/Report/ReportPage.tsx
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { api } from '../../../api/client'
 import { useAuth } from '../../../auth/contexts/AuthContext'
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
+import autoTable from 'jspdf-autotable'
 import styles from './ReportPage.module.css'
 
 interface ReportPageProps {
@@ -17,6 +17,7 @@ interface SizeData {
   real: number | null
   selisih: number | null
   status: 'belum' | 'sesuai' | 'minus' | 'plus' | 'kosong'
+  lokasi_rak?: string | null
 }
 
 interface GroupedProduct {
@@ -29,51 +30,121 @@ interface GroupedProduct {
   total_real: number
   total_selisih: number
   isComplete: boolean
+  lokasi_rak: string | null
 }
 
 export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
   const { token } = useAuth()
   const reportRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
-  const [reportData, setReportData] = useState<any[]>([])
-  const [summary, setSummary] = useState<any>(null)
+  const [masterData, setMasterData] = useState<any[]>([]) // 🔥 MASTER DATA
+  const [opnameData, setOpnameData] = useState<any[]>([]) // 🔥 OPNAME DATA
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'semua' | 'minus' | 'plus' | 'belum' | 'sesuai'>('semua')
+  const [selectedKategori, setSelectedKategori] = useState<string>('semua')
+  const hasFetched = useRef(false)
 
   // ============================================================
-  // ✅ FETCH REPORT DARI API
+  // FETCH MASTER + OPNAME DATA
   // ============================================================
   useEffect(() => {
-    const fetchReport = async () => {
+    if (hasFetched.current) return
+    hasFetched.current = true
+
+    const fetchData = async () => {
       setFetching(true)
       try {
-        const result = await api.get<{ success: boolean; data: any[]; summary: any }>(
-          '/api/report',
+        // 🔥 1. FETCH MASTER DATA
+        console.log('[Report] Fetching master data...')
+        const masterResult = await api.get<{ data: any[]; success?: boolean }>(
+          '/api/products',
           token || undefined
         )
         
-        console.log('[Report] Response data length:', result?.data?.length)
-        
-        if (result?.success && result?.data) {
-          setReportData(result.data)
-          setSummary(result.summary)
-        } else if (result?.data) {
-          setReportData(result.data)
+        let masterRaw: any[] = []
+        if (masterResult) {
+          if (Array.isArray(masterResult)) {
+            masterRaw = masterResult
+          } else if (masterResult.data && Array.isArray(masterResult.data)) {
+            masterRaw = masterResult.data
+          } else if (masterResult.success && masterResult.data && Array.isArray(masterResult.data)) {
+            masterRaw = masterResult.data
+          }
         }
+        console.log('[Report] Master data:', masterRaw.length)
+        setMasterData(masterRaw)
+
+        // 🔥 2. FETCH OPNAME DATA
+        console.log('[Report] Fetching opname data...')
+        const opnameResult = await api.get<{ data: any[]; success?: boolean }>(
+          '/api/opname',
+          token || undefined
+        )
+        
+        let opnameRaw: any[] = []
+        if (opnameResult) {
+          if (Array.isArray(opnameResult)) {
+            opnameRaw = opnameResult
+          } else if (opnameResult.data && Array.isArray(opnameResult.data)) {
+            opnameRaw = opnameResult.data
+          } else if (opnameResult.success && opnameResult.data && Array.isArray(opnameResult.data)) {
+            opnameRaw = opnameResult.data
+          }
+        }
+        console.log('[Report] Opname data:', opnameRaw.length)
+        setOpnameData(opnameRaw)
+        
       } catch (error) {
         console.error('[Report] Error fetching:', error)
-        showToast('❌ Gagal memuat laporan')
+        showToast('❌ Gagal memuat data')
       } finally {
         setFetching(false)
       }
     }
-    fetchReport()
+
+    fetchData()
   }, [token, showToast])
 
   // ============================================================
-  // GROUP BY SKU - 1 BARIS PER SKU (SEMUA DATA)
+  // 🔥 GABUNGIN MASTER + OPNAME
   // ============================================================
-  const groupedProducts = reportData.reduce<Record<string, GroupedProduct>>((acc, curr) => {
+  const mergedData = useMemo(() => {
+    // 🔥 BUAT MAP OPNAME PER SKU-SIZE
+    const opnameMap = new Map()
+    opnameData.forEach((item: any) => {
+      const key = `${item.sku}-${item.size || 'OS'}`
+      opnameMap.set(key, item)
+    })
+
+    // 🔥 LOOP MASTER DATA (SEMUA PRODUK)
+    const result = masterData.map((product: any) => {
+      const key = `${product.sku}-${product.size || 'OS'}`
+      const opname = opnameMap.get(key)
+      
+      return {
+        sku: product.sku,
+        size: product.size || 'OS',
+        stock_sistem: product.stock_sistem || 0,
+        stock_real: opname?.stock_real ?? null,
+        selisih: opname?.selisih ?? null,
+        status: opname?.status || 'belum',
+        nama_barang: product.nama_barang || 'UNKNOWN',
+        kategori: product.kategori || 'UNKNOWN',
+        warna: product.warna || 'N/A',
+        lokasi_rak: product.lokasi_rak || null,
+        user_name: opname?.user_name || null,
+        updated_at: opname?.updated_at || null
+      }
+    })
+
+    console.log('[Report] Merged data (all products):', result.length)
+    return result
+  }, [masterData, opnameData])
+
+  // ============================================================
+  // GROUP BY SKU
+  // ============================================================
+  const groupedProducts = mergedData.reduce<Record<string, GroupedProduct>>((acc, curr) => {
     const sku = curr.sku
     if (!acc[sku]) {
       acc[sku] = {
@@ -85,7 +156,8 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
         total_sistem: 0,
         total_real: 0,
         total_selisih: 0,
-        isComplete: true
+        isComplete: true,
+        lokasi_rak: curr.lokasi_rak || null
       }
     }
 
@@ -93,7 +165,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
     const selisih = curr.selisih ?? null
     const status = curr.status || 'belum'
 
-    // 🔥 FIX: Tambahkan size ke SKU (termasuk yang belum)
     acc[sku].sizes.push({
       size: curr.size || 'OS',
       sistem: curr.stock_sistem || 0,
@@ -101,88 +172,93 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
       selisih: selisih,
       status: status === 'sesuai' ? 'sesuai' : 
               status === 'keluar' ? 'minus' : 
-              status === 'masuk' ? 'plus' : 'belum'
+              status === 'masuk' ? 'plus' : 'belum',
+      lokasi_rak: curr.lokasi_rak || null
     })
 
-    // 🔥 FIX: TOTAL_SISTEM harus dihitung SEMUA (termasuk yang belum)
     acc[sku].total_sistem += curr.stock_sistem || 0
 
-    // 🔥 FIX: TOTAL_REAL hanya untuk yang sudah opname
     if (isOpnamed) {
       acc[sku].total_real += curr.stock_real || 0
       acc[sku].total_selisih += selisih || 0
     }
 
-    // 🔥 FIX: isComplete = false kalo ada size yang belum
     if (!isOpnamed) {
       acc[sku].isComplete = false
+    }
+
+    if (curr.lokasi_rak) {
+      acc[sku].lokasi_rak = curr.lokasi_rak
     }
 
     return acc
   }, {})
 
   // ============================================================
-  // FORMAT SIZE DETAILS (pake Material Icons)
+  // GET UNIQUE KATEGORI
   // ============================================================
-  const formatSizeData = (sizes: SizeData[]): JSX.Element[] => {
-    return sizes.map((s, idx) => {
-      const real = s.real !== null ? s.real : '0'
-      const selisih = s.selisih
+  const allKategori = ['semua', ...new Set(Object.values(groupedProducts).map(item => item.kategori))]
 
-      let icon = 'block'
-      let colorClass = styles.sizeIconMuted
-      let label = ''
+  // ============================================================
+  // FORMAT SIZE DETAILS - PAKE ICON
+  // ============================================================
+  const formatSizeData = (sizes: SizeData[]): JSX.Element => {
+    return (
+      <div className={styles.sizeChipsContainer}>
+        {sizes.map((s, idx) => {
+          const selisih = s.selisih
+          let icon = 'block'
+          let colorClass = styles.sizeIconMuted
+          let label = `${s.size}:${s.sistem}`
 
-      if (s.status === 'kosong') {
-        icon = 'block'
-        colorClass = styles.sizeIconMuted
-        label = `${s.size}: 0`
-      } else if (s.status === 'belum') {
-        icon = 'hourglass_empty'
-        colorClass = styles.sizeIconPending
-        label = `${s.size}: ${s.sistem}`
-      } else if (selisih === null) {
-        icon = 'help_outline'
-        colorClass = styles.sizeIconMuted
-        label = `${s.size}: ${real}`
-      } else if (selisih === 0) {
-        icon = 'check_circle'
-        colorClass = styles.sizeIconOk
-        label = `${s.size}: ${real}`
-      } else if (selisih < 0) {
-        icon = 'arrow_downward'
-        colorClass = styles.sizeIconMinus
-        label = `${s.size}: ${real}`
-      } else {
-        icon = 'arrow_upward'
-        colorClass = styles.sizeIconPlus
-        label = `${s.size}: ${real}`
-      }
+          if (s.status === 'belum') {
+            icon = 'hourglass_empty'
+            colorClass = styles.sizeIconPending
+            label = `${s.size}:${s.sistem}`
+          } else if (selisih === null) {
+            icon = 'help_outline'
+            colorClass = styles.sizeIconMuted
+            label = `${s.size}:${s.sistem}`
+          } else if (selisih === 0) {
+            icon = 'check_circle'
+            colorClass = styles.sizeIconOk
+            label = `${s.size}:${s.sistem}`
+          } else if (selisih < 0) {
+            icon = 'arrow_downward'
+            colorClass = styles.sizeIconMinus
+            label = `${s.size}:${s.sistem} ${selisih}`
+          } else {
+            icon = 'arrow_upward'
+            colorClass = styles.sizeIconPlus
+            label = `${s.size}:${s.sistem} +${selisih}`
+          }
 
-      return (
-        <span key={idx} className={`${styles.sizeChip} ${colorClass}`}>
-          <span className={styles.sizeLabel}>{s.size}</span>
-          <span className={styles.sizeQty}>{s.sistem}</span>
-          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-            {icon}
-          </span>
-        </span>
-      )
-    })
+          return (
+            <span key={idx} className={`${styles.sizeChip} ${colorClass}`}>
+              {label}
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                {icon}
+              </span>
+            </span>
+          )
+        })}
+      </div>
+    )
   }
 
   // ============================================================
   // HITUNG STATS
   // ============================================================
-  const allItems = Object.values(groupedProducts)
-  console.log('[Report] Total SKU (grouped):', allItems.length)
+  let allItems = Object.values(groupedProducts)
   
-  // Item yang sudah di-opname (minimal 1 size)
+  if (selectedKategori !== 'semua') {
+    allItems = allItems.filter(item => item.kategori === selectedKategori)
+  }
+  
   const opnameItems = allItems.filter((item: GroupedProduct) => {
     return item.sizes.some(s => s.status === 'sesuai' || s.status === 'minus' || s.status === 'plus')
   })
   
-  // Item yang belum di-opname sama sekali
   const belumItems = allItems.filter((item: GroupedProduct) => {
     return !item.sizes.some(s => s.status === 'sesuai' || s.status === 'minus' || s.status === 'plus')
   })
@@ -209,9 +285,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
 
   const filteredData = getFilteredData()
 
-  // ============================================================
-  // SIZE STATS
-  // ============================================================
   const sizeStats = {
     total: 0,
     sesuai: 0,
@@ -234,22 +307,175 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
   // EXPORT PDF
   // ============================================================
   const handleExportPDF = async () => {
-    if (!reportRef.current) return
+    if (allItems.length === 0) {
+      showToast('❌ Tidak ada data untuk di-export')
+      return
+    }
+
     setLoading(true)
     try {
-      const canvas = await html2canvas(reportRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+      
+      doc.setFillColor(115, 92, 0)
+      doc.rect(0, 0, 297, 12, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(14)
+      doc.setFont('helvetica', 'bold')
+      doc.text('LAPORAN STOCK OPNAME', 14, 8)
+      
+      doc.setTextColor(80, 80, 80)
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID', { 
+        weekday: 'long', 
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric' 
+      })}`, 14, 18)
+      
+      doc.text(`Total SKU: ${totalItems} | Selesai: ${doneItems} | Sisa: ${remainingItems} | Progress: ${progress}%`, 14, 23)
+      doc.text(`Total Selisih: ${totalSelisih > 0 ? '+' : ''}${totalSelisih}`, 14, 28)
+      
+      doc.setDrawColor(200, 200, 200)
+      doc.line(14, 30, 283, 30)
+      
+      const tableData: any[][] = []
+      const dataToExport = activeTab === 'semua' ? allItems : filteredData
+      
+      dataToExport.forEach((item: GroupedProduct) => {
+        const sizeDetails = item.sizes.map(s => {
+          const selisih = s.selisih
+          let symbol = ''
+          
+          if (s.status === 'belum') {
+            symbol = '⏳'
+          } else if (selisih === null) {
+            symbol = '?'
+          } else if (selisih === 0) {
+            symbol = '✓'
+          } else if (selisih < 0) {
+            symbol = `${selisih}`
+          } else {
+            symbol = `+${selisih}`
+          }
+          
+          return `${s.size}:${s.sistem}${symbol}`
+        }).join(' ')
+        
+        let statusText = ''
+        if (!item.isComplete) {
+          statusText = 'BELUM'
+        } else if (item.total_selisih < 0) {
+          statusText = 'MINUS'
+        } else if (item.total_selisih > 0) {
+          statusText = 'PLUS'
+        } else {
+          statusText = 'COCOK'
+        }
+        
+        const rak = item.lokasi_rak || item.sizes[0]?.lokasi_rak || '-'
+        
+        tableData.push([
+          item.sku,
+          item.nama_barang,
+          item.kategori,
+          sizeDetails,
+          item.total_sistem,
+          item.total_real || '-',
+          item.total_selisih !== 0 ? (item.total_selisih > 0 ? `+${item.total_selisih}` : item.total_selisih) : '0',
+          rak,
+          statusText
+        ])
       })
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-      pdf.save(`laporan-opname-${new Date().toISOString().slice(0, 10)}.pdf`)
+      
+      autoTable(doc, {
+        startY: 32,
+        head: [['SKU', 'Nama Barang', 'Kategori', 'Size Details', 'Sistem', 'Real', 'Selisih', 'Rak', 'Status']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: {
+          fillColor: [245, 245, 245],
+          textColor: [30, 30, 30],
+          fontSize: 8,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        styles: {
+          fontSize: 7,
+          cellPadding: 2,
+          lineColor: [200, 200, 200],
+          lineWidth: 0.1,
+          overflow: 'linebreak',
+        },
+        columnStyles: {
+          0: { cellWidth: 16 },
+          1: { cellWidth: 26 },
+          2: { cellWidth: 14, halign: 'center' },
+          3: { cellWidth: 55 },
+          4: { cellWidth: 10, halign: 'center' },
+          5: { cellWidth: 10, halign: 'center' },
+          6: { cellWidth: 12, halign: 'center' },
+          7: { cellWidth: 12, halign: 'center' },
+          8: { cellWidth: 14, halign: 'center' },
+        },
+        didDrawCell: (data: any) => {
+          if (!data || !data.cell || !data.cell.text || data.cell.text.length === 0) return
+          const text = data.cell.text[0]
+          if (!text) return
+          
+          if (data.section === 'body' && data.column.index === 8) {
+            const status = String(text).toUpperCase()
+            if (status === 'COCOK') {
+              doc.setTextColor(5, 150, 105)
+            } else if (status === 'MINUS') {
+              doc.setTextColor(220, 38, 38)
+            } else if (status === 'PLUS') {
+              doc.setTextColor(217, 119, 6)
+            } else {
+              doc.setTextColor(150, 150, 150)
+            }
+          }
+          
+          if (data.section === 'body' && data.column.index === 6) {
+            const selisihText = String(text)
+            if (selisihText === '0') {
+              doc.setTextColor(5, 150, 105)
+            } else if (selisihText.startsWith('-')) {
+              doc.setTextColor(220, 38, 38)
+            } else if (selisihText.startsWith('+')) {
+              doc.setTextColor(217, 119, 6)
+            }
+          }
+          
+          if (data.section === 'body' && data.column.index === 7) {
+            const rakText = String(text)
+            if (rakText !== '-') {
+              doc.setTextColor(233, 195, 73)
+              doc.setFont('helvetica', 'bold')
+            } else {
+              doc.setTextColor(150, 150, 150)
+            }
+          }
+        }
+      })
+      
+      const pageCount = doc.getNumberOfPages()
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i)
+        doc.setFontSize(6)
+        doc.setTextColor(150, 150, 150)
+        doc.text(
+          `Dicetak: ${new Date().toLocaleString('id-ID')} | Halaman ${i} dari ${pageCount}`,
+          14,
+          doc.internal.pageSize.getHeight() - 5
+        )
+      }
+      
+      doc.save(`laporan-opname-${new Date().toISOString().slice(0, 10)}.pdf`)
       showToast('✅ Laporan PDF berhasil di-download!')
+      
     } catch (error) {
+      console.error('[Export PDF] Error:', error)
       showToast('❌ Gagal generate PDF: ' + (error as Error).message)
     } finally {
       setLoading(false)
@@ -261,7 +487,36 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
       <div className={styles.reportPage}>
         <div className={styles.reportLoading}>
           <span className="material-symbols-outlined animate-spin">progress_activity</span>
-          <p>Memuat laporan...</p>
+          <p>Memuat data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // 🔥 CEK KALO DATA KOSONG
+  if (!fetching && masterData.length === 0) {
+    return (
+      <div className={styles.reportPage}>
+        <div className={styles.reportHeader}>
+          <div>
+            <h2 className={styles.reportTitle}>Laporan Stock Opname</h2>
+            <p className={styles.reportSubtitle}>Ringkasan aktivitas audit inventaris operasional harian.</p>
+          </div>
+          <div className={styles.reportActions}>
+            <button className={styles.reportBackBtn} onClick={() => navigateTo('dashboard')}>
+              <span className="material-symbols-outlined">arrow_back</span>
+              Kembali
+            </button>
+          </div>
+        </div>
+        <div className={styles.reportContent}>
+          <div className={styles.reportEmpty}>
+            <span className="material-symbols-outlined">database_off</span>
+            <p>Belum ada data master</p>
+            <p style={{ fontSize: '14px', color: 'rgba(77,70,53,0.3)', marginTop: '4px' }}>
+              Import data master terlebih dahulu
+            </p>
+          </div>
         </div>
       </div>
     )
@@ -269,7 +524,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
 
   return (
     <div className={styles.reportPage}>
-      {/* Header */}
       <div className={styles.reportHeader}>
         <div>
           <h2 className={styles.reportTitle}>Laporan Stock Opname</h2>
@@ -280,11 +534,7 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
             <span className="material-symbols-outlined">arrow_back</span>
             Kembali
           </button>
-          <button
-            className={styles.reportExportBtn}
-            onClick={handleExportPDF}
-            disabled={loading || opnameItems.length === 0}
-          >
+          <button className={styles.reportExportBtn} onClick={handleExportPDF} disabled={loading || allItems.length === 0}>
             <span className="material-symbols-outlined">picture_as_pdf</span>
             {loading ? '⏳ Generating...' : 'Export PDF'}
           </button>
@@ -292,7 +542,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
       </div>
 
       <div ref={reportRef} className={styles.reportContent}>
-        {/* Summary */}
         <div className={styles.reportSummary}>
           <div className={styles.reportSummaryItem}>
             <p className={styles.reportSummaryLabel}>Total SKU</p>
@@ -318,7 +567,7 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
               <span className={styles.reportSummaryNumber}>{progress}%</span>
             </div>
             <div className={styles.reportSummaryBar}>
-              <div className={styles.reportSummaryBarFill} style={{ width: `${progress}%` }}></div>
+              <div className={styles.reportSummaryBarFill} style={{ width: `${progress}%` }} />
             </div>
           </div>
           <div className={styles.reportSummaryItem}>
@@ -331,7 +580,15 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
           </div>
         </div>
 
-        {/* Size Stats */}
+        <div className={styles.reportFilters}>
+          <label className={styles.reportFilterLabel}>Kategori:</label>
+          <select className={styles.reportFilterSelect} value={selectedKategori} onChange={(e) => setSelectedKategori(e.target.value)}>
+            {allKategori.map(kat => (
+              <option key={kat} value={kat}>{kat === 'semua' ? 'Semua Kategori' : kat}</option>
+            ))}
+          </select>
+        </div>
+
         <div className={styles.reportMetricsStrip}>
           <div className={styles.reportMetricsItem}>
             <span className={styles.reportMetricsLabel}>Total Size</span>
@@ -365,7 +622,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className={styles.reportTabs}>
           <button className={`${styles.reportTab} ${activeTab === 'semua' ? styles.active : ''}`} onClick={() => setActiveTab('semua')}>
             Semua ({allItems.length})
@@ -384,7 +640,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
           </button>
         </div>
 
-        {/* Table */}
         {filteredData.length > 0 ? (
           <div className={styles.reportTableWrapper}>
             <table className={styles.reportTable}>
@@ -393,10 +648,12 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
                   <th>No</th>
                   <th>SKU</th>
                   <th>Nama Barang</th>
-                  <th>Size &amp; Data</th>
-                  <th className={styles.textCenter}>T. Sistem</th>
-                  <th className={styles.textCenter}>T. Real</th>
+                  <th>Kategori</th>
+                  <th>Size Details</th>
+                  <th className={styles.textCenter}>Sistem</th>
+                  <th className={styles.textCenter}>Real</th>
                   <th className={styles.textCenter}>Selisih</th>
+                  <th className={styles.textCenter}>Rak</th>
                   <th className={styles.textRight}>Status</th>
                 </tr>
               </thead>
@@ -415,30 +672,33 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
                   else if (isPlus) { rowClass = styles.rowPlus; statusText = 'Plus'; statusBadgeClass = styles.statusPlus }
                   else if (isZero) { rowClass = styles.rowZero; statusText = 'Cocok'; statusBadgeClass = styles.statusOk }
 
+                  const rak = item.lokasi_rak || item.sizes[0]?.lokasi_rak || null
+
                   return (
                     <tr key={i} className={rowClass}>
                       <td>{i + 1}</td>
                       <td className={styles.sku}>{item.sku}</td>
                       <td>{item.nama_barang}</td>
+                      <td>{item.kategori}</td>
                       <td className={styles.sizeDetails}>
-                        <div className={styles.sizeChips}>
-                          {formatSizeData(item.sizes)}
-                        </div>
+                        {formatSizeData(item.sizes)}
                       </td>
                       <td className={styles.textCenter}>{item.total_sistem}</td>
                       <td className={styles.textCenter}>{item.total_real || '-'}</td>
-                      <td className={`${styles.textCenter} ${
-                        isMinus ? styles.selisihMinus :
-                        isPlus ? styles.selisihPlus :
-                        styles.selisihZero
-                      }`}>
+                      <td className={`${styles.textCenter} ${isMinus ? styles.selisihMinus : isPlus ? styles.selisihPlus : styles.selisihZero}`}>
                         {isBelum ? (
-                          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(77,70,53,0.3)' }}>
-                            remove
+                          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'rgba(77,70,53,0.3)' }}>remove</span>
+                        ) : isMinus ? `${item.total_selisih}` : isPlus ? `+${item.total_selisih}` : '0'}
+                      </td>
+                      <td className={styles.textCenter}>
+                        {rak ? (
+                          <span className={styles.rakBadge}>
+                            <span className="material-symbols-outlined">inventory_2</span>
+                            {rak}
                           </span>
-                        ) : isMinus ? `${item.total_selisih}` :
-                          isPlus ? `+${item.total_selisih}` :
-                          '0'}
+                        ) : (
+                          <span className={styles.rakEmpty}>-</span>
+                        )}
                       </td>
                       <td className={styles.textRight}>
                         <span className={`${styles.statusBadge} ${statusBadgeClass}`}>
@@ -459,7 +719,6 @@ export function ReportPage({ navigateTo, showToast }: ReportPageProps) {
           </div>
         )}
 
-        {/* Pagination */}
         <div className={styles.reportPagination}>
           <span className={styles.reportPaginationInfo}>
             Menampilkan 1-{filteredData.length} dari {allItems.length} data

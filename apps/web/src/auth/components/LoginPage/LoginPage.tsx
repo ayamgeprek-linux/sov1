@@ -1,7 +1,12 @@
+// apps/web/src/components/pages/Login/LoginPage.tsx
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import styles from './LoginPage.module.css'
+
+// 🔥 IMPORT GAMBAR DARI src/assets/
+import logoSrc from '../../../assets/logo-dsc.png'
+import illustrationSrc from '../../../assets/login-illustration.png'
 
 export function LoginPage() {
   const { login, isLoading, error, clearError, isAuthenticated, user } = useAuth()
@@ -14,7 +19,6 @@ export function LoginPage() {
     if (isAuthenticated && user) {
       const role = user.role
       const path = role === 'petugas' ? '/petugas-dashboard' : '/dashboard'
-      console.log('[LoginPage] Redirect to:', path)
       navigate(path, { replace: true })
     }
   }, [isAuthenticated, user, navigate])
@@ -25,52 +29,72 @@ export function LoginPage() {
     await login(email, password)
   }
 
+  const demoAdmin = { email: 'admin@hki.com', password: 'admin123' }
+  const demoPetugas = { email: 'petugas@hki.com', password: 'petugas123' }
+
+  const fillDemo = (type: 'admin' | 'petugas') => {
+    if (type === 'admin') {
+      setEmail(demoAdmin.email)
+      setPassword(demoAdmin.password)
+    } else {
+      setEmail(demoPetugas.email)
+      setPassword(demoPetugas.password)
+    }
+  }
+
   return (
     <div className={styles.loginPage}>
-      {/* Background Texture */}
-      <div className={styles.loginBg}></div>
+      <div className={styles.loginContainer}>
+        {/* HEADER - LOGO IMAGE */}
+        <header className={styles.logoHeader}>
+          <div className={styles.logoWrapper}>
+            <img 
+              src={logoSrc}
+              alt="DSC Logo"
+              className={styles.logoImage}
+            />
+          </div>
+        </header>
 
-      <main className={styles.loginContainer}>
-        <div className={styles.loginBox}>
-          <header className={styles.loginHeader}>
-            <div className={styles.loginLogoWrapper}>
-              <div className={styles.loginLogo}>
-                
-              </div>
+        {/* MAIN CONTENT */}
+        <main className={styles.loginContent}>
+          {/* LEFT - ILLUSTRATION IMAGE */}
+          <div className={styles.illustrationSide}>
+            <div className={styles.imageWrapper}>
+              <img 
+                src={illustrationSrc}
+                alt="Stock Opname Illustration"
+                className={styles.loginImage}
+              />
             </div>
-            <h1 className={styles.loginTitle}>Selamat Datang</h1>
-            <p className={styles.loginSubtitle}>Akses sistem manajemen inventaris Anda</p>
-          </header>
+          </div>
 
-          <form className={styles.loginForm} onSubmit={handleSubmit}>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="email">Alamat Email</label>
-              <div className={styles.inputWrapper}>
+          {/* RIGHT - FORM */}
+          <div className={styles.formSide}>
+            <form className={styles.loginForm} onSubmit={handleSubmit}>
+              <div className={styles.inputGroup}>
+                <span className={styles.inputIcon}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>person</span>
+                </span>
                 <input
-                  id="email"
                   type="email"
-                  className={styles.formInput}
-                  placeholder="nama@perusahaan.com"
+                  id="username"
+                  placeholder="Username / ID"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
                   required
                 />
-                
               </div>
-            </div>
 
-            <div className={styles.formGroup}>
-              <div className={styles.formLabelRow}>
-                <label className={styles.formLabel} htmlFor="password">Kata Sandi</label>
-                <a className={styles.forgotLink} href="#">LUPA SANDI?</a>
-              </div>
-              <div className={styles.inputWrapper}>
+              <div className={styles.inputGroup}>
+                <span className={styles.inputIcon}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>lock</span>
+                </span>
                 <input
-                  id="password"
                   type={showPassword ? 'text' : 'password'}
-                  className={styles.formInput}
-                  placeholder="••••••••"
+                  id="password"
+                  placeholder="Kata Sandi"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
@@ -81,60 +105,32 @@ export function LoginPage() {
                   className={styles.passwordToggle}
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <span className="material-symbols-outlined">
-                    {showPassword ? '0' : '0'}
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showPassword ? 'visibility_off' : 'visibility'}
                   </span>
                 </button>
               </div>
-            </div>
 
-            {error && (
-              <div className={styles.formError}>
-                <span className="material-symbols-outlined">error</span>
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className={styles.loginButton}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="material-symbols-outlined animate-spin">progress_activity</span>
-              ) : (
-                'Masuk Sekarang'
+              {error && (
+                <div className={styles.formError}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>error</span>
+                  {error}
+                </div>
               )}
-            </button>
-          </form>
 
-          <footer className={styles.loginFooter}>
-            <p className={styles.loginFooterText}>
-              Belum punya akun? <a className={styles.loginFooterLink} href="#">Hubungi Admin</a>
-            </p>
-            <div className={styles.loginFooterLinks}>
-              <a className={styles.loginFooterLinkItem} href="#">
-                
-                Demo PWA
-              </a>
-              <span className={styles.loginFooterDivider}></span>
-              <a className={styles.loginFooterLinkItem} href="#">
-               Bantuan
-              </a>
-            </div>
-          </footer>
-        </div>
+              <button type="submit" className={styles.btnLogin} disabled={isLoading}>
+                {isLoading ? 'LOADING...' : 'LOGIN'}
+              </button>
+            </form>
 
-        <div className={styles.loginCorporate}>
-          <p>
-            HKI Global Systems Management<br />
-            <span>Security Protocol © 2024 Inventory Pro v2.4</span>
-          </p>
-        </div>
-      </main>
+           
+          </div>
+        </main>
 
-      {/* Credentials Demo */}
-      
+        <footer className={styles.loginFooter}>
+          <a href="#">Lupa Kata Sandi?</a> <span>Hubungi IT Support</span>
+        </footer>
+      </div>
     </div>
   )
 }

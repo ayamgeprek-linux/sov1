@@ -4,17 +4,32 @@ import jwt from 'jsonwebtoken'
 import { supabase, TABLES } from '../supabase/client.js'
 import { authMiddleware } from '../middleware/auth.js'
 
+// ============================================================
+// EXTEND EXPRESS REQUEST TYPE
+// ============================================================
+interface AuthRequest extends Request {
+  user?: {
+    id: string
+    email: string
+    role: string
+  }
+}
+
 const router = Router()
 
 // ============================================================
 // GET /api/sessions - Ambil semua session user
 // ============================================================
-router.get('/', authMiddleware, async (req: Request, res: Response) => {
+router.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' })
+    }
+
     const { data, error } = await supabase
       .from(TABLES.SESSIONS)
       .select('*')
-      .eq('user_id', req.user!.id)
+      .eq('user_id', req.user.id)
       .order('created_at', { ascending: false })
 
     if (error) throw error
@@ -34,15 +49,19 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
 // ============================================================
 // DELETE /api/sessions/:id - Logout dari session tertentu
 // ============================================================
-router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
+router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params
+
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' })
+    }
 
     const { error } = await supabase
       .from(TABLES.SESSIONS)
       .delete()
       .eq('id', id)
-      .eq('user_id', req.user!.id)
+      .eq('user_id', req.user.id)
 
     if (error) throw error
 
@@ -57,14 +76,18 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
 // ============================================================
 // DELETE /api/sessions - Logout dari semua session (kecuali current)
 // ============================================================
-router.delete('/', authMiddleware, async (req: Request, res: Response) => {
+router.delete('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' })
+    }
+
     const currentToken = req.headers.authorization?.replace('Bearer ', '')
 
     let query = supabase
       .from(TABLES.SESSIONS)
       .delete()
-      .eq('user_id', req.user!.id)
+      .eq('user_id', req.user.id)
 
     if (currentToken) {
       query = query.neq('token', currentToken)
@@ -109,23 +132,27 @@ router.post('/refresh', async (req: Request, res: Response) => {
       return res.status(401).json({ success: false, error: 'Refresh token expired' })
     }
 
-    // Generate new tokens - PAKE (jwt as any)
+    // Generate new tokens
     const { config } = await import('../config/index.js')
 
-    const newToken = (jwt as any).sign(
+    // FIX: Pastikan expiresIn dalam format yang benar
+    const expiresIn = config.jwt.expiresIn || '7d'
+    const refreshExpiresIn = '30d'
+
+    const newToken = jwt.sign(
       {
         id: session.user_id,
         email: session.users.email,
         role: session.users.role,
       },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      { expiresIn: expiresIn as any }
     )
 
-    const newRefreshToken = (jwt as any).sign(
+    const newRefreshToken = jwt.sign(
       { id: session.user_id },
       config.jwt.secret + 'refresh',
-      { expiresIn: '30d' }
+      { expiresIn: refreshExpiresIn as any }
     )
 
     // Update session

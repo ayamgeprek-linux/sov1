@@ -1,0 +1,29 @@
+// apps/api/src/index.ts
+import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import app from './app.js' // 🔥 TETAP .js KARENA ESM
+
+// 🔥 FIX: __dirname untuk ES Module
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Load .env dari root
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
+
+console.log('🔍 Environment check:')
+console.log(`   PORT: ${process.env.PORT || '7860'}`)
+console.log(`   SUPABASE_URL: ${process.env.SUPABASE_URL ? '✅' : '❌'}`)
+console.log(`   SUPABASE_SERVICE_KEY: ${process.env.SUPABASE_SERVICE_KEY ? '✅' : '❌'}`)
+console.log(`   JWT_SECRET: ${process.env.JWT_SECRET ? '✅' : '❌'}`)
+
+// 🔥 PORT UNTUK HUGGING FACE
+const PORT = parseInt(process.env.PORT || '7860', 10)
+
+// 🔥 START SERVER
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 DOCTOR SO API running on http://localhost:${PORT}`)
+  console.log(`📍 Health check: http://localhost:${PORT}/health`)
+  console.log(`📚 Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`🕐 Started at: ${new Date().toISOString()}`)
+})

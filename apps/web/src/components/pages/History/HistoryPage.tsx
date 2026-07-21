@@ -17,19 +17,37 @@ interface HistoryItem {
   petugasImage?: string
   items: number
   status: 'Selesai' | 'Proses' | 'Pending'
+  sku: string
+  size: string
+  nama_barang: string
+  stock_sistem: number
+  stock_real: number
+  selisih: number
+  lokasi_rak: string | null // 🔥 BARU
 }
 
-// 👇 TAMBAHIN INTERFACE UNTUK RESPONSE API
+// Response dari API
 interface OpnameResponse {
-  data: HistoryItem[]
+  success: boolean
+  data: any[]
   total: number
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
 }
 
 interface StatsResponse {
-  totalSessions: number
-  divergentItems: number
-  activeOfficers: number
-  latestCompliance: number
+  success: boolean
+  data: {
+    total: number
+    today: number
+    activeUsers: { name: string; scans: number }[]
+    statusBreakdown: { sesuai: number; masuk: number; keluar: number }
+    totalSelisih: number
+  }
 }
 
 export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
@@ -38,13 +56,14 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
   const [stats, setStats] = useState({
     totalSessions: 0,
     divergentItems: '0%',
     activeOfficers: 0,
     latestCompliance: '0%'
   })
-  const itemsPerPage = 5
+  const itemsPerPage = 10
 
   // ============================================================
   // FETCH HISTORY DATA
@@ -61,31 +80,40 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
 
         console.log('[History] Response:', response)
 
-        if (response?.data) {
-          // Transform data ke format HistoryItem dengan type assertion
+        if (response?.success && response?.data) {
+          // Transform data ke format HistoryItem
           const transformed: HistoryItem[] = response.data.map((item: any) => ({
             id: item.id || String(Date.now()),
-            date: new Date(item.created_at).toLocaleDateString('id-ID', {
+            date: new Date(item.created_at || item.updated_at).toLocaleDateString('id-ID', {
               day: '2-digit',
               month: 'short',
               year: 'numeric'
             }),
-            time: new Date(item.created_at).toLocaleTimeString('id-ID', {
+            time: new Date(item.created_at || item.updated_at).toLocaleTimeString('id-ID', {
               hour: '2-digit',
               minute: '2-digit'
             }) + ' WIB',
             periode: item.periode || `Putaran ${Math.floor(Math.random() * 5) + 1}`,
             petugas: item.user_name || item.petugas || 'Petugas',
             petugasImage: item.user_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.user_name || 'Petugas')}&background=735c00&color=fff&size=40`,
-            items: item.items_count || item.stock_real || 0,
-            // 👇 FIX: Type assertion buat status
-            status: item.status === 'selesai' ? 'Selesai' 
-                   : item.status === 'proses' ? 'Proses' 
+            items: item.stock_real || 0,
+            // 🔥 Data produk
+            sku: item.sku,
+            size: item.size,
+            nama_barang: item.nama_barang || item.temp_master?.nama_barang || 'UNKNOWN',
+            stock_sistem: item.stock_sistem || item.temp_master?.stock_sistem || 0,
+            stock_real: item.stock_real || 0,
+            selisih: item.selisih || 0,
+            lokasi_rak: item.lokasi_rak || item.temp_master?.lokasi_rak || null,
+            status: item.status === 'sesuai' ? 'Selesai' 
+                   : item.status === 'masuk' ? 'Proses' 
+                   : item.status === 'keluar' ? 'Proses'
                    : 'Pending' as 'Selesai' | 'Proses' | 'Pending'
           }))
 
           setHistoryData(transformed)
           setTotalItems(response.total || transformed.length)
+          setTotalPages(response.pagination?.totalPages || Math.ceil((response.total || transformed.length) / itemsPerPage))
         }
 
         // 2. Fetch stats
@@ -96,13 +124,21 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
 
         console.log('[History] Stats response:', statsResponse)
 
-        // 👇 FIX: Akses langsung ke response, bukan response.data
-        if (statsResponse) {
+        if (statsResponse?.success && statsResponse?.data) {
+          const total = statsResponse.data.total || 0
+          const today = statsResponse.data.today || 0
+          const activeUsers = statsResponse.data.activeUsers || []
+          const statusBreakdown = statsResponse.data.statusBreakdown || { sesuai: 0, masuk: 0, keluar: 0 }
+          const totalSelisih = statsResponse.data.totalSelisih || 0
+
+          // Hitung divergent items (items dengan selisih != 0)
+          const divergent = total > 0 ? Math.round((totalSelisih / total) * 100) : 0
+
           setStats({
-            totalSessions: statsResponse.totalSessions || 0,
-            divergentItems: `${statsResponse.divergentItems || 0}%`,
-            activeOfficers: statsResponse.activeOfficers || 0,
-            latestCompliance: `${statsResponse.latestCompliance || 0}%`
+            totalSessions: total,
+            divergentItems: `${Math.abs(divergent)}%`,
+            activeOfficers: activeUsers.length,
+            latestCompliance: total > 0 ? `${Math.round((statusBreakdown.sesuai / total) * 100)}%` : '0%'
           })
         }
 
@@ -130,11 +166,20 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
   }
 
   // ============================================================
+  // GET SELISIH CLASS
+  // ============================================================
+  const getSelisihClass = (selisih: number) => {
+    if (selisih === 0) return styles.selisihMatch
+    if (selisih < 0) return styles.selisihMinus
+    return styles.selisihPlus
+  }
+
+  // ============================================================
   // HANDLE ROW CLICK
   // ============================================================
   const handleRowClick = (item: HistoryItem) => {
     if (showToast) {
-      showToast(`📋 Detail session: ${item.petugas} - ${item.periode} (${item.items} items)`)
+      showToast(`📋 ${item.sku} - ${item.nama_barang} (${item.size}) | Rak: ${item.lokasi_rak || '-'} | Selisih: ${item.selisih}`)
     }
     if (navigateTo) {
       navigateTo(`history/${item.id}`)
@@ -146,17 +191,9 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
   // ============================================================
   const handleRefresh = () => {
     setCurrentPage(1)
-    // Trigger re-fetch dengan update key
     setLoading(true)
     setTimeout(() => setLoading(false), 100)
   }
-
-  // ============================================================
-  // CALCULATE PAGINATION
-  // ============================================================
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = Math.min(startIndex + itemsPerPage, totalItems)
 
   // ============================================================
   // LOADING STATE
@@ -258,9 +295,13 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
             <thead>
               <tr>
                 <th>Tanggal</th>
-                <th>Periode</th>
-                <th>Petugas</th>
-                <th className={styles.textCenter}>Items Count</th>
+                <th>SKU</th>
+                <th>Nama Barang</th>
+                <th>Size</th>
+                <th className={styles.textCenter}>Sistem</th>
+                <th className={styles.textCenter}>Real</th>
+                <th className={styles.textCenter}>Selisih</th>
+                <th className={styles.textCenter}>Rak</th>
                 <th className={styles.textCenter}>Status</th>
                 <th className={styles.textRight}>Aksi</th>
               </tr>
@@ -276,22 +317,35 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
                     <span className={styles.historyDate}>{item.date}</span>
                     <p className={styles.historyTime}>{item.time}</p>
                   </td>
-                  <td>{item.periode}</td>
                   <td>
-                    <div className={styles.historyPetugas}>
-                      <div className={styles.historyPetugasAvatar}>
-                        {item.petugasImage ? (
-                          <img src={item.petugasImage} alt={item.petugas} />
-                        ) : (
-                          <span>{item.petugas.charAt(0)}</span>
-                        )}
-                      </div>
-                      <span>{item.petugas}</span>
-                    </div>
+                    <span className={styles.historySku}>{item.sku}</span>
+                  </td>
+                  <td>
+                    <span className={styles.historyName}>{item.nama_barang}</span>
+                  </td>
+                  <td>
+                    <span className={styles.historySize}>{item.size}</span>
                   </td>
                   <td className={styles.textCenter}>
-                    <span className={styles.historyItems}>{item.items}</span>
-                    <span className={styles.historyItemsLabel}>Units</span>
+                    <span className={styles.historyStock}>{item.stock_sistem}</span>
+                  </td>
+                  <td className={styles.textCenter}>
+                    <span className={styles.historyStock}>{item.stock_real}</span>
+                  </td>
+                  <td className={styles.textCenter}>
+                    <span className={`${styles.historySelisih} ${getSelisihClass(item.selisih)}`}>
+                      {item.selisih > 0 ? `+${item.selisih}` : item.selisih}
+                    </span>
+                  </td>
+                  <td className={styles.textCenter}>
+                    {item.lokasi_rak ? (
+                      <span className={styles.rakBadge}>
+                        <span className="material-symbols-outlined">inventory_2</span>
+                        {item.lokasi_rak}
+                      </span>
+                    ) : (
+                      <span className={styles.rakEmpty}>-</span>
+                    )}
                   </td>
                   <td className={styles.textCenter}>
                     <span className={`${styles.historyStatus} ${getStatusClass(item.status)}`}>
@@ -312,7 +366,7 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
         {/* Pagination */}
         <div className={styles.historyPagination}>
           <span className={styles.historyPaginationInfo}>
-            Showing <strong>{startIndex + 1} - {endIndex}</strong> of <strong>{totalItems}</strong> results
+            Showing <strong>{historyData.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} - {Math.min(currentPage * itemsPerPage, totalItems)}</strong> of <strong>{totalItems}</strong> results
           </span>
           <div className={styles.historyPaginationControls}>
             <button 
@@ -322,7 +376,7 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
             >
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            {Array.from({ length: Math.min(totalPages || 1, 5) }, (_, i) => {
               const page = i + 1
               return (
                 <button
@@ -334,12 +388,12 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
                 </button>
               )
             })}
-            {totalPages > 5 && (
+            {(totalPages || 0) > 5 && (
               <>
                 <span className={styles.historyPaginationDots}>...</span>
                 <button
                   className={styles.historyPaginationPage}
-                  onClick={() => setCurrentPage(totalPages)}
+                  onClick={() => setCurrentPage(totalPages || 1)}
                 >
                   {totalPages}
                 </button>
@@ -347,8 +401,8 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
             )}
             <button 
               className={styles.historyPaginationBtn}
-              disabled={currentPage === totalPages || totalPages === 0}
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === (totalPages || 1) || totalPages === 0}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages || 1))}
             >
               <span className="material-symbols-outlined">chevron_right</span>
             </button>

@@ -9,15 +9,25 @@ interface MappingPageProps {
   products: any[]
   navigateTo: (page: string) => void
   showToast: (msg: string) => void
+  refreshProducts?: () => void
 }
 
 const READER_ELEMENT_ID = 'barcode-reader'
 
-export function MappingPage({ products, navigateTo, showToast }: MappingPageProps) {
+// ============================================================
+// RAK PRESETS
+// ============================================================
+const RAK_PRESETS = [
+  'A1', 'A2', 'A3', 'A4', 'A5',
+  'B1', 'B2', 'B3', 'B4', 'B5',
+  'C1', 'C2', 'C3', 'C4', 'C5',
+  'D1', 'D2', 'D3', 'D4', 'D5',
+]
+
+export function MappingPage({ products, navigateTo, showToast, refreshProducts }: MappingPageProps) {
   const { token } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null)
-  // Grup SKU yang lagi nunggu dipilih size-nya (kalau SKU punya >1 size)
   const [pendingSizeGroup, setPendingSizeGroup] = useState<any | null>(null)
   const [barcodeInput, setBarcodeInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -28,6 +38,11 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
   const [unmappedCount, setUnmappedCount] = useState(0)
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null)
+  
+  // 🔥 RAK STATE
+  const [selectedRak, setSelectedRak] = useState('')
+  const [customRak, setCustomRak] = useState('')
+  const [isSavingRak, setIsSavingRak] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const html5QrCodeRef = useRef<any>(null)
@@ -102,7 +117,8 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
       acc[curr.sku].sizes.push({
         size: curr.size || 'OS',
         stock_sistem: curr.stock_sistem || 0,
-        status_mapping: curr.status_mapping || false
+        status_mapping: curr.status_mapping || false,
+        lokasi_rak: curr.lokasi_rak || null // 🔥 BARU
       })
       return acc
     }, {})
@@ -111,9 +127,6 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
     setShowSuggestions(true)
   }
 
-  // Klik hasil pencarian: kalau SKU cuma punya 1 size, langsung lanjut.
-  // Kalau lebih dari 1 size, tampilkan panel pilih size dulu — karena
-  // barcode beda-beda tiap size, jadi harus jelas size mana yang dipilih.
   const selectProduct = (group: any) => {
     if (group.sizes.length === 1) {
       finalizeSelection(group.sku, group.sizes[0].size)
@@ -131,6 +144,8 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
 
     if (fullProduct) {
       setSelectedProduct(fullProduct)
+      setSelectedRak(fullProduct.lokasi_rak || '')
+      setCustomRak('')
       setPendingSizeGroup(null)
       setBarcodeInput('')
       setDetectedBarcode(null)
@@ -151,7 +166,21 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
   }
 
   // ============================================================
-  // SAVE MAPPING
+  // RAK HANDLER
+  // ============================================================
+  const handleRakSelect = (rak: string) => {
+    setSelectedRak(rak)
+    setCustomRak('')
+  }
+
+  const handleCustomRakChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toUpperCase()
+    setCustomRak(value)
+    setSelectedRak(value)
+  }
+
+  // ============================================================
+  // SAVE MAPPING + RAK
   // ============================================================
   const handleSaveMapping = useCallback(async () => {
     if (isSavingRef.current) return
@@ -166,6 +195,9 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
       return
     }
 
+    // 🔥 Ambil rak (prioritas: customRak > selectedRak)
+    const rak = customRak || selectedRak || null
+
     isSavingRef.current = true
     setLoading(true)
     try {
@@ -174,18 +206,22 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
         {
           sku: selectedProduct.sku,
           size: selectedProduct.size,
-          barcode: barcode
+          barcode: barcode,
+          lokasi_rak: rak // 🔥 KIRIM RAK
         },
         token || undefined
       )
 
       if (result?.success) {
-        showToast(`✅ ${barcode} → ${selectedProduct.nama_barang} (${selectedProduct.size})`)
+        showToast(`✅ ${barcode} → ${selectedProduct.nama_barang} (${selectedProduct.size})${rak ? ` @ Rak ${rak}` : ''}`)
         setSelectedProduct(null)
         setBarcodeInput('')
         setDetectedBarcode(null)
+        setSelectedRak('')
+        setCustomRak('')
         fetchUnmapped()
         fetchMapped()
+        if (refreshProducts) refreshProducts()
         if (scanMode === 'camera') {
           await stopCamera()
         }
@@ -202,8 +238,7 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
       setLoading(false)
       isSavingRef.current = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProduct, barcodeInput, token, scanMode])
+  }, [selectedProduct, barcodeInput, token, scanMode, selectedRak, customRak, refreshProducts])
 
   // ============================================================
   // 🔥 CAMERA SCAN
@@ -247,8 +282,8 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
       await html5QrCodeRef.current.start(
         { facingMode: 'environment' },
         {
-          fps: 15,
-          qrbox: { width: 280, height: 120 },
+          fps: 30,
+          qrbox: { width: 400, height: 100 },
           aspectRatio: 1.777
         },
         (decodedText: string) => {
@@ -322,7 +357,7 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
       {/* HEADER */}
       <div className={styles.mappingHeader}>
         <div>
-          <h1 className={styles.mappingTitle}>🔗 Mapping Barcode</h1>
+          <h1 className={styles.mappingTitle}> Mapping Barcode</h1>
           <p className={styles.mappingSubtitle}>Scan barcode atau cari produk untuk mapping</p>
         </div>
         <div className={styles.mappingStats}>
@@ -410,6 +445,8 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
                 setSelectedProduct(null)
                 setBarcodeInput('')
                 setDetectedBarcode(null)
+                setSelectedRak('')
+                setCustomRak('')
                 if (inputRef.current) inputRef.current.focus()
               }}
             >
@@ -461,7 +498,7 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
         </div>
       )}
 
-      {/* PILIH SIZE — muncul kalau SKU yang dipilih punya lebih dari 1 size */}
+      {/* PILIH SIZE */}
       {pendingSizeGroup && scanMode === 'search' && (
         <div className={styles.sizePickerPanel}>
           <div className={styles.sizePickerHeader}>
@@ -507,8 +544,48 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
                 <span>•</span>
                 <span>{selectedProduct.warna}</span>
                 <span className={styles.detailSize}>{selectedProduct.size}</span>
+                {selectedProduct.lokasi_rak && (
+                  <span className={styles.detailRak}>
+                    <span className="material-symbols-outlined">inventory_2</span>
+                    {selectedProduct.lokasi_rak}
+                  </span>
+                )}
               </div>
             </div>
+          </div>
+
+          {/* 🔥 FORM RAK - PILIH LOKASI */}
+          <div className={styles.mappingRakSection}>
+            <label className={styles.mappingRakLabel}>
+              <span className="material-symbols-outlined">inventory_2</span>
+              Lokasi Rak
+            </label>
+            <div className={styles.rakGrid}>
+              {RAK_PRESETS.map((rak) => (
+                <button
+                  key={rak}
+                  className={`${styles.rakBtn} ${selectedRak === rak && !customRak ? styles.active : ''}`}
+                  onClick={() => handleRakSelect(rak)}
+                >
+                  {rak}
+                </button>
+              ))}
+            </div>
+            <div className={styles.customRakContainer}>
+              <input
+                type="text"
+                placeholder="Atau custom (contoh: Z1, RAK-01)"
+                value={customRak}
+                onChange={handleCustomRakChange}
+                className={styles.rakInput}
+              />
+            </div>
+            {(selectedRak || customRak) && (
+              <div className={styles.rakStatus}>
+                <span className="material-symbols-outlined">check_circle</span>
+                Rak: <strong>{customRak || selectedRak}</strong>
+              </div>
+            )}
           </div>
 
           <div className={styles.mappingBarcodeInput}>
@@ -555,6 +632,8 @@ export function MappingPage({ products, navigateTo, showToast }: MappingPageProp
                 setSelectedProduct(null)
                 setBarcodeInput('')
                 setDetectedBarcode(null)
+                setSelectedRak('')
+                setCustomRak('')
                 if (scanMode === 'camera') stopCamera()
                 if (inputRef.current) inputRef.current.focus()
               }}

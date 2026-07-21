@@ -10,14 +10,28 @@ interface ProgressPageProps {
   showToast: (msg: string) => void
 }
 
+interface ProgressItem {
+  sku: string
+  nama_barang: string
+  kategori: string
+  size: string
+  stock_sistem: number
+  stock_real: number
+  selisih: number
+  status: string
+  lokasi_rak: string | null
+  user_name: string
+  updated_at: string
+}
+
 export function ProgressPage({ products, navigateTo, showToast }: ProgressPageProps) {
   const { token } = useAuth()
-  const [opnameData, setOpnameData] = useState<any[]>([])
+  const [opnameData, setOpnameData] = useState<ProgressItem[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'semua' | 'aktif'>('semua')
 
   // ============================================================
-  // HITUNG STATS DARI DATA (pake useMemo biar auto update)
+  // HITUNG STATS DARI DATA
   // ============================================================
   const stats = useMemo(() => {
     const total = products?.length || 0
@@ -26,7 +40,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
     const progress = total > 0 ? Math.round((done / total) * 100) : 0
     const totalSelisih = opnameData?.reduce((acc: number, item: any) => acc + (item.selisih || 0), 0) || 0
 
-    // Group by user
     const userMap = new Map<string, { items: number; selisih: number }>()
     opnameData?.forEach((item: any) => {
       const name = item.user_name || 'Petugas'
@@ -50,24 +63,49 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
   }, [products, opnameData])
 
   // ============================================================
-  // FETCH DATA DARI API
+  // FETCH DATA DARI API + GABUNGIN DENGAN PRODUCTS
   // ============================================================
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       try {
         console.log('[Progress] Fetching opname data...')
-        const response = await api.get<{ data: any[] }>('/api/opname', token || undefined)
+        const response = await api.get<{ data: any[]; success?: boolean }>('/api/opname', token || undefined)
         
-        console.log('[Progress] Raw response:', response)
-        
-        if (response?.data) {
-          setOpnameData(response.data)
-          console.log('[Progress] Opname data set:', response.data.length, 'items')
-        } else {
-          setOpnameData([])
-          console.warn('[Progress] No data received')
+        let rawData: any[] = []
+        if (response) {
+          if (Array.isArray(response)) {
+            rawData = response
+          } else if (response.data && Array.isArray(response.data)) {
+            rawData = response.data
+          } else if (response.success && response.data && Array.isArray(response.data)) {
+            rawData = response.data
+          }
         }
+        
+        console.log('[Progress] Raw data:', rawData.length)
+
+        // 🔥 GABUNGIN DENGAN PRODUCTS
+        const mergedData: ProgressItem[] = rawData.map((item: any) => {
+          const product = products?.find((p: any) => p.sku === item.sku && p.size === item.size)
+          return {
+            sku: item.sku,
+            nama_barang: product?.nama_barang || item.nama_barang || 'UNKNOWN',
+            kategori: product?.kategori || item.kategori || 'UNKNOWN',
+            size: item.size || 'OS',
+            stock_sistem: product?.stock_sistem || item.stock_sistem || 0,
+            stock_real: item.stock_real || 0,
+            selisih: item.selisih || 0,
+            status: item.status || 'belum',
+            lokasi_rak: item.lokasi_rak || product?.lokasi_rak || null,
+            user_name: item.user_name || 'Petugas',
+            updated_at: item.updated_at || item.created_at || new Date().toISOString()
+          }
+        })
+
+        setOpnameData(mergedData)
+        console.log('[Progress] Merged data:', mergedData.length)
+
       } catch (error) {
         console.error('[Progress] Error fetching:', error)
         showToast?.('❌ Gagal memuat data progress')
@@ -78,32 +116,12 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
     }
 
     fetchData()
-  }, [token, showToast])
+  }, [token, showToast, products])
 
-  // ============================================================
-  // DEBUG LOG - Cek nilai stats
-  // ============================================================
-  useEffect(() => {
-    console.log('[Progress] Stats:', {
-      total: stats.total,
-      done: stats.done,
-      remaining: stats.remaining,
-      progress: stats.progress,
-      totalSelisih: stats.totalSelisih,
-      petugasCount: stats.petugasList.length
-    })
-  }, [stats])
-
-  // ============================================================
-  // FILTER DATA
-  // ============================================================
   const filteredPetugas = filter === 'aktif' 
     ? stats.petugasList.filter(p => p.status === 'active')
     : stats.petugasList
 
-  // ============================================================
-  // GET STATUS BADGE
-  // ============================================================
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'active': return { label: 'Aktif', className: styles.statusActive }
@@ -112,15 +130,9 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
     }
   }
 
-  // ============================================================
-  // CALCULATE GAUGE
-  // ============================================================
-  const circumference = 2 * Math.PI * 88 // 552.92
+  const circumference = 2 * Math.PI * 88
   const offset = circumference - (stats.progress / 100) * circumference
 
-  // ============================================================
-  // LOADING STATE
-  // ============================================================
   if (loading) {
     return (
       <div className={styles.progressPage}>
@@ -132,9 +144,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
     )
   }
 
-  // ============================================================
-  // TOP PERFORMERS
-  // ============================================================
   const sortedPetugas = [...stats.petugasList].sort((a, b) => b.items - a.items)
   const topPerformers = sortedPetugas.slice(0, 3)
 
@@ -144,25 +153,14 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
 
   const totalSelisihDisplay = stats.totalSelisih > 0 ? `+${stats.totalSelisih}` : stats.totalSelisih
 
-  // ============================================================
-  // RENDER
-  // ============================================================
   return (
     <div className={styles.progressPage}>
-      {/* Background Mesh */}
       <div className={styles.meshBg}></div>
 
-      {/* Header */}
       <header className={styles.header}>
         <div>
-          <div className={styles.headerLocation}>
-            <span className="material-symbols-outlined">location_on</span>
-            <span>Semarang - Indonesia</span>
-          </div>
-          <h2 className={styles.headerTitle}>MONITOR PROGRESS STOCK OPNAME</h2>
-          <p className={styles.headerSubtitle}>
-            Real-time analytical overview of current warehouse verification cycles and personnel productivity.
-          </p>
+          <h2 className={styles.headerTitle}>Monitoring progres sistem stock</h2>
+          <p className={styles.headerSubtitle}>data real time production</p>
         </div>
         <div className={styles.headerFilter}>
           <button 
@@ -180,7 +178,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
         </div>
       </header>
 
-      {/* Stats Grid */}
       <div className={styles.statsGrid}>
         <div className={`${styles.statCard} ${styles.glassCard}`}>
           <div className={styles.statCardHeader}>
@@ -237,9 +234,7 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
         </div>
       </div>
 
-      {/* Analytical Bento Grid */}
       <div className={styles.bentoGrid}>
-        {/* Progress Overview (Gauge) */}
         <div className={`${styles.gaugeCard} ${styles.glassCard}`}>
           <h4 className={styles.gaugeTitle}>Progress Overview</h4>
           <div className={styles.gaugeContainer}>
@@ -277,7 +272,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
           </div>
         </div>
 
-        {/* Top Performers */}
         <div className={`${styles.performersCard} ${styles.glassCard}`}>
           <div className={styles.performersHeader}>
             <h4 className={styles.performersTitle}>Top Performers</h4>
@@ -316,9 +310,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
           <div className={styles.performersFooter}>
             <div>
               <p className={styles.performersFooterLabel}>Team Target Achievement</p>
-              <p className={styles.performersFooterSub}>
-                {stats.progress >= 100 ? '✅ Selesai semua!' : `On track to complete ${100 - stats.progress}% remaining.`}
-              </p>
             </div>
             <div className={styles.performersFooterRight}>
               <span className={styles.performersFooterPercent}>{stats.progress}%</span>
@@ -328,7 +319,6 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
         </div>
       </div>
 
-      {/* Global Progress Bar */}
       <div className={`${styles.globalProgress} ${styles.glassCard}`}>
         <div className={styles.globalProgressHeader}>
           <h4 className={styles.globalProgressTitle}>Global Progress Tracker</h4>
@@ -356,16 +346,16 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
           </div>
           <div className={styles.globalProgressRight}>
             <span className={styles.globalProgressError}>
-              {stats.totalSelisih !== 0 ? `Total selisih: ${totalSelisihDisplay}` : '✅ Tidak ada selisih'}
+              {stats.totalSelisih !== 0 ? `Total selisih: ${totalSelisihDisplay}` : 'Tidak ada selisih'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Personnel Status Table */}
+      {/* TABLE - dengan data lengkap */}
       <div className={`${styles.tableCard} ${styles.glassCard}`}>
         <div className={styles.tableHeader}>
-          <h4 className={styles.tableTitle}>Active Personnel Logs</h4>
+          <h4 className={styles.tableTitle}>Detail Progress Opname</h4>
           <div className={styles.tableActions}>
             <button className={styles.tableActionBtn}>
               <span className="material-symbols-outlined">filter_list</span>
@@ -379,61 +369,93 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Petugas</th>
-                <th>Progress</th>
-                <th>Items</th>
+                <th>SKU</th>
+                <th>Nama Barang</th>
+                <th>Size</th>
+                <th className={styles.textCenter}>Sistem</th>
+                <th className={styles.textCenter}>Real</th>
                 <th className={styles.textCenter}>Selisih</th>
-                <th className={styles.textRight}>Status</th>
+                <th className={styles.textCenter}>Rak</th>
+                <th className={styles.textCenter}>Status</th>
+                <th>Petugas</th>
               </tr>
             </thead>
             <tbody>
-              {filteredPetugas.length === 0 ? (
+              {opnameData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className={styles.tableEmpty}>
-                    <span className="material-symbols-outlined">person_off</span>
-                    <p>Belum ada petugas yang melakukan opname</p>
+                  <td colSpan={9} className={styles.tableEmpty}>
+                    <span className="material-symbols-outlined">inbox</span>
+                    <p>Belum ada data opname</p>
                   </td>
                 </tr>
               ) : (
-                filteredPetugas.map((petugas, idx) => {
-                  const status = getStatusBadge(petugas.status)
-                  const isActive = petugas.status === 'active'
-                  const selisihDisplay = petugas.selisih > 0 ? `+${petugas.selisih}` : petugas.selisih
-                  
+                opnameData.map((item, idx) => {
+                  const isMinus = item.selisih < 0
+                  const isPlus = item.selisih > 0
+                  const isMatch = item.selisih === 0
+
                   return (
                     <tr key={idx} className={styles.tableRow}>
                       <td>
-                        <div className={styles.tablePetugas}>
-                          <div className={`${styles.tableAvatar} ${isActive ? styles.avatarActive : styles.avatarIdle}`}>
-                            {getInitials(petugas.name)}
-                          </div>
-                          <div>
-                            <p className={styles.tablePetugasName}>{petugas.name}</p>
-                            <p className={styles.tablePetugasId}>ID: {String(idx + 1).padStart(6, '0')}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={styles.tableProgress}>
-                        <div className={styles.tableProgressBar}>
-                          <div className={styles.tableProgressTrack}>
-                            <div className={styles.tableProgressFill} style={{ width: `${petugas.progress}%` }} />
-                          </div>
-                          <span className={styles.tableProgressPercent}>{petugas.progress}%</span>
-                        </div>
+                        <span className={styles.tableSku}>{item.sku}</span>
                       </td>
                       <td>
-                        <span className={styles.tableItems}>{petugas.items} Items</span>
+                        <span className={styles.tableName}>{item.nama_barang}</span>
+                      </td>
+                      <td>
+                        <span className={styles.tableSize}>{item.size}</span>
                       </td>
                       <td className={styles.textCenter}>
-                        <span className={`${styles.tableSelisih} ${petugas.selisih !== 0 ? styles.selisihError : ''}`}>
-                          {selisihDisplay}
+                        <span className={styles.tableStock}>{item.stock_sistem}</span>
+                      </td>
+                      <td className={styles.textCenter}>
+                        <span className={styles.tableStock}>{item.stock_real}</span>
+                      </td>
+                      <td className={styles.textCenter}>
+                        <span className={`${styles.tableSelisih} ${
+                          isMatch ? styles.selisihMatch :
+                          isMinus ? styles.selisihMinus :
+                          styles.selisihPlus
+                        }`}>
+                          {isMinus ? item.selisih : isPlus ? `+${item.selisih}` : '0'}
                         </span>
                       </td>
-                      <td className={styles.textRight}>
-                        <div className={`${styles.tableStatus} ${isActive ? styles.statusActive : styles.statusIdle}`}>
-                          <span className={styles.statusDot} />
-                          <span className={styles.statusLabel}>{status.label}</span>
-                        </div>
+                      <td className={styles.textCenter}>
+                        {item.lokasi_rak ? (
+                          <span className={styles.rakBadge}>
+                            <span className="material-symbols-outlined">inventory_2</span>
+                            {item.lokasi_rak}
+                          </span>
+                        ) : (
+                          <span className={styles.rakEmpty}>-</span>
+                        )}
+                      </td>
+                      <td className={styles.textCenter}>
+                        <span className={`${styles.statusBadge} ${
+                          isMatch ? styles.statusMatch :
+                          isMinus ? styles.statusMinus :
+                          styles.statusPlus
+                        }`}>
+                          {isMatch ? (
+                            <>
+                              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>check_circle</span>
+                              Cocok
+                            </>
+                          ) : isMinus ? (
+                            <>
+                              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_downward</span>
+                              Minus
+                            </>
+                          ) : (
+                            <>
+                              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_upward</span>
+                              Plus
+                            </>
+                          )}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={styles.tablePetugas}>{item.user_name || 'Petugas'}</span>
                       </td>
                     </tr>
                   )
@@ -443,15 +465,10 @@ export function ProgressPage({ products, navigateTo, showToast }: ProgressPagePr
           </table>
         </div>
         <div className={styles.tableFooter}>
-          <span className={styles.tableFooterText}>
-            Showing {filteredPetugas.length} of {stats.petugasList.length} active personnel
-          </span>
           <div className={styles.tablePagination}>
             <button className={styles.paginationBtn}>
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
-            <button className={`${styles.paginationBtn} ${styles.paginationActive}`}>1</button>
-            <button className={styles.paginationBtn}>2</button>
             <button className={styles.paginationBtn}>
               <span className="material-symbols-outlined">chevron_right</span>
             </button>
