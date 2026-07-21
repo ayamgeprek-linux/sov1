@@ -1,17 +1,19 @@
 {
   "name": "stock-opname",
+  "version": "2.0.0",
   "private": true,
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@stock-opname/web",
     "build:api": "turbo run build --filter=@stock-opname/api"
   },
-  "packageManager": "npm@10.0.0",
-  "workspaces": [
-    "apps/*"
-  ],
   "devDependencies": {
-    "turbo": "^2.3.0"
+    "turbo": "^2.3.0",
+    "concurrently": "^8.2.2"
   }
 }
