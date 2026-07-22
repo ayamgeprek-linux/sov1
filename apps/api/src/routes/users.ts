@@ -1,95 +1,103 @@
-// apps/api/src/routes/users.js
-import { Router } from 'express'
-import { supabase, TABLES } from '../supabase/client.js'
+// apps/api/src/routes/users.ts
 
-const router = Router()
+import { Router } from "express";
+import { supabase, TABLES } from "../supabase/client.js";
 
-console.log('[Users] ✅ Route file loaded! (JavaScript)')
+const router = Router();
+
+console.log("[Users] ✅ Route file loaded!");
 
 // GET /api/users/active
-router.get('/active', async (req, res) => {
+router.get("/active", async (_req, res) => {
   try {
-    console.log('[Users] 📋 Fetching all staff/petugas...')
+    console.log("[Users] 📋 Fetching all staff/petugas...");
 
     const { data: users, error } = await supabase
       .from(TABLES.USERS)
-      .select('id, name, email, role, created_at')
-      .in('role', ['staff', 'petugas'])
-      .order('name', { ascending: true })
+      .select("id, name, email, role, created_at")
+      .in("role", ["staff", "petugas"])
+      .order("name", { ascending: true });
 
     if (error) {
-      console.error('[Users] ❌ Fetch error:', error)
-      return res.status(500).json({ 
-        success: false, 
-        error: error.message 
-      })
+      console.error("[Users] ❌ Fetch error:", error);
+
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
     }
 
-    console.log('[Users] ✅ Users found:', users?.length || 0)
+    console.log("[Users] ✅ Users found:", users?.length || 0);
 
     const { data: scans } = await supabase
       .from(TABLES.OPNAME)
-      .select('user_id')
+      .select("user_id");
 
-    const scanCount = new Map()
+    const scanCount = new Map<string, number>();
+
     scans?.forEach((item) => {
       if (item.user_id) {
-        scanCount.set(item.user_id, (scanCount.get(item.user_id) || 0) + 1)
+        scanCount.set(
+          item.user_id,
+          (scanCount.get(item.user_id) || 0) + 1
+        );
       }
-    })
+    });
 
-    const formattedData = users?.map((user) => ({
-      ...user,
-      scans: scanCount.get(user.id) || 0,
-      isActive: (scanCount.get(user.id) || 0) > 0
-    })) || []
+    const formattedData =
+      users?.map((user) => ({
+        ...user,
+        scans: scanCount.get(user.id) || 0,
+        isActive: (scanCount.get(user.id) || 0) > 0,
+      })) || [];
 
-    formattedData.sort((a, b) => b.scans - a.scans)
+    formattedData.sort((a, b) => b.scans - a.scans);
 
-    console.log('[Users] ✅ Total users:', formattedData.length)
+    console.log("[Users] ✅ Total users:", formattedData.length);
 
-    res.json({
+    return res.json({
       success: true,
-      data: formattedData
-    })
+      data: formattedData,
+    });
+  } catch (error: unknown) {
+    console.error("[Users] ❌ Active error:", error);
 
-  } catch (error) {
-    console.error('[Users] ❌ Active error:', error)
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    })
+    return res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
-})
+});
 
 // GET /api/users
-router.get('/', async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const { data: users, error } = await supabase
       .from(TABLES.USERS)
-      .select('id, name, email, role, created_at')
-      .order('name', { ascending: true })
+      .select("id, name, email, role, created_at")
+      .order("name", { ascending: true });
 
     if (error) {
-      console.error('[Users] ❌ Get all error:', error)
-      return res.status(500).json({ 
-        success: false, 
-        error: error.message 
-      })
+      console.error("[Users] ❌ Get all error:", error);
+
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
     }
 
-    res.json({
+    return res.json({
       success: true,
-      data: users || []
-    })
+      data: users || [],
+    });
+  } catch (error: unknown) {
+    console.error("[Users] ❌ Get all error:", error);
 
-  } catch (error) {
-    console.error('[Users] ❌ Get all error:', error)
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    })
+    return res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
-})
+});
 
-export default router
+export default router;
