@@ -23,7 +23,8 @@
     "react-webcam": "^7.2.0",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4",
-    "zustand": "^4.4.7"
+    "zustand": "^4.4.7",
+   "xlsx-js-style": "^0.15.9",
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
