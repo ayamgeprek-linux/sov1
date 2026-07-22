@@ -1,8 +1,8 @@
 // apps/web/src/api/client.ts
-// 👇 KOSONGKAN, PAKE RELATIVE URL
-const API_URL = ''
 
-console.log('[API] Using relative URL (proxy)')
+const API_URL = import.meta.env.VITE_API_URL || ''
+
+console.log('[API] Base URL:', API_URL)
 
 export const api = {
   // ============================================================
@@ -12,34 +12,46 @@ export const api = {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] GET ${endpoint}`)
+    console.log(`[API] GET ${API_URL}${endpoint}`)
 
-    const response = await fetch(`${API_URL}${endpoint}`, { headers })
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers,
+    })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
     return response.json()
   },
 
+
   // ============================================================
   // POST
   // ============================================================
-  post: async <T>(endpoint: string, data?: any, token?: string): Promise<T> => {
+  post: async <T>(
+    endpoint: string,
+    data?: any,
+    token?: string
+  ): Promise<T> => {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] POST ${endpoint}`, data)
+    console.log(`[API] POST ${API_URL}${endpoint}`, data)
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
@@ -48,25 +60,34 @@ export const api = {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
     return response.json()
   },
 
+
   // ============================================================
   // PUT
   // ============================================================
-  put: async <T>(endpoint: string, data: any, token?: string): Promise<T> => {
+  put: async <T>(
+    endpoint: string,
+    data: any,
+    token?: string
+  ): Promise<T> => {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] PUT ${endpoint}`, data)
+    console.log(`[API] PUT ${API_URL}${endpoint}`, data)
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PUT',
@@ -75,25 +96,34 @@ export const api = {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
     return response.json()
   },
 
+
   // ============================================================
   // PATCH
   // ============================================================
-  patch: async <T>(endpoint: string, data: any, token?: string): Promise<T> => {
+  patch: async <T>(
+    endpoint: string,
+    data: any,
+    token?: string
+  ): Promise<T> => {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] PATCH ${endpoint}`, data)
+    console.log(`[API] PATCH ${API_URL}${endpoint}`, data)
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'PATCH',
@@ -102,25 +132,33 @@ export const api = {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
     return response.json()
   },
 
+
   // ============================================================
   // DELETE
   // ============================================================
-  del: async <T>(endpoint: string, token?: string): Promise<T> => {
+  del: async <T>(
+    endpoint: string,
+    token?: string
+  ): Promise<T> => {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] DELETE ${endpoint}`)
+    console.log(`[API] DELETE ${API_URL}${endpoint}`)
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'DELETE',
@@ -128,23 +166,32 @@ export const api = {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
     return response.json()
   },
 
+
   // ============================================================
-  // UPLOAD (untuk file)
+  // UPLOAD
   // ============================================================
-  upload: async <T>(endpoint: string, formData: FormData, token?: string): Promise<T> => {
+  upload: async <T>(
+    endpoint: string,
+    formData: FormData,
+    token?: string
+  ): Promise<T> => {
     const headers: HeadersInit = {}
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
-    console.log(`[API] UPLOAD ${endpoint}`)
+    console.log(`[API] UPLOAD ${API_URL}${endpoint}`)
 
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
@@ -153,7 +200,10 @@ export const api = {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }))
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }))
+
       throw new Error(error.error || `API Error: ${response.status}`)
     }
 
