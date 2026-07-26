@@ -149,7 +149,6 @@ export function ImportPage({ navigateTo, showToast }: ImportPageProps) {
        
         <div>
           <h2 className={styles.importTitle}>Import Data Master</h2>
-          <p className={styles.importSubtitle}>Effortlessly synchronize your inventory database with Excel integration.</p>
         </div>
       </div>
 
