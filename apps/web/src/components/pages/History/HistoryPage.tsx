@@ -411,18 +411,7 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
 
       {/* Footer Insights */}
       <div className={styles.historyFooter}>
-        <div className={styles.historyFooterItem}>
-          <div>
-            <h4>Audit Integrity Guaranteed</h4>
-            <p>Every record in this history is cryptographically signed and verified against the master inventory database.</p>
-          </div>
-        </div>
-        <div className={`${styles.historyFooterItem} ${styles.footerHighlight}`}>
-          <div>
-            <h4>Deep Analytics Available</h4>
-            <p>Click on any session row to view individual item variances and high-precision deviation charts.</p>
-          </div>
-        </div>
+       
       </div>
     </div>
   )
