@@ -242,8 +242,7 @@ export function HistoryPage({ navigateTo, showToast }: HistoryPageProps) {
         <div>
           <h2 className={styles.historyTitle}>Riwayat Stock Opname</h2>
           <p className={styles.historySubtitle}>
-            Overview of historical stock count sessions. Track accuracy, officer assignments, 
-            and cycle completion status for compliance and inventory integrity.
+          history stock opname realtime-data
           </p>
         </div>
         <div className={styles.historyActions}>
